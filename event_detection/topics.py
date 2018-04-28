@@ -9,10 +9,10 @@ import matplotlib
 # resize name of x-bar
 matplotlib.rcParams.update({'xtick.labelsize' : 6})
 
-TRENDING_THRESHOLD = 2.5
-TOPIC_PROBABILITY_THRESHOLD = 0.1
+TRENDING_THRESHOLD = 2.0
+TOPIC_PROBABILITY_THRESHOLD = 0.3
 TOP_DOCUMENTS = 5
-MERGE_THRESHOLD = 0.35
+MERGE_THRESHOLD = 0.5
 
 # print topics to file
 def print_topics(beta_file, topics_title, vocab_file, nwords, result_file):

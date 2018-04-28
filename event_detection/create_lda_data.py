@@ -47,8 +47,11 @@ def get_title(dataset, output_dir, output_file):
                 data = unicodedata.normalize('NFKC', f.read().strip())
                 title = data.lower().split(u'\n')[0]
                 titles.append(title)
+    exist = False
+    if os.path.isfile(output_file):
+        exist = True
     with open(output_file, 'a', encoding='utf-8') as f:
-        if os.path.isfile(output_dir):
+        if exist:
             f.write(u'\n')
         f.write(u'\n'.join(titles))
 
@@ -59,7 +62,6 @@ def load_vocab(vocab_file):
         for i, w in enumerate(f):
             vocab.update({w.strip(u'\n'):i})
     return vocab
-
 
 
 def get_lda_data(contents, vocab, output_dir, output_file):

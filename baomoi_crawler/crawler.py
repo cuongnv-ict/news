@@ -36,7 +36,7 @@ class crawler:
         for story in list_stories:
             source = story.find_all('a', {'class' : 'cache', 'target' : '_blank'})
             self.parser_resultset(source)
-
+            # get related stories
             relate = story.find_all('a', {'class' : 'relate'})
             for r in relate:
                 href = r.attrs['href']

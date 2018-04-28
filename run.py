@@ -18,7 +18,7 @@ app = Flask(__name__, static_url_path='',
             template_folder='templates')
 
 
-domain_label = 6
+domain_label = 0
 
 @app.route('/', methods = ['GET'])
 def homepage():

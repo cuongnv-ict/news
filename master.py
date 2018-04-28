@@ -81,23 +81,26 @@ class master:
         domains = []
         events = {}
         for i, label in enumerate(self.counter.keys()):
-            if label != 6: continue # topic 'The gioi'
+            if label != 0: continue # topic 'Chinh tri Xa hoi'
             domain = my_map.label2name[label]
             ndocs = self.counter[label]
             if ndocs < 10:
                 continue
-            if ndocs > 500:
+            if ndocs > 1000:
                 event = event_detection(domain, os.path.join(self.text_clf.result_dir, domain),
                                         root_dir='event_detection', num_topics=100)
-            elif 350 <= ndocs:
+            elif 500 < ndocs and ndocs <= 1000:
                 event = event_detection(domain, os.path.join(self.text_clf.result_dir, domain),
                                         root_dir='event_detection', num_topics=50)
-            elif 200 <= ndocs and ndocs < 350:
+            elif 350 < ndocs and ndocs <= 500:
                 event = event_detection(domain, os.path.join(self.text_clf.result_dir, domain),
                                         root_dir='event_detection', num_topics=30)
-            elif 50 <= ndocs and ndocs < 200:
+            elif 200 < ndocs and ndocs <= 350:
                 event = event_detection(domain, os.path.join(self.text_clf.result_dir, domain),
                                         root_dir='event_detection', num_topics=20)
+            elif 50 < ndocs and ndocs <= 200:
+                event = event_detection(domain, os.path.join(self.text_clf.result_dir, domain),
+                                        root_dir='event_detection', num_topics=15)
             else:
                 event = event_detection(domain, os.path.join(self.text_clf.result_dir, domain),
                                         root_dir='event_detection', num_topics=10)
