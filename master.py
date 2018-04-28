@@ -33,7 +33,7 @@ class master:
             print('run crawler...')
             self.crawler.run()
             joblib.dump(self.crawler.new_stories, 'new_stories.pkl')
-            self.crawler.new_stories = joblib.load('new_stories.pkl')
+            # self.crawler.new_stories = joblib.load('new_stories.pkl')
 
             print('run text classification...')
             self.text_clf.reset()
@@ -81,7 +81,7 @@ class master:
         domains = []
         events = {}
         for i, label in enumerate(self.counter.keys()):
-            if label != 7: continue
+            if label != 6: continue # topic 'The gioi'
             domain = my_map.label2name[label]
             ndocs = self.counter[label]
             if ndocs < 10:

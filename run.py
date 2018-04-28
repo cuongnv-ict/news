@@ -18,6 +18,8 @@ app = Flask(__name__, static_url_path='',
             template_folder='templates')
 
 
+domain_label = 6
+
 @app.route('/', methods = ['GET'])
 def homepage():
     return app.send_static_file('event.html')
@@ -25,13 +27,13 @@ def homepage():
 
 @app.route('/update', methods = ['GET', 'POST'])
 def update():
-    return jsonify(m.trending_jsons[my_map.label2name[7]])
+    return jsonify(m.trending_jsons[my_map.label2name[domain_label]])
 
 
 @app.route('/get', methods = ['GET', 'POST'])
 def get_content():
     title = request.form['title']
-    content = demo.get_document_by_title(title, m.documents[my_map.label2name[7]])
+    content = demo.get_document_by_title(title, m.documents[my_map.label2name[domain_label]])
     return jsonify(content)
 
 
