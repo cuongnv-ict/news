@@ -9,7 +9,6 @@ import matplotlib
 # resize name of x-bar
 matplotlib.rcParams.update({'xtick.labelsize' : 6})
 
-TRENDING_THRESHOLD = 2.0
 TOPIC_PROBABILITY_THRESHOLD = 0.1
 TOP_DOCUMENTS = 5
 MERGE_THRESHOLD = 0.5
@@ -79,11 +78,20 @@ def get_trending_topics(theta, topic_titles, titles):
         return {}, {}
     count_topics = map(lambda x: float(x) / float(total), count_topics)
     trending = np.argsort(count_topics)[::-1]
-    trending = filter(lambda x: count_topics[x] * ntopics > TRENDING_THRESHOLD, trending)
+    trending_threshold = get_trending_threshold(ntopics)
+    trending = filter(lambda x: count_topics[x] * ntopics > trending_threshold, trending)
     trending_titles = {i : topic_titles[i] for i in trending}
     docs_trending = get_docs_trending(docs_id, docs_topic, trending_titles, titles)
     draw_document_distribution(trending_titles, count_topics, total)
     return trending_titles, docs_trending
+
+
+def get_trending_threshold(ntopics):
+    if ntopics >= 100:
+        return 2.5
+    elif ntopics >= 50:
+        return 2.25
+    else: return 2.0
 
 
 def merge_topics(topics_dup, count_topics, docs_topic, docs_id, topic_titles=None):
