@@ -54,7 +54,7 @@ class event_detection:
         if title_map == None:
             title_map = {}
         lda.update_title_map(self.dataset, title_map)
-        print('There are %d titles in title_map' % (len(title_map)))
+        # print('There are %d titles in title_map' % (len(title_map)))
         preprocessing.remove_stop_postag(self.dataset, self.clean_dataset_dir)
         contents, titles = lda.build_vocab(self.clean_dataset_dir, self.vocab_file,
                                            self.root_dir, title_map)
