@@ -154,7 +154,7 @@ def merge_print(merge, topic_titles):
     for m in merge:
         print('merge group:')
         for mm in m:
-            print(topic_titles[mm])
+            print('topic %d - %s' % (mm, topic_titles[mm]))
         print('**************************')
 
 
@@ -180,7 +180,8 @@ def draw_document_distribution(trending_topics, count_topics, total):
     objects = []
     for k in xrange(len(count_topics)):
         try:
-            _ = trending_topics[k]
+            if len(count_topics) >= 50:
+                _ = trending_topics[k]
             objects.append(unicode(k))
         except:
             objects.append(u'')
@@ -192,7 +193,7 @@ def draw_document_distribution(trending_topics, count_topics, total):
     plt.title('Document distribution by topics - num_docs = %d' % (total))
     # plt.show()
     plt.tight_layout(pad=0.4, w_pad=1.4, h_pad=1.0)
-    plt.savefig('static/documents_distribution.png', dpi=130)
+    plt.savefig('static/documents_distribution.png', dpi=100)
 
 
 def get_jaccard_similarity(set1, set2):

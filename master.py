@@ -8,8 +8,12 @@ from text_classification import my_map
 from collections import Counter
 from multiprocessing import Process
 import time, datetime
-from sklearn.externals import joblib
+import warnings
 
+
+
+
+warnings.filterwarnings('ignore', category=UserWarning)
 
 
 class master:
@@ -32,8 +36,6 @@ class master:
 
             print('run crawler...')
             self.crawler.run()
-            joblib.dump(self.crawler.new_stories, 'new_stories.pkl')
-            # self.crawler.new_stories = joblib.load('new_stories.pkl')
 
             print('run text classification...')
             self.text_clf.reset()
@@ -88,22 +90,22 @@ class master:
                 continue
             if ndocs > 1000:
                 event = event_detection(domain, os.path.join(self.text_clf.result_dir, domain),
-                                        root_dir='event_detection', num_topics=100)
+                                        root_dir='event_detection', num_topics=100, max_iter=1000)
             elif 500 < ndocs and ndocs <= 1000:
                 event = event_detection(domain, os.path.join(self.text_clf.result_dir, domain),
-                                        root_dir='event_detection', num_topics=50)
+                                        root_dir='event_detection', num_topics=50, max_iter=1000)
             elif 350 < ndocs and ndocs <= 500:
                 event = event_detection(domain, os.path.join(self.text_clf.result_dir, domain),
-                                        root_dir='event_detection', num_topics=30)
+                                        root_dir='event_detection', num_topics=30, max_iter=1000)
             elif 200 < ndocs and ndocs <= 350:
                 event = event_detection(domain, os.path.join(self.text_clf.result_dir, domain),
-                                        root_dir='event_detection', num_topics=20)
+                                        root_dir='event_detection', num_topics=20, max_iter=1000)
             elif 50 < ndocs and ndocs <= 200:
                 event = event_detection(domain, os.path.join(self.text_clf.result_dir, domain),
-                                        root_dir='event_detection', num_topics=15)
+                                        root_dir='event_detection', num_topics=15, max_iter=1000)
             else:
                 event = event_detection(domain, os.path.join(self.text_clf.result_dir, domain),
-                                        root_dir='event_detection', num_topics=10)
+                                        root_dir='event_detection', num_topics=10, max_iter=1000)
             events.update({domain : event})
             handle = Process(target=events[domain].run_demo)
             handle.start()

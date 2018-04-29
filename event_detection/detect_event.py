@@ -23,6 +23,7 @@ class event_detection:
         self.clean_dataset_dir = os.path.join(self.domain_output_dir, 'clean_dataset')
         self.title_dir = os.path.join(self.domain_output_dir, 'titles')
         self.title_file = os.path.join(self.title_dir, 'titles.dat')
+        self.title_map_file = os.path.join(self.title_dir, 'title_map_file.pkl')
         self.lda_dataset_dir = os.path.join(self.domain_output_dir, 'lda_dataset')
         self.lda_train_file = os.path.join(self.lda_dataset_dir, 'mult.dat')
         self.lda_gibb_dir = os.path.join(self.root_dir, 'lda_gibb')
@@ -36,14 +37,32 @@ class event_detection:
         self.vocab_file = os.path.join(self.domain_output_dir, 'vocab.dat')
 
 
+    def load_title_map(self):
+        try:
+            return joblib.load(self.title_map_file)
+        except:
+            return None
+
+
+    def save_title_map(self, title_map):
+        joblib.dump(title_map, self.title_map_file, compress=True)
+
+
     def prepare_data(self):
         # prepare LDA dataset
+        title_map = self.load_title_map()
+        if title_map == None:
+            title_map = {}
+        lda.update_title_map(self.dataset, title_map)
+        print('There are %d titles in title_map' % (len(title_map)))
         preprocessing.remove_stop_postag(self.dataset, self.clean_dataset_dir)
-        contents = lda.build_vocab(self.clean_dataset_dir, self.vocab_file, self.root_dir)
+        contents, titles = lda.build_vocab(self.clean_dataset_dir, self.vocab_file,
+                                           self.root_dir, title_map)
         print('There are %s docs in domain %s' % (len(contents), self.domain))
         vocab = lda.load_vocab(self.vocab_file)
         lda.get_lda_data(contents, vocab, self.lda_dataset_dir, self.lda_train_file)
-        lda.get_title(self.dataset, self.title_dir, self.title_file)
+        lda.save_titles_to_file(titles, self.title_dir, self.title_file)
+        self.save_title_map(title_map)
 
 
     def reset_all(self):

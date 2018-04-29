@@ -8,11 +8,11 @@ import os
 
 
 
-def build_vocab(dataset, output_vocab, root_dir):
+def build_vocab(dataset, output_vocab, root_dir, title_map):
     vectorizer = TfidfVectorizer(ngram_range=(1, 1), max_df=0.6, min_df=2,
                                  stop_words=utils.load_data_from_list(os.path.join(root_dir, 'stopwords.txt')))
     stack = os.listdir(dataset)
-    contents = []
+    contents = []; titles = []
     while (len(stack) > 0):
         file_name = stack.pop()
         file_path = os.path.join(dataset, file_name)
@@ -20,7 +20,10 @@ def build_vocab(dataset, output_vocab, root_dir):
             utils.push_data_to_stack(stack, file_path, file_name)
         else:
             with open(file_path, 'r', encoding='utf-8') as f:
-                contents.append(f.read().lower())
+                content = f.read()
+                base = os.path.basename(file_name)
+                titles.append(title_map[base])
+                contents.append(content.lower())
     # change vectorizer to ensure length of document greater than 0
     if len(contents) < 100:
         vectorizer.min_df = 1
@@ -30,13 +33,11 @@ def build_vocab(dataset, output_vocab, root_dir):
     with open(output_vocab, 'w', encoding='utf-8') as f:
         vocab = {w:i for i, w in enumerate(vectorizer.vocabulary_.keys())}
         f.write(u'\n'.join(vocab.keys()))
-    return contents
+    return contents, titles
 
 
-def get_title(dataset, output_dir, output_file):
+def update_title_map(dataset, title_map):
     stack = os.listdir(dataset)
-    utils.mkdir(output_dir)
-    titles = []
     while (len(stack) > 0):
         file_name = stack.pop()
         file_path = os.path.join(dataset, file_name)
@@ -46,13 +47,13 @@ def get_title(dataset, output_dir, output_file):
             with open(file_path, 'r', encoding='utf-8') as f:
                 data = unicodedata.normalize('NFKC', f.read().strip())
                 title = data.lower().split(u'\n')[0]
-                titles.append(title)
-    exist = False
-    if os.path.isfile(output_file):
-        exist = True
-    with open(output_file, 'a', encoding='utf-8') as f:
-        if exist:
-            f.write(u'\n')
+                base = os.path.basename(file_name)
+                title_map.update({base : title})
+
+
+def save_titles_to_file(titles, output_dir, output_file):
+    utils.mkdir(output_dir)
+    with open(output_file, 'w', encoding='utf-8') as f:
         f.write(u'\n'.join(titles))
 
 
@@ -92,4 +93,4 @@ if __name__ == '__main__':
     contents = build_vocab('clean_dataset')
     vocab = load_vocab('vocab.dat')
     get_lda_data(contents, vocab)
-    get_title('dataset')
+    update_title_map('dataset')
