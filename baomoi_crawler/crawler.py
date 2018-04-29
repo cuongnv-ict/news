@@ -1,16 +1,19 @@
 # -*- encoding: utf-8 -*-
 import os
+from _socket import timeout
+
 import requests
+from requests.exceptions import ConnectTimeout
 from bs4 import BeautifulSoup
 from datetime import datetime
 import warnings
 
 
 
+
 class crawler:
     def __init__(self):
         self.ids = {}
-        self.list_stories = []
         self.new_stories = []
         self.domain = 'http://baomoi.com'
         warnings.filterwarnings("ignore", category=UserWarning, module='bs4')
@@ -26,7 +29,11 @@ class crawler:
 
 
     def get_homepage(self):
-        homepage = requests.get('https://baomoi.com/')
+        try:
+            homepage = requests.get('https://baomoi.com/', timeout=(5, 30))
+        except ConnectTimeout as e:
+            print(e.message)
+            return None
         return homepage.content
 
 
@@ -44,7 +51,11 @@ class crawler:
 
 
     def parser_related(self, relate):
-        r = requests.get(self.domain + relate).content
+        try:
+            r = requests.get(self.domain + relate, timeout=(5, 30)).content
+        except ConnectTimeout as e:
+            print(e.message)
+            return
         bs = BeautifulSoup(r)
         list_related = bs.find_all('div', {'class' : 'story__meta'})
         for story in list_related:
@@ -62,7 +73,6 @@ class crawler:
             if content.strip() == u'':
                 continue
             self.new_stories.append(content)
-            self.list_stories.append(content)
 
 
     def get_id(self, href):
@@ -72,7 +82,11 @@ class crawler:
 
     def get_content(self, href):
         url_href = self.domain + href
-        source = requests.get(url_href).content
+        try:
+            source = requests.get(url_href, timeout=(5, 30)).content
+        except ConnectTimeout as e:
+            print(e.message)
+            return u''
         bs = BeautifulSoup(source)
         content = self.get_content_baomoi(bs)
         return content
@@ -91,7 +105,6 @@ class crawler:
 
 
     def remove_old_documents(self):
-        del self.list_stories[:]
         del self.new_stories[:]
         self.ids.clear()
 
@@ -99,6 +112,8 @@ class crawler:
     def run(self):
         del self.new_stories[:]
         homepage = self.get_homepage()
+        if homepage == None:
+            return
         self.parser_hompage(homepage)
         date = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         print('[%s] - There are %d new documents' % (date, len(self.new_stories)))
