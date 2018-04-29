@@ -10,7 +10,7 @@ import matplotlib
 matplotlib.rcParams.update({'xtick.labelsize' : 6})
 
 TRENDING_THRESHOLD = 2.0
-TOPIC_PROBABILITY_THRESHOLD = 0.3
+TOPIC_PROBABILITY_THRESHOLD = 0.1
 TOP_DOCUMENTS = 5
 MERGE_THRESHOLD = 0.5
 

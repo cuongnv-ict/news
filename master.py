@@ -90,19 +90,19 @@ class master:
                 continue
             if ndocs > 1000:
                 event = event_detection(domain, os.path.join(self.text_clf.result_dir, domain),
-                                        root_dir='event_detection', num_topics=100, max_iter=1000)
+                                        root_dir='event_detection', num_topics=100, max_iter=1200)
             elif 500 < ndocs and ndocs <= 1000:
                 event = event_detection(domain, os.path.join(self.text_clf.result_dir, domain),
-                                        root_dir='event_detection', num_topics=50, max_iter=1000)
+                                        root_dir='event_detection', num_topics=50, max_iter=1200)
             elif 350 < ndocs and ndocs <= 500:
                 event = event_detection(domain, os.path.join(self.text_clf.result_dir, domain),
-                                        root_dir='event_detection', num_topics=30, max_iter=1000)
+                                        root_dir='event_detection', num_topics=30, max_iter=1200)
             elif 200 < ndocs and ndocs <= 350:
                 event = event_detection(domain, os.path.join(self.text_clf.result_dir, domain),
-                                        root_dir='event_detection', num_topics=20, max_iter=1000)
+                                        root_dir='event_detection', num_topics=20, max_iter=1200)
             elif 50 < ndocs and ndocs <= 200:
                 event = event_detection(domain, os.path.join(self.text_clf.result_dir, domain),
-                                        root_dir='event_detection', num_topics=15, max_iter=1000)
+                                        root_dir='event_detection', num_topics=15, max_iter=1200)
             else:
                 event = event_detection(domain, os.path.join(self.text_clf.result_dir, domain),
                                         root_dir='event_detection', num_topics=10, max_iter=1000)
