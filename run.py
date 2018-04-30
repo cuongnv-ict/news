@@ -18,7 +18,6 @@ domain = 'Chinh tri Xa hoi'
 domain_label = my_map.name2label[domain]
 dataset = os.path.join(m.text_clf.result_dir, domain)
 
-documents_content = demo.load_document_content(dataset)
 while True:
     try:
         trending_titles = m.trending_titles[domain]
@@ -38,6 +37,8 @@ for k, title in trending_titles.items():
     event.update({u'subTitles': sub_title})
     trending.append(event)
 trending_json = json.dumps(trending, ensure_ascii=False, encoding='utf-8')
+
+documents_content = demo.load_document_content(dataset)
 
 
 app = Flask(__name__, static_url_path='',
