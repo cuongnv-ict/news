@@ -84,13 +84,3 @@ def get_lda_data(contents, vocab, output_dir, output_file):
             x.extend([unicode(i) + u':' + unicode(j) for i, j in lda_data.items()])
             result.append(u' '.join(x))
         f.write(u'\n'.join(result))
-
-
-
-
-
-if __name__ == '__main__':
-    contents = build_vocab('clean_dataset')
-    vocab = load_vocab('vocab.dat')
-    get_lda_data(contents, vocab)
-    update_title_map('dataset')

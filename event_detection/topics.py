@@ -16,10 +16,8 @@ MERGE_THRESHOLD = 0.5
 # print topics to file
 def print_topics(beta_file, topics_title, vocab_file, nwords, result_file):
     min_float = -sys.float_info.max
-    # get the vocabulary
     vocab = file(vocab_file, 'r').readlines()
-    vocab = map(lambda x: x.strip(), vocab)    
-    # open file to write
+    vocab = map(lambda x: x.strip(), vocab)
     with open(result_file, 'w', encoding='utf-8') as fp:
         for topic_no, topic in enumerate(file(beta_file, 'r')):
             fp.write(u'topic %03d - %s\n' % (topic_no, topics_title[topic_no]))
@@ -29,7 +27,6 @@ def print_topics(beta_file, topics_title, vocab_file, nwords, result_file):
                 fp.write(unicode('   %s \t\t %f\n' % (vocab[index], topic[index]), encoding='utf-8'))
                 topic[index] = min_float
             fp.write(u'\n')
-    # print('print topics has finished')
 
 
 def get_topics_title(doc_states, titles_file):
@@ -210,20 +207,3 @@ def get_jaccard_similarity(set1, set2):
         return 0.0
     intersection = float(len(set1.intersection(set2)))
     return intersection / union
-
-
-
-
-if (__name__ == '__main__'):
-    if (len(sys.argv) != 7):
-       print 'usage: python topics.py [beta-file] [theta-file] [titles-file] [vocab-file] [num words] [result-file]\n'
-       sys.exit(1)
-
-    beta_file = sys.argv[1]
-    theta_file = sys.argv[2]
-    titles_file = sys.argv[3]
-    vocab_file = sys.argv[4]
-    nwords = int(sys.argv[5])
-    result_file = sys.argv[6]
-    theta, topics_title, titles = get_topics_title(theta_file, titles_file)
-    print_topics(beta_file, topics_title, vocab_file, nwords, result_file)
