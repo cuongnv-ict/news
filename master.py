@@ -54,11 +54,6 @@ class master:
 
     def merge_trending(self, trending_titles, docs_trending):
         print('merge trending...')
-        from sklearn.externals import joblib
-        self.trending_titles = joblib.load('event_detection/event_result/Chinh tri Xa hoi_/trending_titles.pkl')
-        self.trending_titles = {u'Chinh tri Xa hoi' : self.trending_titles}
-        self.docs_trending = joblib.load('event_detection/event_result/Chinh tri Xa hoi_/docs_trending.pkl')
-        self.docs_trending = {u'Chinh tri Xa hoi' : self.docs_trending}
         for domain in trending_titles.keys():
             try:
                 for k1 in trending_titles[domain].keys():
