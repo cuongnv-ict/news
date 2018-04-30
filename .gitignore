@@ -101,7 +101,6 @@ ENV/
 .mypy_cache/
 
 *.pyc
-tokenizer/model/
 lda_gibb/fit_*/
 lda_gibb/lda
 .idea/
