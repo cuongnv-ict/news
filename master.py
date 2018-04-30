@@ -21,8 +21,8 @@ class master:
         self.crawler = crawler()
         self.text_clf = classification(root_dir='text_classification')
         self.text_clf.run()
-        self.documents = {}
-        self.trending_jsons = {}
+        self.docs_trending = {}
+        self.trending_titles = {}
         self.date = datetime.datetime.now().date()
         self.first_run = True
         self.counter = {label:0 for label in my_map.label2name.keys()}
@@ -30,24 +30,24 @@ class master:
 
     def run(self):
         while(True):
-            if self.check_date() or self.first_run:
-                self.reset_all()
-                self.first_run = False
-
-            print('run crawler...')
-            self.crawler.run()
-
-            print('run text classification...')
-            self.text_clf.reset()
-            labels = self.text_clf.predict(self.crawler.new_stories)
-            self.text_clf.save_to_dir(self.crawler.new_stories, labels)
-
-            self.update_counter(labels)
-
+            # if self.check_date() or self.first_run:
+            #     self.reset_all()
+            #     self.first_run = False
+            #
+            # print('run crawler...')
+            # self.crawler.run()
+            #
+            # print('run text classification...')
+            # self.text_clf.reset()
+            # labels = self.text_clf.predict(self.crawler.new_stories)
+            # self.text_clf.save_to_dir(self.crawler.new_stories, labels)
+            #
+            # self.update_counter(labels)
+            self.counter = {0:231}
             print('run event detection...')
-            documents, trending_jsons = self.run_event()
-            self.documents = documents
-            self.trending_jsons = trending_jsons
+            trending_titles, docs_trending = self.run_event_detection()
+            self.docs_trending = docs_trending
+            self.trending_titles = trending_titles
 
             time.sleep(1300)
 
@@ -76,54 +76,61 @@ class master:
         return False
 
 
-    def run_event(self):
+    def run_event_detection(self):
         handles = []
-        documents = {}
-        trending_json = {}
-        domains = []
-        events = {}
+        docs_trending = {}
+        trending_titles = {}
+        domains = []; events = {}
         for i, label in enumerate(self.counter.keys()):
             if label != 0: continue # topic 'Chinh tri Xa hoi'
             domain = my_map.label2name[label]
             ndocs = self.counter[label]
-            if ndocs < 10:
+            event = self.config_event_detection(domain, ndocs)
+            if event == None:
                 continue
-            if ndocs > 1000:
-                event = event_detection(domain, os.path.join(self.text_clf.result_dir, domain),
-                                        root_dir='event_detection', num_topics=100, max_iter=1200)
-            elif 500 < ndocs and ndocs <= 1000:
-                event = event_detection(domain, os.path.join(self.text_clf.result_dir, domain),
-                                        root_dir='event_detection', num_topics=50, max_iter=1200)
-            elif 350 < ndocs and ndocs <= 500:
-                event = event_detection(domain, os.path.join(self.text_clf.result_dir, domain),
-                                        root_dir='event_detection', num_topics=30, max_iter=1200)
-            elif 200 < ndocs and ndocs <= 350:
-                event = event_detection(domain, os.path.join(self.text_clf.result_dir, domain),
-                                        root_dir='event_detection', num_topics=20, max_iter=1200)
-            elif 50 < ndocs and ndocs <= 200:
-                event = event_detection(domain, os.path.join(self.text_clf.result_dir, domain),
-                                        root_dir='event_detection', num_topics=15, max_iter=1200)
-            else:
-                event = event_detection(domain, os.path.join(self.text_clf.result_dir, domain),
-                                        root_dir='event_detection', num_topics=10, max_iter=1000)
             events.update({domain : event})
-            handle = Process(target=events[domain].run_demo)
+            handle = Process(target=events[domain].run, kwargs={'save2file':True})
             handle.start()
             handles.append(handle)
             domains.append(domain)
         for i in xrange(len(handles)):
             handles[i].join()
         print('All process have finished')
-        self.get_trending(events, domains, documents, trending_json)
-        return documents, trending_json
+        self.get_trending(events, domains, trending_titles, docs_trending)
+        return docs_trending, trending_titles
 
 
-    def get_trending(self, events, domains, documents, trending_json):
+    def config_event_detection(self, domain, ndocs):
+        if ndocs < 10:
+            return None
+        if ndocs > 1000:
+            event = event_detection(domain, os.path.join(self.text_clf.result_dir, domain),
+                                    root_dir='event_detection', num_topics=100, max_iter=1300)
+        elif 500 < ndocs and ndocs <= 1000:
+            event = event_detection(domain, os.path.join(self.text_clf.result_dir, domain),
+                                    root_dir='event_detection', num_topics=50, max_iter=1300)
+        elif 350 < ndocs and ndocs <= 500:
+            event = event_detection(domain, os.path.join(self.text_clf.result_dir, domain),
+                                    root_dir='event_detection', num_topics=30, max_iter=1300)
+        elif 200 < ndocs and ndocs <= 350:
+            event = event_detection(domain, os.path.join(self.text_clf.result_dir, domain),
+                                    root_dir='event_detection', num_topics=20, max_iter=1300)
+        elif 50 < ndocs and ndocs <= 200:
+            event = event_detection(domain, os.path.join(self.text_clf.result_dir, domain),
+                                    root_dir='event_detection', num_topics=15, max_iter=1300)
+        else:
+            event = event_detection(domain, os.path.join(self.text_clf.result_dir, domain),
+                                    root_dir='event_detection', num_topics=10, max_iter=1300)
+        return event
+
+
+    def get_trending(self, events, domains, trending_titles, docs_trending):
         for domain in domains:
             event = events[domain]
             d, j = event.load_trending()
-            documents.update({domain: d})
-            trending_json.update({domain: j})
+            docs_trending.update({domain: d})
+            trending_titles.update({domain: j})
+
 
 
 

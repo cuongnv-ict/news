@@ -1,9 +1,6 @@
 # -*- encoding: utf-8 -*-
 import os
-from _socket import timeout
-
 import requests
-from requests.exceptions import ConnectTimeout
 from bs4 import BeautifulSoup
 from datetime import datetime
 import warnings
@@ -31,7 +28,7 @@ class crawler:
     def get_homepage(self):
         try:
             homepage = requests.get('https://baomoi.com/', timeout=(5, 30))
-        except ConnectTimeout as e:
+        except Exception as e:
             print(e.message)
             return None
         return homepage.content
@@ -53,7 +50,7 @@ class crawler:
     def parser_related(self, relate):
         try:
             r = requests.get(self.domain + relate, timeout=(5, 30)).content
-        except ConnectTimeout as e:
+        except Exception as e:
             print(e.message)
             return
         bs = BeautifulSoup(r)
@@ -84,7 +81,7 @@ class crawler:
         url_href = self.domain + href
         try:
             source = requests.get(url_href, timeout=(5, 30)).content
-        except ConnectTimeout as e:
+        except Exception as e:
             print(e.message)
             return u''
         bs = BeautifulSoup(source)
@@ -116,7 +113,8 @@ class crawler:
             return
         self.parser_hompage(homepage)
         date = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        print('[%s] - There are %d new documents' % (date, len(self.new_stories)))
+        print('[%s] - There are %d new docs_trending' % (date, len(self.new_stories)))
+
 
 
 

@@ -35,6 +35,10 @@ class event_detection:
         self.topic_result_dir = os.path.join(self.domain_output_dir, 'topics')
         self.topic_result_file = os.path.join(self.topic_result_dir, 'topics.txt')
         self.vocab_file = os.path.join(self.domain_output_dir, 'vocab.dat')
+        self.trending_titles_file = os.path.join(self.domain_output_dir, 'trending_titles.pkl')
+        self.docs_trending_file = os.path.join(self.domain_output_dir, 'docs_trending.pkl')
+        self.docs_content_file = os.path.join(self.domain_output_dir, 'docs_content.pkl')
+        self.trending_json_file = os.path.join(self.domain_output_dir, 'trending_json.pkl')
 
 
     def load_title_map(self):
@@ -93,41 +97,26 @@ class event_detection:
         return trending_titles, docs_trending
 
 
-    def run(self):
+    def run(self, save2file=False):
         utils.mkdir(self.root_output_dir)
         utils.mkdir(self.domain_output_dir)
-        self.prepare_data()
-        self.run_gibb_LDA()
+        # self.prepare_data()
+        # self.run_gibb_LDA()
         trending_titles, docs_trending = self.get_trending()
+        if save2file:
+            self.save_trending(trending_titles, docs_trending)
         return trending_titles, docs_trending
 
 
-    def run_demo(self):
-        print('get trending domain %s' % (self.domain))
-        trending_titles, docs_trending = self.run()
-        documents_content = demo.load_document_content(self.dataset)
-        # build json content
-        trending = []
-        for k, title in trending_titles.items():
-            event = {}
-            event.update({u'title': u'topic ' + unicode(k) + u' - ' + title})
-            # sub_title = []
-            docs = docs_trending[k]
-            sub_title = [{u'title': name} for name in docs]
-            event.update({u'subTitles': sub_title})
-            trending.append(event)
-        self.save_trending(documents_content, json.dumps(trending, ensure_ascii=False, encoding='utf-8'))
-
-
-    def save_trending(self, documents, trending_json):
-        joblib.dump(documents, os.path.join(self.domain_output_dir, 'documents.pkl'), compress=True)
-        joblib.dump(trending_json, os.path.join(self.domain_output_dir, 'trending_json.pkl'), compress=True)
+    def save_trending(self, trending_titles, docs_trending):
+        joblib.dump(trending_titles, self.trending_titles_file, compress=True)
+        joblib.dump(docs_trending, self.docs_trending_file, compress=True)
 
 
     def load_trending(self):
-        documents = joblib.load(os.path.join(self.domain_output_dir, 'documents.pkl'))
-        trending_json = joblib.load(os.path.join(self.domain_output_dir, 'trending_json.pkl'))
-        return documents, trending_json
+        trending_titles = joblib.load(self.trending_titles_file)
+        docs_trending = joblib.load(self.docs_trending_file)
+        return trending_titles, docs_trending
 
 
 
