@@ -1,9 +1,16 @@
-import sys
+import sys, os
 import numpy as np
 from io import open
+
+import matplotlib
+# check display and when ssh to server using command:
+# ssh -X "your_login"
+if os.environ.get('DISPLAY','') == '':
+    print('no display found. Using non-interactive Agg backend')
+    matplotlib.use('Agg')
+
 import matplotlib.pyplot as plt; plt.rcdefaults()
 import matplotlib.pyplot as plt
-import matplotlib
 
 
 
