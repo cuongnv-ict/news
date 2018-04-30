@@ -52,7 +52,7 @@ def homepage():
 
 @app.route('/update', methods = ['GET', 'POST'])
 def update():
-    return jsonify(trending_titles)
+    return jsonify(trending_json)
 
 
 @app.route('/get', methods = ['GET', 'POST'])
