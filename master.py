@@ -80,6 +80,7 @@ class master:
 
 
     def reset_all(self):
+        print('reset all...')
         self.crawler.remove_old_documents()
         self.text_clf.reset()
         for domain in my_map.name2label.keys():
