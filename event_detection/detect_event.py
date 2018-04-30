@@ -79,7 +79,6 @@ class event_detection:
                    '--num_topics', str(self.num_topics), '--save_lag', '10000',
                    '--eta', '0.01', '--alpha', '0.1', '--max_iter', str(self.max_iter)]
         subprocess.call(command)
-        # print('\nlda training has finished')
 
 
     def get_trending(self):

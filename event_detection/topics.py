@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 import matplotlib
 
 
+
 # resize name of x-bar
 matplotlib.rcParams.update({'xtick.labelsize' : 6})
 

@@ -113,7 +113,7 @@ class crawler:
             return
         self.parser_hompage(homepage)
         date = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        print('[%s] - There are %d new docs_trending' % (date, len(self.new_stories)))
+        print('[%s] - There are %d new stories' % (date, len(self.new_stories)))
 
 
 

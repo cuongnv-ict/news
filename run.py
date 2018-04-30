@@ -15,7 +15,6 @@ handle = Thread(target=m.run)
 handle.start()
 
 domain = 'Chinh tri Xa hoi'
-domain_label = my_map.name2label[domain]
 dataset = os.path.join(m.text_clf.result_dir, domain)
 
 while True:

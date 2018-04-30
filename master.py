@@ -9,6 +9,7 @@ from collections import Counter
 from multiprocessing import Process
 import time, datetime
 import warnings
+from event_detection.topics import get_jaccard_similarity, MERGE_THRESHOLD
 
 
 
@@ -30,26 +31,51 @@ class master:
 
     def run(self):
         while(True):
-            if self.check_date() or self.first_run:
-                self.reset_all()
-                self.first_run = False
-
-            print('run crawler...')
-            self.crawler.run()
-
-            print('run text classification...')
-            self.text_clf.reset()
-            labels = self.text_clf.predict(self.crawler.new_stories)
-            self.text_clf.save_to_dir(self.crawler.new_stories, labels)
-
-            self.update_counter(labels)
-
+            # if self.check_date() or self.first_run:
+            #     self.reset_all()
+            #     self.first_run = False
+            #
+            # print('run crawler...')
+            # self.crawler.run()
+            #
+            # print('run text classification...')
+            # self.text_clf.reset()
+            # labels = self.text_clf.predict(self.crawler.new_stories)
+            # self.text_clf.save_to_dir(self.crawler.new_stories, labels)
+            #
+            # self.update_counter(labels)
+            self.counter = {0:180}
             print('run event detection...')
             trending_titles, docs_trending = self.run_event_detection()
-            self.docs_trending = docs_trending
-            self.trending_titles = trending_titles
+            self.merge_trending(trending_titles, docs_trending)
 
             time.sleep(1300)
+
+
+    def merge_trending(self, trending_titles, docs_trending):
+        print('merge trending...')
+        from sklearn.externals import joblib
+        self.trending_titles = joblib.load('event_detection/event_result/Chinh tri Xa hoi_/trending_titles.pkl')
+        self.trending_titles = {u'Chinh tri Xa hoi' : self.trending_titles}
+        self.docs_trending = joblib.load('event_detection/event_result/Chinh tri Xa hoi_/docs_trending.pkl')
+        self.docs_trending = {u'Chinh tri Xa hoi' : self.docs_trending}
+        for domain in trending_titles.keys():
+            try:
+                for k1 in trending_titles[domain].keys():
+                    for k2 in self.trending_titles[domain].keys():
+                        docs1 = set(docs_trending[domain][k1])
+                        docs2 = set(self.docs_trending[domain][k2])
+                        jaccard = get_jaccard_similarity(docs1, docs2)
+                        if jaccard > MERGE_THRESHOLD:
+                            print('[%s] topic %d - %s <==> topic %d - %s' %
+                                  (domain, k1, trending_titles[domain][k1], k2, self.trending_titles[domain][k2]))
+                            trending_titles[domain][k1] = self.trending_titles[domain][k2]
+                            docs_trending[domain][k1] = list(docs1.union(docs2))
+                            break
+            except:
+                continue
+        self.trending_titles = trending_titles
+        self.docs_trending = docs_trending
 
 
     def update_counter(self, labels):
@@ -70,7 +96,8 @@ class master:
 
     def check_date(self):
         present = datetime.datetime.now().date()
-        if self.date < present:
+        diff = present - self.date
+        if diff.days >= 1:
             self.date = present
             return True
         return False
