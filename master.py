@@ -114,7 +114,7 @@ class master:
         trending_titles = {}
         domains = []; events = {}
         for i, label in enumerate(self.counter.keys()):
-            # if label != 0: continue # topic 'Chinh tri Xa hoi'
+            if label != 6: continue # topic 'Chinh tri Xa hoi'
             domain = my_map.label2name[label]
             ndocs = self.counter[label]
             event = self.config_event_detection(domain, ndocs)
@@ -133,7 +133,7 @@ class master:
 
 
     def config_event_detection(self, domain, ndocs):
-        if ndocs < 10:
+        if ndocs < 20:
             return None
         if ndocs > 2000:
             event = event_detection(domain, os.path.join(self.text_clf.result_dir, domain),
@@ -162,9 +162,12 @@ class master:
         elif 100 < ndocs and ndocs <= 300:
             event = event_detection(domain, os.path.join(self.text_clf.result_dir, domain),
                                     root_dir='event_detection', num_topics=15, max_iter=1300)
-        else:
+        elif 50 < ndocs and ndocs <= 100:
             event = event_detection(domain, os.path.join(self.text_clf.result_dir, domain),
                                     root_dir='event_detection', num_topics=10, max_iter=1300)
+        else:
+            event = event_detection(domain, os.path.join(self.text_clf.result_dir, domain),
+                                    root_dir='event_detection', num_topics=5, max_iter=1300)
         return event
 
 
