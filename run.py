@@ -57,7 +57,7 @@ def homepage():
 def update():
     trending_titles = joblib.load(m.trending_titles_file)
     docs_trending = joblib.load(m.docs_trending_file)
-    trending_json = build_json_content(trending_titles, docs_trending)
+    trending_json = build_json_content(trending_titles[domain], docs_trending[domain])
     return jsonify(trending_json)
 
 
