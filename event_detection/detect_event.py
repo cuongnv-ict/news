@@ -94,8 +94,8 @@ class event_detection:
     def run(self, save2file=False):
         utils.mkdir(self.root_output_dir)
         utils.mkdir(self.domain_output_dir)
-        # self.prepare_data()
-        # self.run_gibb_LDA()
+        self.prepare_data()
+        self.run_gibb_LDA()
         trending_titles, docs_trending = self.get_trending()
         if save2file:
             self.save_trending(trending_titles, docs_trending)

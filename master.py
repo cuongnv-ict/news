@@ -31,20 +31,20 @@ class master:
 
     def run(self):
         while(True):
-            # if self.check_date() or self.first_run:
-            #     self.reset_all()
-            #     self.first_run = False
-            #
-            # print('run crawler...')
-            # self.crawler.run()
-            #
-            # print('run text classification...')
-            # self.text_clf.reset()
-            # labels = self.text_clf.predict(self.crawler.new_stories)
-            # self.text_clf.save_to_dir(self.crawler.new_stories, labels)
-            #
-            # self.update_counter(labels)
-            self.counter = {0:207}
+            if self.check_date() or self.first_run:
+                self.reset_all()
+                self.first_run = False
+
+            print('run crawler...')
+            self.crawler.run()
+
+            print('run text classification...')
+            self.text_clf.reset()
+            labels = self.text_clf.predict(self.crawler.new_stories)
+            self.text_clf.save_to_dir(self.crawler.new_stories, labels)
+
+            self.update_counter(labels)
+
             print('run event detection...')
             trending_titles, docs_trending = self.run_event_detection()
             self.merge_trending(trending_titles, docs_trending)
