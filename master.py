@@ -170,10 +170,12 @@ class master:
 
     def get_trending(self, events, domains, trending_titles, docs_trending):
         for domain in domains:
-            event = events[domain]
-            j, d = event.load_trending()
-            docs_trending.update({domain: d})
-            trending_titles.update({domain: j})
+            try:
+                event = events[domain]
+                j, d = event.load_trending()
+                docs_trending.update({domain: d})
+                trending_titles.update({domain: j})
+            except: continue
 
 
     def save_trending_to_file(self):
