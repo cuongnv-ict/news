@@ -15,7 +15,7 @@ handle.start()
 
 domain = 'Chinh tri Xa hoi'
 dataset = os.path.join(m.text_clf.result_dir, domain)
-
+documents_content = {}
 
 while True:
     try:
@@ -25,18 +25,19 @@ while True:
     except:
         time.sleep(1)
 
-# build json content
-trending = []
-for k, title in trending_titles.items():
-    event = {}
-    event.update({u'title': u'topic ' + unicode(k) + u' - ' + title})
-    # sub_title = []
-    docs = docs_trending[k]
-    sub_title = [{u'title': name} for name in docs]
-    event.update({u'subTitles': sub_title})
-    trending.append(event)
-trending_json = json.dumps(trending, ensure_ascii=False, encoding='utf-8')
-documents_content = demo.load_document_content(dataset)
+def build_json_content():
+    # build json content
+    trending = []
+    for k, title in trending_titles.items():
+        event = {}
+        event.update({u'title': u'topic ' + unicode(k) + u' - ' + title})
+        # sub_title = []
+        docs = docs_trending[k]
+        sub_title = [{u'title': name} for name in docs]
+        event.update({u'subTitles': sub_title})
+        trending.append(event)
+    trending_json = json.dumps(trending, ensure_ascii=False, encoding='utf-8')
+    return trending_json
 
 
 app = Flask(__name__, static_url_path='',
@@ -51,12 +52,14 @@ def homepage():
 
 @app.route('/update', methods = ['GET', 'POST'])
 def update():
+    trending_json = build_json_content()
     return jsonify(trending_json)
 
 
 @app.route('/get', methods = ['GET', 'POST'])
 def get_content():
     title = request.form['title']
+    demo.load_document_content(dataset, documents_content)
     content = demo.get_document_by_title(title, documents_content)
     return jsonify(content)
 

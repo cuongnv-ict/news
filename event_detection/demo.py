@@ -8,8 +8,7 @@ import utils
 
 
 
-def load_document_content(dataset):
-    documents = {}
+def load_document_content(dataset, documents):
     stack = os.listdir(dataset)
     while (len(stack) > 0):
         file_name = stack.pop()
@@ -33,7 +32,6 @@ def load_document_content(dataset):
                     documents.update({raw_content[0].lower() : u'\n'.join(new_content)})
                 except:
                     continue
-    return documents
 
 
 def get_document_by_title(title, documents):
