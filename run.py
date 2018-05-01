@@ -6,6 +6,7 @@ from event_detection import demo
 from master import master
 from threading import Thread
 import os, json, time
+from event_detection.detect_event import event_detection
 
 
 
@@ -17,15 +18,18 @@ domain = 'Chinh tri Xa hoi'
 dataset = os.path.join(m.text_clf.result_dir, domain)
 documents_content = {}
 
+# wait for master finish in the first running.
 while True:
     try:
-        trending_titles = m.trending_titles[domain]
-        docs_trending = m.docs_trending[domain]
+        _ = m.trending_titles[domain]
         break
     except:
         time.sleep(1)
 
-def build_json_content():
+event = event_detection(domain, dataset, root_dir='event_detection')
+
+
+def build_json_content(trending_titles, docs_trending):
     # build json content
     trending = []
     for k, title in trending_titles.items():
@@ -52,7 +56,8 @@ def homepage():
 
 @app.route('/update', methods = ['GET', 'POST'])
 def update():
-    trending_json = build_json_content()
+    trending_titles, docs_trending = event.load_trending()
+    trending_json = build_json_content(trending_titles, docs_trending)
     return jsonify(trending_json)
 
 
