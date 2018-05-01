@@ -5,8 +5,6 @@ import subprocess
 import topics
 import utils
 import os
-import demo
-import json
 from sklearn.externals import joblib
 
 

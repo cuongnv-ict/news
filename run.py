@@ -3,7 +3,6 @@
 from flask import Flask, request
 from flask import jsonify
 from event_detection import demo
-from text_classification import my_map
 from master import master
 from threading import Thread
 import os, json, time
@@ -16,6 +15,7 @@ handle.start()
 
 domain = 'Chinh tri Xa hoi'
 dataset = os.path.join(m.text_clf.result_dir, domain)
+
 
 while True:
     try:
@@ -36,13 +36,13 @@ for k, title in trending_titles.items():
     event.update({u'subTitles': sub_title})
     trending.append(event)
 trending_json = json.dumps(trending, ensure_ascii=False, encoding='utf-8')
-
 documents_content = demo.load_document_content(dataset)
 
 
 app = Flask(__name__, static_url_path='',
             static_folder='static',
             template_folder='templates')
+
 
 @app.route('/', methods = ['GET'])
 def homepage():
@@ -57,7 +57,7 @@ def update():
 @app.route('/get', methods = ['GET', 'POST'])
 def get_content():
     title = request.form['title']
-    content = demo.get_document_by_title(title, docs_trending)
+    content = demo.get_document_by_title(title, documents_content)
     return jsonify(content)
 
 

@@ -54,6 +54,7 @@ class master:
 
     def merge_trending(self, trending_titles, docs_trending):
         print('merge trending...')
+        replace_all = True
         for domain in trending_titles.keys():
             try:
                 for k1 in trending_titles[domain].keys():
@@ -63,14 +64,19 @@ class master:
                         jaccard = get_jaccard_similarity(docs1, docs2)
                         if jaccard > MERGE_THRESHOLD:
                             print('[%s] topic %d - %s <==> topic %d - %s' %
-                                  (domain, k1, trending_titles[domain][k1], k2, self.trending_titles[domain][k2]))
+                                  (domain, k1, trending_titles[domain][k1],
+                                   k2, self.trending_titles[domain][k2]))
                             trending_titles[domain][k1] = self.trending_titles[domain][k2]
                             docs_trending[domain][k1] = list(docs1.union(docs2))
                             break
             except:
                 continue
-        self.trending_titles = trending_titles
-        self.docs_trending = docs_trending
+            replace_all = False
+            self.trending_titles[domain] = trending_titles[domain]
+            self.docs_trending[domain] = docs_trending[domain]
+        if replace_all:
+            self.trending_titles = trending_titles
+            self.docs_trending = docs_trending
 
 
     def update_counter(self, labels):
