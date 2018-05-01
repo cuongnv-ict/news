@@ -15,7 +15,7 @@ m = master()
 handle = Thread(target=m.run)
 handle.start()
 
-domain = 'Chinh tri Xa hoi'
+domain = 'The thao'
 dataset = os.path.join(m.text_clf.result_dir, domain)
 documents_content = {}
 

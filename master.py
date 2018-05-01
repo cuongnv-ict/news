@@ -114,7 +114,7 @@ class master:
         trending_titles = {}
         domains = []; events = {}
         for i, label in enumerate(self.counter.keys()):
-            if label != 0: continue # topic 'Chinh tri Xa hoi'
+            # if label != 0: continue # topic 'Chinh tri Xa hoi'
             domain = my_map.label2name[label]
             ndocs = self.counter[label]
             event = self.config_event_detection(domain, ndocs)
@@ -135,19 +135,31 @@ class master:
     def config_event_detection(self, domain, ndocs):
         if ndocs < 10:
             return None
-        if ndocs > 1000:
+        if ndocs > 2000:
             event = event_detection(domain, os.path.join(self.text_clf.result_dir, domain),
                                     root_dir='event_detection', num_topics=100, max_iter=1300)
-        elif 500 < ndocs and ndocs <= 1000:
+        elif 1500 < ndocs and ndocs <= 2000:
             event = event_detection(domain, os.path.join(self.text_clf.result_dir, domain),
                                     root_dir='event_detection', num_topics=50, max_iter=1300)
-        elif 350 < ndocs and ndocs <= 500:
+        elif 1300 < ndocs and ndocs <= 1500:
+            event = event_detection(domain, os.path.join(self.text_clf.result_dir, domain),
+                                    root_dir='event_detection', num_topics=45, max_iter=1300)
+        elif 1100 < ndocs and ndocs <= 1300:
+            event = event_detection(domain, os.path.join(self.text_clf.result_dir, domain),
+                                    root_dir='event_detection', num_topics=40, max_iter=1300)
+        elif 900 < ndocs and ndocs <= 1100:
+            event = event_detection(domain, os.path.join(self.text_clf.result_dir, domain),
+                                    root_dir='event_detection', num_topics=35, max_iter=1300)
+        elif 700 < ndocs and ndocs <= 900:
             event = event_detection(domain, os.path.join(self.text_clf.result_dir, domain),
                                     root_dir='event_detection', num_topics=30, max_iter=1300)
-        elif 200 < ndocs and ndocs <= 350:
+        elif 500 < ndocs and ndocs <= 700:
+            event = event_detection(domain, os.path.join(self.text_clf.result_dir, domain),
+                                    root_dir='event_detection', num_topics=25, max_iter=1300)
+        elif 300 < ndocs and ndocs <= 500:
             event = event_detection(domain, os.path.join(self.text_clf.result_dir, domain),
                                     root_dir='event_detection', num_topics=20, max_iter=1300)
-        elif 50 < ndocs and ndocs <= 200:
+        elif 100 < ndocs and ndocs <= 300:
             event = event_detection(domain, os.path.join(self.text_clf.result_dir, domain),
                                     root_dir='event_detection', num_topics=15, max_iter=1300)
         else:
