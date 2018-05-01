@@ -10,6 +10,8 @@ from multiprocessing import Process
 import time, datetime
 import warnings
 from event_detection.topics import get_jaccard_similarity, MERGE_THRESHOLD
+from sklearn.externals import joblib
+from tokenizer import utils
 
 
 
@@ -27,6 +29,9 @@ class master:
         self.date = datetime.datetime.now().date()
         self.first_run = True
         self.counter = {label:0 for label in my_map.label2name.keys()}
+        self.trending_result_dir = 'trending_result'
+        self.trending_titles_file = os.path.join(self.trending_result_dir, 'trending_titles.pkl')
+        self.docs_trending_file = os.path.join(self.trending_result_dir, 'docs_trending.pkl')
 
 
     def run(self):
@@ -48,6 +53,7 @@ class master:
             print('run event detection...')
             trending_titles, docs_trending = self.run_event_detection()
             self.merge_trending(trending_titles, docs_trending)
+            self.save_trending_to_file()
 
             time.sleep(1300)
 
@@ -156,6 +162,12 @@ class master:
             d, j = event.load_trending()
             docs_trending.update({domain: d})
             trending_titles.update({domain: j})
+
+
+    def save_trending_to_file(self):
+        utils.mkdir(self.trending_result_dir)
+        joblib.dump(self.trending_titles, self.trending_titles_file, compress=True)
+        joblib.dump(self.docs_trending, self.docs_trending_file, compress=True)
 
 
 

@@ -6,7 +6,8 @@ from event_detection import demo
 from master import master
 from threading import Thread
 import os, json, time
-from event_detection.detect_event import event_detection
+from sklearn.externals import joblib
+
 
 
 
@@ -25,8 +26,6 @@ while True:
         break
     except:
         time.sleep(1)
-
-event = event_detection(domain, dataset, root_dir='event_detection')
 
 
 def build_json_content(trending_titles, docs_trending):
@@ -56,7 +55,8 @@ def homepage():
 
 @app.route('/update', methods = ['GET', 'POST'])
 def update():
-    trending_titles, docs_trending = event.load_trending()
+    trending_titles = joblib.load(m.trending_titles_file)
+    docs_trending = joblib.load(m.docs_trending_file)
     trending_json = build_json_content(trending_titles, docs_trending)
     return jsonify(trending_json)
 
