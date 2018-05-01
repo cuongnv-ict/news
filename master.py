@@ -114,7 +114,7 @@ class master:
         trending_titles = {}
         domains = []; events = {}
         for i, label in enumerate(self.counter.keys()):
-            if label != 6: continue # topic 'Chinh tri Xa hoi'
+            # if label != 0: continue # topic 'Chinh tri Xa hoi'
             domain = my_map.label2name[label]
             ndocs = self.counter[label]
             event = self.config_event_detection(domain, ndocs)
