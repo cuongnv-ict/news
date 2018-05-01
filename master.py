@@ -129,7 +129,7 @@ class master:
             handles[i].join()
         print('All process have finished')
         self.get_trending(events, domains, trending_titles, docs_trending)
-        return docs_trending, trending_titles
+        return trending_titles, docs_trending
 
 
     def config_event_detection(self, domain, ndocs):
@@ -159,7 +159,7 @@ class master:
     def get_trending(self, events, domains, trending_titles, docs_trending):
         for domain in domains:
             event = events[domain]
-            d, j = event.load_trending()
+            j, d = event.load_trending()
             docs_trending.update({domain: d})
             trending_titles.update({domain: j})
 
