@@ -4,6 +4,7 @@ import requests
 from bs4 import BeautifulSoup
 from datetime import datetime
 import warnings
+import datetime
 
 
 
@@ -85,8 +86,29 @@ class crawler:
             print(e.message)
             return u''
         bs = BeautifulSoup(source)
+        if self.is_old_article(bs):
+            return u''
         content = self.get_content_baomoi(bs)
         return content
+
+
+    def is_old_article(self, bs):
+        datetime_artical = self.get_time(bs).date()
+        now = datetime.datetime.now().date()
+        diff = now - datetime_artical
+        if diff.days != 0:
+            return True
+        return False
+
+
+    def get_time(self, bs):
+        datetime_str = bs.find_all('time', {'class' : 'time'})[0].text
+        datetime_str = datetime_str.split()[0]
+        datetime_str = datetime_str.split(u'/')
+        datetime_str[2] = u'20' + datetime_str[2]
+        datetime_str = u'/'.join(datetime_str)
+        datetime_obj = datetime.datetime.strptime(datetime_str, '%d/%m/%Y')
+        return datetime_obj
 
 
     def get_content_baomoi(self, bs):
