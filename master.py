@@ -99,10 +99,11 @@ class master:
             self.counter[l] = 0
 
 
+    # reset all if it is either the first run or at 6h AM on next day
     def check_date(self):
-        present = datetime.datetime.now().date()
-        diff = present - self.date
-        if diff.days >= 1:
+        present = datetime.datetime.now()
+        diff = present.date() - self.date
+        if diff.days >= 1 and present.hour == 6:
             self.date = present
             return True
         return False

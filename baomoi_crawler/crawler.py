@@ -4,7 +4,6 @@ import requests
 from bs4 import BeautifulSoup
 from datetime import datetime
 import warnings
-import datetime
 
 
 
@@ -94,7 +93,7 @@ class crawler:
 
     def is_old_article(self, bs):
         datetime_artical = self.get_time(bs).date()
-        now = datetime.datetime.now().date()
+        now = datetime.now().date()
         diff = now - datetime_artical
         if diff.days != 0:
             return True
