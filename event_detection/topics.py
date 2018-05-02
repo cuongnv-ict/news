@@ -17,7 +17,7 @@ import matplotlib.pyplot as plt
 # resize name of x-bar
 matplotlib.rcParams.update({'xtick.labelsize' : 6})
 
-TOPIC_PROBABILITY_THRESHOLD = 0.1
+TOPIC_PROBABILITY_THRESHOLD = 0.25
 TOP_DOCUMENTS = 5
 MERGE_THRESHOLD = 0.5
 
@@ -93,10 +93,12 @@ def get_trending_topics(theta, topic_titles, titles):
 
 def get_trending_threshold(ntopics):
     if ntopics >= 100:
-        return 2.5
+        return 3.0
     elif ntopics >= 50:
-        return 2.25
-    else: return 2.0
+        return 2.75
+    elif ntopics >= 30:
+        return 2.5
+    else: return 2.4
 
 
 def merge_topics(topics_dup, count_topics, docs_topic, docs_id, topic_titles=None):

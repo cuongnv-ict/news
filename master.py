@@ -55,7 +55,7 @@ class master:
             self.merge_trending(trending_titles, docs_trending)
             self.save_trending_to_file()
 
-            time.sleep(1300)
+            time.sleep(900)
 
 
     def merge_trending(self, trending_titles, docs_trending):
@@ -114,7 +114,7 @@ class master:
         trending_titles = {}
         domains = []; events = {}
         for i, label in enumerate(self.counter.keys()):
-            # if label != 0: continue # topic 'Chinh tri Xa hoi'
+            if label != 7: continue # topic 'The thao'
             domain = my_map.label2name[label]
             ndocs = self.counter[label]
             event = self.config_event_detection(domain, ndocs)
