@@ -197,6 +197,7 @@ def get_docs_trending(docs_id, docs_topic, trending_titles, titles):
 def draw_document_distribution(trending_topics, count_topics, total, domain):
     domain_nor = domain.replace(u' ', u'-').lower()
     output_dir = os.path.join(u'static', domain_nor)
+    utils.delete_dir(output_dir)
     utils.mkdir(output_dir)
     objects = []
     for k in xrange(len(count_topics)):
