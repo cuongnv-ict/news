@@ -106,7 +106,7 @@ class crawler:
         datetime_str = datetime_str.split(u'/')
         datetime_str[2] = u'20' + datetime_str[2]
         datetime_str = u'/'.join(datetime_str)
-        datetime_obj = datetime.datetime.strptime(datetime_str, '%d/%m/%Y')
+        datetime_obj = datetime.strptime(datetime_str, '%d/%m/%Y')
         return datetime_obj
 
 
