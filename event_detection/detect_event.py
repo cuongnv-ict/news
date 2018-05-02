@@ -87,7 +87,7 @@ class event_detection:
         utils.mkdir(self.topic_result_dir)
         topics.print_topics(self.lda_beta_file, topics_title,
                             self.vocab_file, 20, self.topic_result_file)
-        trending_titles, docs_trending = topics.get_trending_topics(theta, topics_title, titles)
+        trending_titles, docs_trending = topics.get_trending_topics(theta, topics_title, titles, self.domain)
         return trending_titles, docs_trending
 
 

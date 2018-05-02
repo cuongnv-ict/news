@@ -28,7 +28,7 @@ while True:
         time.sleep(1)
 
 
-def build_json_content(trending_titles, docs_trending):
+def build_trending_domain(trending_titles, docs_trending):
     # build json content
     trending = []
     for k, title in trending_titles.items():
@@ -39,8 +39,7 @@ def build_json_content(trending_titles, docs_trending):
         sub_title = [{u'title': name} for name in docs]
         event.update({u'subTitles': sub_title})
         trending.append(event)
-    trending_json = json.dumps(trending, ensure_ascii=False, encoding='utf-8')
-    return trending_json
+    return trending
 
 
 app = Flask(__name__, static_url_path='',
@@ -57,8 +56,15 @@ def homepage():
 def update():
     trending_titles = joblib.load(m.trending_titles_file)
     docs_trending = joblib.load(m.docs_trending_file)
-    trending_json = build_json_content(trending_titles[domain], docs_trending[domain])
-    return jsonify(trending_json)
+    result = []
+    for domain in trending_titles.keys():
+        json_content = {}
+        json_content.update({u'domain' : domain, u'id' : domain.replace(u' ', u'-').lower()})
+        trending_domain = build_trending_domain(trending_titles[domain], docs_trending[domain])
+        json_content.update({u'content' : trending_domain})
+        result.append(json_content)
+    #result = json.dumps(result, ensure_ascii=False, encoding='utf-8')
+    return jsonify(result)
 
 
 @app.route('/get', methods = ['GET', 'POST'])

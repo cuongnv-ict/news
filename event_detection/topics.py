@@ -1,6 +1,7 @@
 import sys, os
 import numpy as np
 from io import open
+import utils
 
 import matplotlib
 # check display and when ssh to server using command:
@@ -61,7 +62,7 @@ def get_topics_title(doc_states, titles_file):
     return theta, topics_title, titles
 
 
-def get_trending_topics(theta, topic_titles, titles):
+def get_trending_topics(theta, topic_titles, titles, domain):
     ntopics = theta.shape[1]
     count_topics = np.zeros((ntopics), dtype=np.int)
     docs_topic = {k : [] for k in xrange(ntopics)}
@@ -87,7 +88,7 @@ def get_trending_topics(theta, topic_titles, titles):
     trending = filter(lambda x: count_topics[x] * ntopics > trending_threshold, trending)
     trending_titles = {i : topic_titles[i] for i in trending}
     docs_trending = get_docs_trending(docs_id, docs_topic, trending_titles, titles)
-    draw_document_distribution(trending_titles, count_topics, total)
+    draw_document_distribution(trending_titles, count_topics, total, domain)
     return trending_titles, docs_trending
 
 
@@ -191,7 +192,10 @@ def get_docs_trending(docs_id, docs_topic, trending_titles, titles):
     return docs_trending
 
 
-def draw_document_distribution(trending_topics, count_topics, total):
+def draw_document_distribution(trending_topics, count_topics, total, domain):
+    domain_nor = domain.replace(u' ', u'-').lower()
+    output_dir = os.path.join(u'static', domain_nor)
+    utils.mkdir(output_dir)
     objects = []
     for k in xrange(len(count_topics)):
         try:
@@ -208,7 +212,8 @@ def draw_document_distribution(trending_topics, count_topics, total):
     plt.title('Document distribution by topics - num_docs = %d' % (total))
     # plt.show()
     plt.tight_layout(pad=0.4, w_pad=1.4, h_pad=1.0)
-    plt.savefig('static/documents_distribution.png', dpi=100)
+
+    plt.savefig(os.path.join(output_dir, 'documents_distribution.png'), dpi=100)
 
 
 def get_jaccard_similarity(set1, set2):

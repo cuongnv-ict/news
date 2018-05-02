@@ -37,6 +37,8 @@
 -->
 
     <div class="container">
+
+
         <div class="row">
 
         </div>
@@ -50,37 +52,350 @@
         <!-- Content here -->
         <div class="row">
             <div class="col-12">
-            <hr>
+                <hr>
             </div>
         </div>
+
+
         <div class="row">
-            <div class="col-6" id="eventContainer">
+            <ul class="nav nav-tabs" id="myTab" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link active" id="chinh-tri-tab" data-toggle="tab" href="#chinh-tri-xa-hoi" role="tab" aria-controls="home"
+                        aria-selected="true">Chinh tri Xa hoi</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="doi-song-tab" data-toggle="tab" href="#doi-song" role="tab" aria-controls="profile" aria-selected="false">Doi song</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="khoa-hoc-tab" data-toggle="tab" href="#khoa-hoc" role="tab" aria-controls="profile" aria-selected="false">Khoa hoc</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="kinh-doanh-tab" data-toggle="tab" href="#kinh-doanh" role="tab" aria-controls="profile" aria-selected="false">Kinh doanh</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="phap-luat-tab" data-toggle="tab" href="#phap-luat" role="tab" aria-controls="profile" aria-selected="false">Phap luat</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="suc-khoe-tab" data-toggle="tab" href="#suc-khoe" role="tab" aria-controls="profile" aria-selected="false">Suc khoe</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="the-gioi-tab" data-toggle="tab" href="#phap-luat" role="tab" aria-controls="profile" aria-selected="false">The gioi</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="the-thao-tab" data-toggle="tab" href="#the-thao" role="tab" aria-controls="profile" aria-selected="false">The thao</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="van-hoa-tab" data-toggle="tab" href="#van-hoa" role="tab" aria-controls="profile" aria-selected="false">Van hoa</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="cong-nghe-tab" data-toggle="tab" href="#cong-nghe" role="tab" aria-controls="profile" aria-selected="false">Cong nghe</a>
+                </li>
+            </ul>
+        </div>
 
-                <div id="eventList">
-                    <div>
-                        <div id="accordion">
 
+
+        <div class="tab-content" id="myTabContent">
+            <div class="tab-pane fade show active" id="chinh-tri-xa-hoi" role="tabpanel" aria-labelledby="chinh-tri-xa-hoi-tab">
+                <div class="row">
+                    <div class="col-6" id="eventContainer">
+
+                        <div id="eventList-chinh-tri-xa-hoi">
+                            <div>
+                                <div id="accordion-chinh-tri-xa-hoi">
+
+                                </div>
+                            </div>
                         </div>
+
+
+                    </div>
+
+                    <div class="col-6" id="newsContent-chinh-tri-xa-hoi">
+
+
                     </div>
                 </div>
 
-
-            </div>
-
-            <div class="col-6" id="newsContent">
-
-
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-12">
                 <br>
-                <br>
-              <img src="documents_distribution.png" class="img-rounded" style="height: 100%;" alt="Topics distribution">
+                <div class="row">
+                    <div class="col-12">
+                        <br>
+                        <br>
+                        <img src="chinh-tri-xa-hoi/documents_distribution.png" class="img-rounded" style="height: 100%;" alt="Topics distribution">
+                    </div>
+                </div>
             </div>
+            <div class="tab-pane fade" id="doi-song" role="tabpanel" aria-labelledby="doi-song-tab">
+                <div class="row">
+                    <div class="col-6" id="eventContainer">
+                        <div id="eventList-doi-song">
+                            <div>
+                                <div id="accordion-doi-song">
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-6" id="newsContent-doi-song">
+                    </div>
+
+                </div>
+
+                <br>
+                <div class="row">
+                    <div class="col-12">
+                        <br>
+                        <br>
+                        <img src="doi-song/documents_distribution.png" class="img-rounded" style="height: 100%;" alt="Topics distribution">
+                    </div>
+                </div>
+
+            </div>
+
+
+            <div class="tab-pane fade" id="khoa-hoc" role="tabpanel" aria-labelledby="khoa-hoc-tab">
+                <div class="row">
+                    <div class="col-6" id="eventContainer">
+                        <div id="eventList-khoa-hoc">
+                            <div>
+                                <div id="accordion-khoa-hoc">
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-6" id="newsContent-khoa-hoc">
+                    </div>
+
+                </div>
+
+                <br>
+                <div class="row">
+                    <div class="col-12">
+                        <br>
+                        <br>
+                        <img src="khoa-hoc/documents_distribution.png" class="img-rounded" style="height: 100%;" alt="Topics distribution">
+                    </div>
+                </div>
+
+            </div>
+
+
+            <div class="tab-pane fade" id="kinh-doanh" role="tabpanel" aria-labelledby="kinh-doanh-tab">
+                <div class="row">
+                    <div class="col-6" id="eventContainer">
+                        <div id="eventList-khoa-hoc">
+                            <div>
+                                <div id="accordion-kinh-doanh">
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-6" id="newsContent-kinh-doanh">
+                    </div>
+
+                </div>
+
+                <br>
+                <div class="row">
+                    <div class="col-12">
+                        <br>
+                        <br>
+                        <img src="kinh-doanh/documents_distribution.png" class="img-rounded" style="height: 100%;" alt="Topics distribution">
+                    </div>
+                </div>
+
+            </div>
+
+
+            <div class="tab-pane fade" id="phap-luat" role="tabpanel" aria-labelledby="phap-luat-tab">
+                <div class="row">
+                    <div class="col-6" id="eventContainer">
+                        <div id="eventList-khoa-hoc">
+                            <div>
+                                <div id="accordion-phap-luat">
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-6" id="newsContent-phap-luat">
+                    </div>
+
+                </div>
+
+                <br>
+                <div class="row">
+                    <div class="col-12">
+                        <br>
+                        <br>
+                        <img src="phap-luat/documents_distribution.png" class="img-rounded" style="height: 100%;" alt="Topics distribution">
+                    </div>
+                </div>
+
+            </div>
+
+
+
+            <div class="tab-pane fade" id="suc-khoe" role="tabpanel" aria-labelledby="suc-khoe-tab">
+                <div class="row">
+                    <div class="col-6" id="eventContainer">
+                        <div id="eventList-khoa-hoc">
+                            <div>
+                                <div id="accordion-suc-khoe">
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-6" id="newsContent-suc-khoe">
+                    </div>
+
+                </div>
+
+                <br>
+                <div class="row">
+                    <div class="col-12">
+                        <br>
+                        <br>
+                        <img src="suc-khoe/documents_distribution.png" class="img-rounded" style="height: 100%;" alt="Topics distribution">
+                    </div>
+                </div>
+
+            </div>
+
+
+            <div class="tab-pane fade" id="the-gioi" role="tabpanel" aria-labelledby="the-gioi-tab">
+                <div class="row">
+                    <div class="col-6" id="eventContainer">
+                        <div id="eventList-khoa-hoc">
+                            <div>
+                                <div id="accordion-the-gioi">
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-6" id="newsContent-the-gioi">
+                    </div>
+
+                </div>
+
+                <br>
+                <div class="row">
+                    <div class="col-12">
+                        <br>
+                        <br>
+                        <img src="the-gioi/documents_distribution.png" class="img-rounded" style="height: 100%;" alt="Topics distribution">
+                    </div>
+                </div>
+
+            </div>
+
+
+
+            <div class="tab-pane fade" id="the-thao" role="tabpanel" aria-labelledby="the-thao-tab">
+                <div class="row">
+                    <div class="col-6" id="eventContainer">
+                        <div id="eventList-the-thao">
+                            <div>
+                                <div id="accordion-the-thao">
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-6" id="newsContent-the-thao">
+                    </div>
+
+                </div>
+
+                <br>
+                <div class="row">
+                    <div class="col-12">
+                        <br>
+                        <br>
+                        <img src="the-thao/documents_distribution.png" class="img-rounded" style="height: 100%;" alt="Topics distribution">
+                    </div>
+                </div>
+
+            </div>
+
+
+            <div class="tab-pane fade" id="van-hoa" role="tabpanel" aria-labelledby="van-hoa-tab">
+                <div class="row">
+                    <div class="col-6" id="eventContainer">
+                        <div id="eventList-khoa-hoc">
+                            <div>
+                                <div id="accordion-van-hoa">
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-6" id="newsContent-van-hoa">
+                    </div>
+
+                </div>
+
+                <br>
+                <div class="row">
+                    <div class="col-12">
+                        <br>
+                        <br>
+                        <img src="van-hoa/documents_distribution.png" class="img-rounded" style="height: 100%;" alt="Topics distribution">
+                    </div>
+                </div>
+
+            </div>
+
+
+            <div class="tab-pane fade" id="cong-nghe" role="tabpanel" aria-labelledby="cong-nghe-tab">
+                <div class="row">
+                    <div class="col-6" id="eventContainer">
+                        <div id="eventList-khoa-hoc">
+                            <div>
+                                <div id="accordion-cong-nghe">
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-6" id="newsContent-cong-nghe">
+                    </div>
+
+                </div>
+
+                <br>
+                <div class="row">
+                    <div class="col-12">
+                        <br>
+                        <br>
+                        <img src="cong-nghe/documents_distribution.png" class="img-rounded" style="height: 100%;" alt="Topics distribution">
+                    </div>
+                </div>
+
+            </div>
+
         </div>
+
+
     </div>
     <script type='text/javascript'>
+
+        var TOPIC_IDS = ['chinh-tri-xa-hoi', 'doi-song', 'khoa-hoc', 'kinh-doanh', 'phap-luat', 'suc-khoe', 'the-gioi', 'the-thao', 'van-hoa', 'cong-nghe'];
+
 
         String.prototype.format = function () {
             var content = this;
@@ -93,13 +408,13 @@
 
         update();
 
-        function toUpperTitle(title){
+        function toUpperTitle(title) {
             firstLetter = title[0].toUpperCase();
             title = firstLetter + title.substring(1);
             return title;
         }
-
         function update() {
+            console.log("In update")
             clearAll();
             var url = "/update"
             var posting = $.post(url);
@@ -112,17 +427,29 @@
                     return;
                 }
                 //
+                console.log(typeof(data));
+                //data = JSON.parse(data);
                 //console.log(typeof(data));
-                data = JSON.parse(data);
-                //console.log(typeof(data));
-                //console.log(data[0]['title']);
+                console.log(data+ " "+data.length);
+                //alert(data)
 
                 try {
-                    for (var i = 0; i < data.length; i++) {
-                        //recs = recs + data[i]["id"] + " #N: "+data[i]["name"]+" #S: "+data[i]["score"].toFixed(1) + "\n"
+                    for (var tid = 0; tid < data.length; tid++) {
+                        var data_t = data[tid]
+                        var t_name = data_t['domain']
+                        var t_id = data_t['id']
+                        var t_content = data_t['content']
+                        console.log(data_t)
+                        if (t_id=='the-thao'){
+                            console.log('At the thao')
+                            console.log(t_content)
+                        }
+                        for (var i = 0; i < t_content.length; i++) {
+                            //recs = recs + data[i]["id"] + " #N: "+data[i]["name"]+" #S: "+data[i]["score"].toFixed(1) + "\n"
 
-                        card = createCard(data[i],i)
-                        $("#accordion").append(card)
+                            card = createCard(t_content[i], i)
+                            $("#accordion-" + t_id).append(card)
+                        }
                     }
                 }
                 catch (e) {
@@ -150,9 +477,12 @@
         }
 
         function clearAll() {
+
             //console.log("Clear")
-            $("#accordion").empty();
-            $("#newsContent").empty();
+            for (i = 0; i < TOPIC_IDS.length; ++i) {
+                $("#accordion-" + TOPIC_IDS[i]).empty();
+                $("#newsContent-" + TOPIC_IDS[i]).empty();
+            }
         }
         function createCard(jsonCardData, idx) {
 
@@ -198,8 +528,9 @@
 
 
         }
+        setInterval(update,800000);
 
-        
+
 
     </script>
 </body>
