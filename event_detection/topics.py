@@ -20,7 +20,7 @@ matplotlib.rcParams.update({'xtick.labelsize' : 6})
 
 TOPIC_PROBABILITY_THRESHOLD = 0.25
 TOP_DOCUMENTS = 5
-MERGE_THRESHOLD = 0.5
+MERGE_THRESHOLD = 0.35
 
 # print topics to file
 def print_topics(beta_file, topics_title, vocab_file, nwords, result_file):
@@ -94,12 +94,14 @@ def get_trending_topics(theta, topic_titles, titles, domain):
 
 def get_trending_threshold(ntopics):
     if ntopics >= 100:
-        return 2.75
+        return 2.6
     elif ntopics >= 50:
-        return 2.5
+        return 2.45
     elif ntopics >= 30:
-        return 2.4
-    else: return 2.25
+        return 2.3
+    elif ntopics >= 20:
+        return 2.15
+    else: return 2.0
 
 
 def merge_topics(topics_dup, count_topics, docs_topic, docs_id, topic_titles=None):
