@@ -92,12 +92,14 @@ class crawler:
 
 
     def is_old_article(self, bs):
-        datetime_artical = self.get_time(bs).date()
-        now = datetime.now().date()
-        diff = now - datetime_artical
-        if diff.days != 0:
-            return True
-        return False
+        try:
+            datetime_artical = self.get_time(bs).date()
+            now = datetime.now().date()
+            diff = now - datetime_artical
+            if diff.days != 0:
+                return True
+            return False
+        except: return False
 
 
     def get_time(self, bs):

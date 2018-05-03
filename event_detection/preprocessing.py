@@ -31,9 +31,9 @@ def remove_stop_postag(dataset, output_dir):
         else:
             with open(file_path, 'r', encoding='utf-8') as fr:
                 data = unicodedata.normalize('NFKC', fr.read().strip())
-                content = tokenizer.predict(data)
+                original_content = tokenizer.predict(data)
                 content = map(lambda x: ViPosTagger.postagging(x),
-                              spliter.split(content))
+                              spliter.split(original_content))
                 clean_content = []
                 for info in content:
                     sen = []
@@ -43,7 +43,9 @@ def remove_stop_postag(dataset, output_dir):
                     clean_content.append(u' '.join(sen))
                 with open(os.path.join(output_dir, os.path.basename(file_name)),
                           'w', encoding='utf-8') as fw:
-                    fw.write(u'\n'.join(clean_content))
+                    if len(clean_content) > 0:
+                        fw.write(u'\n'.join(clean_content))
+                    else: fw.write(original_content)
                 total_doc += 1
                 # print '\rprocessed doc %2dth' % (total_doc),
                 # sys.stdout.flush()

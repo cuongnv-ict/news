@@ -106,6 +106,5 @@ lda_gibb/lda
 .idea/
 event_detection/event_result/
 text_classification/result/
-text_classification/model/
 new_stories.pkl
 trending_result/
