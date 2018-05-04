@@ -104,7 +104,7 @@ class master:
         present = datetime.datetime.now()
         diff = present.date() - self.date
         if diff.days >= 1 and present.hour == 3:
-            self.date = present
+            self.date = present.date()
             return True
         return False
 
