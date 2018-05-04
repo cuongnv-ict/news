@@ -95,14 +95,16 @@ def get_trending_topics(theta, topic_titles, titles, domain):
 
 def get_trending_threshold(ntopics):
     if ntopics >= 100:
-        return 2.6
+        return 2.75
+    elif ntopics >= 75:
+        return 2.625
     elif ntopics >= 50:
-        return 2.45
+        return 2.5
     elif ntopics >= 30:
-        return 2.3
+        return 2.4
     elif ntopics >= 20:
-        return 2.15
-    else: return 2.0
+        return 2.25
+    else: return 2.1
 
 
 def merge_topics(topics_dup, count_topics, docs_topic, docs_id, topic_titles=None):

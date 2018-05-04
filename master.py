@@ -136,9 +136,12 @@ class master:
     def config_event_detection(self, domain, ndocs):
         if ndocs < 10:
             return None
-        if ndocs > 1000:
+        if ndocs > 1500:
             event = event_detection(domain, os.path.join(self.text_clf.result_dir, domain),
                                     root_dir='event_detection', num_topics=100, max_iter=1300)
+        elif 1000 < ndocs and ndocs <= 1500:
+            event = event_detection(domain, os.path.join(self.text_clf.result_dir, domain),
+                                    root_dir='event_detection', num_topics=75, max_iter=1300)
         elif 500 < ndocs and ndocs <= 1000:
             event = event_detection(domain, os.path.join(self.text_clf.result_dir, domain),
                                     root_dir='event_detection', num_topics=50, max_iter=1300)
