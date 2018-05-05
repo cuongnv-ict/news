@@ -42,6 +42,9 @@ class master:
 
             print('run crawler...')
             self.crawler.run()
+            if len(self.crawler.new_stories) == 0:
+                time.sleep(900)
+                continue
 
             print('run text classification...')
             self.text_clf.reset()
