@@ -87,7 +87,8 @@ def get_trending_topics(theta, topic_titles, titles, domain):
     topics_propotion = map(lambda x: float(x) / float(total), count_topics)
     trending = np.argsort(topics_propotion)[::-1]
     trending_threshold = get_trending_threshold(ntopics)
-    trending = filter(lambda x: topics_propotion[x] * ntopics > trending_threshold and count_topics[x] >= MINIMUM_DOCS, trending)
+    trending = filter(lambda x: topics_propotion[x] * ntopics > trending_threshold
+                                and count_topics[x] >= MINIMUM_DOCS, trending)
     trending_titles = {i : topic_titles[i] for i in trending}
     docs_trending = get_docs_trending(docs_id, docs_topic, trending_titles, titles)
     draw_document_distribution(trending_titles, topics_propotion, total, domain)
