@@ -22,7 +22,7 @@ TOPIC_PROBABILITY_THRESHOLD = 0.35
 TOPIC_MERGE_PROBABILITY_THRESHOLD = 0.15
 TOP_DOCUMENTS = 5
 TOPIC_MERGE_THRESHOLD = 0.5
-
+MINIMUM_DOCS = 5
 
 # print topics to file
 def print_topics(beta_file, topics_title, vocab_file, nwords, result_file):
@@ -84,13 +84,13 @@ def get_trending_topics(theta, topic_titles, titles, domain):
     total = sum(count_topics)
     if total == 0:
         return {}, {}
-    count_topics = map(lambda x: float(x) / float(total), count_topics)
-    trending = np.argsort(count_topics)[::-1]
+    topics_propotion = map(lambda x: float(x) / float(total), count_topics)
+    trending = np.argsort(topics_propotion)[::-1]
     trending_threshold = get_trending_threshold(ntopics)
-    trending = filter(lambda x: count_topics[x] * ntopics > trending_threshold, trending)
+    trending = filter(lambda x: topics_propotion[x] * ntopics > trending_threshold and count_topics[x] >= MINIMUM_DOCS, trending)
     trending_titles = {i : topic_titles[i] for i in trending}
     docs_trending = get_docs_trending(docs_id, docs_topic, trending_titles, titles)
-    draw_document_distribution(trending_titles, count_topics, total, domain)
+    draw_document_distribution(trending_titles, topics_propotion, total, domain)
     return trending_titles, docs_trending
 
 
