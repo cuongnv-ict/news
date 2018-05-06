@@ -21,7 +21,8 @@ matplotlib.rcParams.update({'xtick.labelsize' : 6})
 TOPIC_PROBABILITY_THRESHOLD = 0.35
 TOPIC_MERGE_PROBABILITY_THRESHOLD = 0.15
 TOP_DOCUMENTS = 5
-MERGE_THRESHOLD = 0.5
+TOPIC_MERGE_THRESHOLD = 0.5
+
 
 # print topics to file
 def print_topics(beta_file, topics_title, vocab_file, nwords, result_file):
@@ -122,7 +123,7 @@ def merge_step_one(topics_dup):
         for k2, s2 in topics_dup.items():
             if k1 >= k2: continue
             jaccard = get_jaccard_similarity(s1, s2)
-            if jaccard > MERGE_THRESHOLD:
+            if jaccard > TOPIC_MERGE_THRESHOLD:
                 exist = False
                 for i in xrange(len(step_one)):
                     if k1 in step_one[i] or k2 in step_one[i]:

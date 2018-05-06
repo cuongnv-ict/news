@@ -9,15 +9,15 @@ from collections import Counter
 from multiprocessing import Process
 import time, datetime
 import warnings
-from event_detection.topics import get_jaccard_similarity, MERGE_THRESHOLD
+from event_detection.topics import get_jaccard_similarity
 from sklearn.externals import joblib
 from tokenizer import utils
 
 
 
-
 warnings.filterwarnings('ignore', category=UserWarning)
 
+TRENDING_MERGE_THRESHOLD = 0.1
 
 class master:
     def __init__(self):
@@ -70,19 +70,22 @@ class master:
                         docs1 = set(docs_trending[domain][k1])
                         docs2 = set(self.docs_trending[domain][k2])
                         jaccard = get_jaccard_similarity(docs1, docs2)
-                        if jaccard > MERGE_THRESHOLD:
+                        if jaccard > TRENDING_MERGE_THRESHOLD:
                             print('[%s] topic %d - %s <==> topic %d - %s' %
                                   (domain, k1, trending_titles[domain][k1],
                                    k2, self.trending_titles[domain][k2]))
                             trending_titles[domain][k1] = self.trending_titles[domain][k2]
                             docs_trending[domain][k1] = list(docs1.union(docs2))
+                            del self.trending_titles[domain][k2]
+                            del self.docs_trending[domain][k2]
                             break
             except:
                 self.trending_titles.update({domain : trending_titles[domain]})
                 self.docs_trending.update({domain : docs_trending[domain]})
                 continue
-            self.trending_titles[domain] = trending_titles[domain]
-            self.docs_trending[domain] = docs_trending[domain]
+            for k in trending_titles[domain].keys():
+                self.trending_titles[domain].update({k : trending_titles[domain][k]})
+                self.docs_trending[domain].update({k : docs_trending[domain][k]})
 
 
     def update_counter(self, labels):
@@ -118,7 +121,7 @@ class master:
         trending_titles = {}
         domains = []; events = {}
         for i, label in enumerate(self.counter.keys()):
-            # if label != 7: continue # topic 'The thao'
+            # if label != 0: continue
             domain = my_map.label2name[label]
             ndocs = self.counter[label]
             event = self.config_event_detection(domain, ndocs)
