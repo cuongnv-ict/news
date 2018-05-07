@@ -72,6 +72,7 @@ def update():
 
 @app.route('/get', methods = ['GET', 'POST'])
 def get_content():
+    return {}
     title = request.form['title']
     demo.load_document_content(dataset, documents_content)
     content = demo.get_document_by_title(title, documents_content)
