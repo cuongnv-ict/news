@@ -16,7 +16,7 @@ from sklearn.externals import joblib
 
 warnings.filterwarnings('ignore', category=UserWarning)
 
-TRENDING_MERGE_THRESHOLD = 0.35
+TRENDING_MERGE_THRESHOLD = 0.1
 
 class master:
     def __init__(self):
