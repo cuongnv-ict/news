@@ -1,0 +1,14 @@
+Control parameters:
+directory: event_detection/event_result/Kinh doanh/lda_fit_10
+random_seed: 1525580890
+save_lag: 10000
+max_iter: 1300
+max_time: 1800
+
+Data parameters:
+train_data: event_detection/event_result/Kinh doanh/lda_dataset/mult.dat
+
+Model parameters:
+eta: 0.0100
+alpha: 0.1000
+num_topics: 10

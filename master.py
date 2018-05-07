@@ -4,14 +4,13 @@ import os
 from event_detection.detect_event import event_detection
 from baomoi_crawler.crawler import crawler
 from text_classification.classification import classification
-from text_classification import my_map
+from text_classification import my_map, utils
 from collections import Counter
 from multiprocessing import Process
 import time, datetime
 import warnings
 from event_detection.topics import get_jaccard_similarity
 from sklearn.externals import joblib
-from tokenizer import utils
 
 
 
@@ -52,7 +51,7 @@ class master:
             self.text_clf.save_to_dir(self.crawler.new_stories, labels)
 
             self.update_counter(labels)
-
+            # self.counter = {0:82}
             print('run event detection...')
             trending_titles, docs_trending = self.run_event_detection()
             self.merge_trending(trending_titles, docs_trending)
@@ -96,6 +95,7 @@ class master:
 
     def reset_all(self):
         print('reset all...')
+        utils.delete_dir(self.trending_result_dir)
         self.crawler.remove_old_documents()
         self.text_clf.reset()
         for domain in my_map.name2label.keys():
@@ -121,7 +121,7 @@ class master:
         trending_titles = {}
         domains = []; events = {}
         for i, label in enumerate(self.counter.keys()):
-            # if label != 0: continue
+            if label != 0: continue
             domain = my_map.label2name[label]
             ndocs = self.counter[label]
             event = self.config_event_detection(domain, ndocs)

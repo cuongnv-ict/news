@@ -1,0 +1,4 @@
+eta: 0.010000
+alpha: 0.100000
+size_vocab: 2192
+num_topics: 15
