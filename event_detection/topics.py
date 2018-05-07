@@ -91,7 +91,7 @@ def get_trending_topics(theta, topic_titles, titles, domain):
                                 and count_topics[x] >= MINIMUM_DOCS, trending)
     trending_titles = {i : topic_titles[i] for i in trending}
     docs_trending = get_docs_trending(docs_id, docs_topic, trending_titles, titles)
-    draw_document_distribution(trending_titles, topics_propotion, total, domain)
+    # draw_document_distribution(trending_titles, topics_propotion, total, domain)
     return trending_titles, docs_trending
 
 

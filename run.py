@@ -15,17 +15,6 @@ m = master()
 handle = Thread(target=m.run)
 handle.start()
 
-domain = 'The thao'
-dataset = os.path.join(m.text_clf.result_dir, domain)
-documents_content = {}
-
-# wait for master finish in the first running.
-while True:
-    try:
-        _ = m.trending_titles[domain]
-        break
-    except:
-        time.sleep(1)
 
 
 def build_trending_domain(trending_titles, docs_trending):
