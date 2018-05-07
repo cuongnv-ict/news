@@ -22,7 +22,7 @@ TOPIC_PROBABILITY_THRESHOLD = 0.5
 TOPIC_MERGE_PROBABILITY_THRESHOLD = 0.35
 TOP_DOCUMENTS = 5
 TOPIC_MERGE_THRESHOLD = 0.5
-MINIMUM_DOCS = 8
+MINIMUM_DOCS = 6
 
 # print topics to file
 def print_topics(beta_file, topics_title, vocab_file, nwords, result_file):
