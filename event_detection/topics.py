@@ -123,8 +123,8 @@ def merge_step_one(topics_dup):
     for k1, s1 in topics_dup.items():
         for k2, s2 in topics_dup.items():
             if k1 >= k2: continue
-            jaccard = get_jaccard_similarity(s1, s2)
-            if jaccard > TOPIC_MERGE_THRESHOLD:
+            similarity = get_similarity_score(s1, s2)
+            if similarity > TOPIC_MERGE_THRESHOLD:
                 exist = False
                 for i in xrange(len(step_one)):
                     if k1 in step_one[i] or k2 in step_one[i]:
@@ -224,9 +224,9 @@ def draw_document_distribution(trending_topics, count_topics, total, domain):
     plt.savefig(os.path.join(output_dir, 'documents_distribution.png'), dpi=100)
 
 
-def get_jaccard_similarity(set1, set2):
-    union = float(len(set1.union(set2)))
-    if union == 0.0:
-        return 0.0
+def get_similarity_score(set1, set2):
+    if len(set1) >= len(set2):
+        m = float(len(set2))
+    else: m = float(len(set1))
     intersection = float(len(set1.intersection(set2)))
-    return intersection / union
+    return intersection / m

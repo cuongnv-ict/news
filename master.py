@@ -9,14 +9,14 @@ from collections import Counter
 from multiprocessing import Process
 import time, datetime
 import warnings
-from event_detection.topics import get_jaccard_similarity
+from event_detection.topics import get_similarity_score
 from sklearn.externals import joblib
 
 
 
 warnings.filterwarnings('ignore', category=UserWarning)
 
-TRENDING_MERGE_THRESHOLD = 0.1
+TRENDING_MERGE_THRESHOLD = 0.35
 
 class master:
     def __init__(self):
@@ -68,11 +68,14 @@ class master:
                     for k2 in self.trending_titles[domain].keys():
                         docs1 = set(docs_trending[domain][k1])
                         docs2 = set(self.docs_trending[domain][k2])
-                        jaccard = get_jaccard_similarity(docs1, docs2)
-                        if jaccard > TRENDING_MERGE_THRESHOLD:
-                            print('[%s] topic %d - %s <==> topic %d - %s' %
-                                  (domain, k1, trending_titles[domain][k1],
-                                   k2, self.trending_titles[domain][k2]))
+                        similarity = get_similarity_score(docs1, docs2)
+                        print('[%s] Similarity = %.2f -- %s <==> %s' %
+                              (domain, similarity, trending_titles[domain][k1],
+                               self.trending_titles[domain][k2]))
+                        if similarity > TRENDING_MERGE_THRESHOLD:
+                            print('[%s] %s <==> %s' %
+                                  (domain, trending_titles[domain][k1],
+                                   self.trending_titles[domain][k2]))
                             trending_titles[domain][k1] = self.trending_titles[domain][k2]
                             docs_trending[domain][k1] = list(docs1.union(docs2))
                             del self.trending_titles[domain][k2]
