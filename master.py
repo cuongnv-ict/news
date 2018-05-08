@@ -73,10 +73,9 @@ class master:
                               (domain, similarity, trending_titles[domain][k1],
                                self.trending_titles[domain][k2]))
                         if similarity > TRENDING_MERGE_THRESHOLD:
-                            trending_titles[domain][k1] = self.trending_titles[domain][k2]
-                            docs_trending[domain][k1] = list(docs1.union(docs2))
-                            del self.trending_titles[domain][k2]
-                            del self.docs_trending[domain][k2]
+                            self.docs_trending[domain][k2] = list(docs1.union(docs2))
+                            del trending_titles[domain][k1]
+                            del docs_trending[domain][k1]
                             break
             except:
                 self.trending_titles.update({domain : {}})
