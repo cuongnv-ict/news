@@ -22,9 +22,9 @@ def build_trending_domain(trending_titles, docs_trending):
     trending = []
     for k, title in trending_titles.items():
         event = {}
-        event.update({u'title': title})
-        # sub_title = []
         docs = docs_trending[k]
+        event.update({u'title': title + u' - %d docs' % (len(docs))})
+        # sub_title = []
         sub_title = [{u'title': name} for name in docs]
         event.update({u'subTitles': sub_title})
         trending.append(event)
