@@ -86,13 +86,13 @@ class master:
                     self.docs_trending[domain].update({i : docs_trending[domain][k]})
                 continue
             for k in trending_titles[domain].keys():
-                print('Before')
-                print(trending_titles[domain])
+                print('[%s] Before - len = %d' % (domain, len(self.trending_titles[domain])))
+                print(self.trending_titles[domain])
                 kk = len(self.trending_titles[domain])
                 self.trending_titles[domain].update({kk : trending_titles[domain][k]})
                 self.docs_trending[domain].update({kk : docs_trending[domain][k]})
-                print('After')
-                print(trending_titles[domain])
+                print('[%s] After' % domain)
+                print(self.trending_titles[domain])
 
 
     def update_counter(self, labels):
