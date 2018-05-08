@@ -181,6 +181,7 @@ def merge_print(merge, topic_titles):
         print('**************************')
 
 
+# remove duplicate document so nember of doc trending can less than MINIMUM_DOCS
 def get_docs_trending(docs_id, docs_topic, trending_titles, titles):
     docs_trending = {}
     for k in trending_titles.keys():

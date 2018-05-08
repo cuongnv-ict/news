@@ -73,9 +73,6 @@ class master:
                               (domain, similarity, trending_titles[domain][k1],
                                self.trending_titles[domain][k2]))
                         if similarity > TRENDING_MERGE_THRESHOLD:
-                            print('[%s] %s <==> %s' %
-                                  (domain, trending_titles[domain][k1],
-                                   self.trending_titles[domain][k2]))
                             trending_titles[domain][k1] = self.trending_titles[domain][k2]
                             docs_trending[domain][k1] = list(docs1.union(docs2))
                             del self.trending_titles[domain][k2]
@@ -89,9 +86,13 @@ class master:
                     self.docs_trending[domain].update({i : docs_trending[domain][k]})
                 continue
             for k in trending_titles[domain].keys():
-                kk = len(self.trending_titles[domain]) + 1
+                print('Before')
+                print(trending_titles[domain])
+                kk = len(self.trending_titles[domain])
                 self.trending_titles[domain].update({kk : trending_titles[domain][k]})
                 self.docs_trending[domain].update({kk : docs_trending[domain][k]})
+                print('After')
+                print(trending_titles[domain])
 
 
     def update_counter(self, labels):
