@@ -82,12 +82,16 @@ class master:
                             del self.docs_trending[domain][k2]
                             break
             except:
-                self.trending_titles.update({domain : trending_titles[domain]})
-                self.docs_trending.update({domain : docs_trending[domain]})
+                self.trending_titles.update({domain : {}})
+                self.docs_trending.update({domain : {}})
+                for i, k in enumerate(trending_titles[domain].keys()):
+                    self.trending_titles[domain].update({i : trending_titles[domain][k]})
+                    self.docs_trending[domain].update({i : docs_trending[domain][k]})
                 continue
             for k in trending_titles[domain].keys():
-                self.trending_titles[domain].update({k : trending_titles[domain][k]})
-                self.docs_trending[domain].update({k : docs_trending[domain][k]})
+                kk = len(self.trending_titles[domain]) + 1
+                self.trending_titles[domain].update({kk : trending_titles[domain][k]})
+                self.docs_trending[domain].update({kk : docs_trending[domain][k]})
 
 
     def update_counter(self, labels):
