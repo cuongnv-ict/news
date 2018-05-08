@@ -228,5 +228,6 @@ def get_similarity_score(set1, set2):
     if len(set1) >= len(set2):
         m = float(len(set2))
     else: m = float(len(set1))
+    if m == 0: return 0.0
     intersection = float(len(set1.intersection(set2)))
     return intersection / m
