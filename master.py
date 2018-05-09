@@ -99,6 +99,8 @@ class master:
     def reset_all(self):
         print('reset all...')
         utils.delete_dir(self.trending_result_dir)
+        self.trending_titles = {}
+        self.docs_trending = {}
         self.crawler.remove_old_documents()
         self.text_clf.reset()
         for domain in my_map.name2label.keys():
@@ -108,11 +110,11 @@ class master:
             self.counter[l] = 0
 
 
-    # reset all if it is either the first run or at 3h AM on next day
+    # reset all if it is either the first run or at 5h AM on next day
     def check_date(self):
         present = datetime.datetime.now()
         diff = present.date() - self.date
-        if diff.days >= 1 and present.hour == 3:
+        if diff.days >= 1 and present.hour == 5:
             self.date = present.date()
             return True
         return False
