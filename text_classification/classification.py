@@ -36,7 +36,8 @@ class classification:
 
     def run(self):
         self.load_model()
-        assert self.model != None and self.vectorizer != None, 'don\'t find tokenizer model'
+        assert self.model != None and self.vectorizer != None, \
+            'don\'t find text classification model'
 
 
     def predict(self, list_document):
