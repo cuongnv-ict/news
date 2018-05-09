@@ -69,11 +69,12 @@ class master:
                         docs1 = set(docs_trending[domain][k1])
                         docs2 = set(self.docs_trending[domain][k2])
                         similarity = get_similarity_score(docs1, docs2)
-                        print('[%s] Similarity = %.2f -- %s <==> %s' %
-                              (domain, similarity, trending_titles[domain][k1],
-                               self.trending_titles[domain][k2]))
                         if similarity > TRENDING_MERGE_THRESHOLD:
+                            print('[%s] Similarity = %.2f -- MERGE -- %s <==> %s' %
+                                  (domain, similarity, trending_titles[domain][k1],
+                                   self.trending_titles[domain][k2]))
                             self.docs_trending[domain][k2] = list(docs1.union(docs2))
+                            print ('delete %s' % (trending_titles[domain][k1]))
                             del trending_titles[domain][k1]
                             del docs_trending[domain][k1]
                             break
