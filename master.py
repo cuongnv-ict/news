@@ -74,7 +74,7 @@ class master:
                                   (domain, similarity, trending_titles[domain][k1],
                                    self.trending_titles[domain][k2]))
                             self.docs_trending[domain][k2] = list(docs1.union(docs2))
-                            print ('delete %s' % (trending_titles[domain][k1]))
+                            print ('Delete -- %s' % (trending_titles[domain][k1]))
                             del trending_titles[domain][k1]
                             del docs_trending[domain][k1]
                             break
@@ -111,11 +111,11 @@ class master:
             self.counter[l] = 0
 
 
-    # reset all if it is either the first run or at 5h AM on next day
+    # reset all if it is either the first run or at 6h AM on next day
     def check_date(self):
         present = datetime.datetime.now()
         diff = present.date() - self.date
-        if diff.days >= 1 and present.hour == 5:
+        if diff.days >= 1 and present.hour == 6:
             self.date = present.date()
             return True
         return False
@@ -150,25 +150,22 @@ class master:
             return None
         if ndocs > 1500:
             event = event_detection(domain, os.path.join(self.text_clf.result_dir, domain),
-                                    root_dir='event_detection', num_topics=100, max_iter=1300)
+                                    root_dir='event_detection', num_topics=100, max_iter=1000)
         elif 1000 < ndocs and ndocs <= 1500:
             event = event_detection(domain, os.path.join(self.text_clf.result_dir, domain),
-                                    root_dir='event_detection', num_topics=75, max_iter=1300)
-        elif 500 < ndocs and ndocs <= 1000:
+                                    root_dir='event_detection', num_topics=75, max_iter=1000)
+        elif 350 < ndocs and ndocs <= 1000:
             event = event_detection(domain, os.path.join(self.text_clf.result_dir, domain),
-                                    root_dir='event_detection', num_topics=50, max_iter=1300)
-        elif 350 < ndocs and ndocs <= 500:
+                                    root_dir='event_detection', num_topics=50, max_iter=1000)
+        elif 100 < ndocs and ndocs <= 350:
             event = event_detection(domain, os.path.join(self.text_clf.result_dir, domain),
-                                    root_dir='event_detection', num_topics=30, max_iter=1300)
-        elif 200 < ndocs and ndocs <= 350:
+                                    root_dir='event_detection', num_topics=30, max_iter=1000)
+        elif 50 < ndocs and ndocs <= 100:
             event = event_detection(domain, os.path.join(self.text_clf.result_dir, domain),
-                                    root_dir='event_detection', num_topics=20, max_iter=1300)
-        elif 30 < ndocs and ndocs <= 200:
-            event = event_detection(domain, os.path.join(self.text_clf.result_dir, domain),
-                                    root_dir='event_detection', num_topics=15, max_iter=1300)
+                                    root_dir='event_detection', num_topics=20, max_iter=1000)
         else:
             event = event_detection(domain, os.path.join(self.text_clf.result_dir, domain),
-                                    root_dir='event_detection', num_topics=10, max_iter=1300)
+                                    root_dir='event_detection', num_topics=10, max_iter=1000)
         return event
 
 
