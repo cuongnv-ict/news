@@ -18,10 +18,10 @@ import matplotlib.pyplot as plt
 # resize name of x-bar
 matplotlib.rcParams.update({'xtick.labelsize' : 6})
 
-TOPIC_PROBABILITY_THRESHOLD = 0.7
+TOPIC_PROBABILITY_THRESHOLD = 0.9
 TOPIC_MERGE_PROBABILITY_THRESHOLD = 0.35
 TOP_DOCUMENTS = 5
-TOPIC_MERGE_THRESHOLD = 0.5
+TOPIC_MERGE_THRESHOLD = 0.9
 MINIMUM_DOCS = 6
 
 # print topics to file
