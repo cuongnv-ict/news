@@ -16,7 +16,7 @@ from sklearn.externals import joblib
 
 warnings.filterwarnings('ignore', category=UserWarning)
 
-TRENDING_MERGE_THRESHOLD = 0.3
+TRENDING_MERGE_THRESHOLD = 0.5
 
 class master:
     def __init__(self):
@@ -69,7 +69,7 @@ class master:
                         docs1 = set(docs_trending[domain][k1])
                         docs2 = set(self.docs_trending[domain][k2])
                         similarity = get_similarity_score(docs1, docs2)
-                        if similarity > TRENDING_MERGE_THRESHOLD:
+                        if similarity >= TRENDING_MERGE_THRESHOLD:
                             print('[%s] Similarity = %.2f -- MERGE -- %s <==> %s' %
                                   (domain, similarity, trending_titles[domain][k1],
                                    self.trending_titles[domain][k2]))
@@ -111,11 +111,11 @@ class master:
             self.counter[l] = 0
 
 
-    # reset all if it is either the first run or at 6h AM on next day
+    # reset all if it is either the first run or at 5h AM on next day
     def check_date(self):
         present = datetime.datetime.now()
         diff = present.date() - self.date
-        if diff.days >= 1 and present.hour == 6:
+        if diff.days >= 1 and present.hour == 5:
             self.date = present.date()
             return True
         return False

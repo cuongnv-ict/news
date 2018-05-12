@@ -18,11 +18,11 @@ import matplotlib.pyplot as plt
 # resize name of x-bar
 matplotlib.rcParams.update({'xtick.labelsize' : 6})
 
-TOPIC_PROBABILITY_THRESHOLD = 0.75
-TOPIC_MERGE_PROBABILITY_THRESHOLD = 0.35
+TOPIC_PROBABILITY_THRESHOLD = 0.8
+TOPIC_MERGE_PROBABILITY_THRESHOLD = 0.8
 TOP_DOCUMENTS = 5
-TOPIC_MERGE_THRESHOLD = 0.75
-MINIMUM_DOCS = 6
+TOPIC_MERGE_THRESHOLD = 0.5
+MINIMUM_DOCS = 5
 
 # print topics to file
 def print_topics(beta_file, topics_title, vocab_file, nwords, result_file):
@@ -75,7 +75,7 @@ def get_trending_topics(theta, topic_titles, titles, domain):
         if d[k] < TOPIC_PROBABILITY_THRESHOLD:
             continue
         for j in xrange(ntopics):
-            if d[j] > TOPIC_MERGE_PROBABILITY_THRESHOLD:
+            if d[j] >= TOPIC_MERGE_PROBABILITY_THRESHOLD:
                 topics_dup[j].update([i])
         count_topics[k] += 1
         docs_topic[k].append(d[k])
@@ -124,7 +124,7 @@ def merge_step_one(topics_dup):
         for k2, s2 in topics_dup.items():
             if k1 >= k2: continue
             similarity = get_similarity_score(s1, s2)
-            if similarity > TOPIC_MERGE_THRESHOLD:
+            if similarity >= TOPIC_MERGE_THRESHOLD:
                 exist = False
                 for i in xrange(len(step_one)):
                     if k1 in step_one[i] or k2 in step_one[i]:
