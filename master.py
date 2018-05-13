@@ -42,7 +42,7 @@ class master:
             print('run crawler...')
             self.crawler.run()
             if len(self.crawler.new_stories) == 0:
-                time.sleep(900)
+                time.sleep(1800)
                 continue
 
             print('run text classification...')
