@@ -78,7 +78,7 @@ class event_detection:
     def get_trending_threshold(self, ndocs):
         if ndocs < 20:
             threshold = 0.21
-        if ndocs < 50:
+        elif ndocs < 50:
             threshold = 0.12
         elif ndocs < 350:
             threshold = 0.08
