@@ -9,7 +9,6 @@ from collections import Counter
 from multiprocessing import Process
 import time, datetime
 import warnings
-from event_detection.topics import get_similarity_score
 from sklearn.externals import joblib
 
 
@@ -51,7 +50,7 @@ class master:
             self.text_clf.save_to_dir(self.crawler.new_stories, labels)
 
             self.update_counter(labels)
-            # self.counter = {0:82}
+
             print('run event detection...')
             trending_titles, docs_trending = self.run_event_detection()
             self.merge_trending(trending_titles, docs_trending)
@@ -68,7 +67,7 @@ class master:
                     for k2 in self.trending_titles[domain].keys():
                         docs1 = set(docs_trending[domain][k1])
                         docs2 = set(self.docs_trending[domain][k2])
-                        similarity = get_similarity_score(docs1, docs2)
+                        similarity = self.get_similarity_score(docs1, docs2)
                         if similarity >= TRENDING_MERGE_THRESHOLD:
                             print('[%s] Similarity = %.2f -- MERGE -- %s <==> %s' %
                                   (domain, similarity, trending_titles[domain][k1],
@@ -127,7 +126,7 @@ class master:
         trending_titles = {}
         domains = []; events = {}
         for i, label in enumerate(self.counter.keys()):
-            # if label != 0: continue
+            # if label != 0: continue # Chinh tri Xa hoi
             domain = my_map.label2name[label]
             ndocs = self.counter[label]
             event = self.config_event_detection(domain, ndocs)
@@ -148,24 +147,9 @@ class master:
     def config_event_detection(self, domain, ndocs):
         if ndocs < 10:
             return None
-        if ndocs > 1500:
-            event = event_detection(domain, os.path.join(self.text_clf.result_dir, domain),
-                                    root_dir='event_detection', num_topics=100, max_iter=1000)
-        elif 1000 < ndocs and ndocs <= 1500:
-            event = event_detection(domain, os.path.join(self.text_clf.result_dir, domain),
-                                    root_dir='event_detection', num_topics=75, max_iter=1000)
-        elif 350 < ndocs and ndocs <= 1000:
-            event = event_detection(domain, os.path.join(self.text_clf.result_dir, domain),
-                                    root_dir='event_detection', num_topics=50, max_iter=1000)
-        elif 100 < ndocs and ndocs <= 350:
-            event = event_detection(domain, os.path.join(self.text_clf.result_dir, domain),
-                                    root_dir='event_detection', num_topics=30, max_iter=1000)
-        elif 50 < ndocs and ndocs <= 100:
-            event = event_detection(domain, os.path.join(self.text_clf.result_dir, domain),
-                                    root_dir='event_detection', num_topics=20, max_iter=1000)
-        else:
-            event = event_detection(domain, os.path.join(self.text_clf.result_dir, domain),
-                                    root_dir='event_detection', num_topics=10, max_iter=1000)
+        event = event_detection(domain,
+                                os.path.join(self.text_clf.result_dir, domain),
+                                root_dir='event_detection')
         return event
 
 
@@ -184,6 +168,14 @@ class master:
         joblib.dump(self.trending_titles, self.trending_titles_file, compress=True)
         joblib.dump(self.docs_trending, self.docs_trending_file, compress=True)
 
+    def get_similarity_score(self, set1, set2):
+        if len(set1) >= len(set2):
+            m = float(len(set2))
+        else:
+            m = float(len(set1))
+        if m == 0: return 0.0
+        intersection = float(len(set1.intersection(set2)))
+        return intersection / m
 
 
 

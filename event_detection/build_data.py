@@ -9,7 +9,8 @@ import os
 
 
 def build_vocab(dataset, output_vocab, root_dir, title_map):
-    vectorizer = TfidfVectorizer(ngram_range=(1, 1), max_df=0.6, min_df=1,
+    vectorizer = TfidfVectorizer(ngram_range=(1, 1), max_df=0.6,
+                                 min_df=1, max_features=1000,
                                  stop_words=utils.load_data_from_list(os.path.join(root_dir, 'stopwords.txt')))
     stack = os.listdir(dataset)
     contents = []; titles = []
@@ -31,7 +32,7 @@ def build_vocab(dataset, output_vocab, root_dir, title_map):
     with open(output_vocab, 'w', encoding='utf-8') as f:
         vocab = {w:i for i, w in enumerate(vectorizer.vocabulary_.keys())}
         f.write(u'\n'.join(vocab.keys()))
-    return contents, titles
+    return vectorizer, contents, titles
 
 
 def update_title_map(dataset, title_map):

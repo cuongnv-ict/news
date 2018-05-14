@@ -1,7 +1,6 @@
 # -*- encoding: utf-8 -*-
 
 from io import open
-import topics
 import os
 import unicodedata
 import utils
