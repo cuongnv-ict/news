@@ -9,6 +9,8 @@ from sklearn.cluster import DBSCAN
 
 
 
+MIN_DOCS = 5
+
 class event_detection:
     def __init__(self, domain, dataset, root_dir='.'):
         self.domain = domain
@@ -66,6 +68,8 @@ class event_detection:
         docs_trending = {}
         trending_threshold = self.get_trending_threshold(total)
         for k, cluster in clusters.items():
+            if len(cluster) < MIN_DOCS:
+                continue
             percent = float(len(cluster)) / float(total)
             if percent < trending_threshold:
                 continue
