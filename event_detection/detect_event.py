@@ -37,6 +37,7 @@ class event_detection:
 
 
     def save_title_map(self, title_map):
+        utils.mkdir(self.title_dir)
         joblib.dump(title_map, self.title_map_file, compress=True)
 
 
