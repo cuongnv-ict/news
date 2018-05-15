@@ -74,7 +74,7 @@ class event_detection:
             if percent < trending_threshold:
                 continue
             docs_trending.update({k : [titles[i] for i in cluster]})
-            index = randint(0, len(cluster))
+            index = randint(0, len(cluster) - 1)
             trending_titles.update({k : titles[cluster[index]]})
         return trending_titles, docs_trending
 

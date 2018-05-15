@@ -168,6 +168,7 @@ class master:
         joblib.dump(self.trending_titles, self.trending_titles_file, compress=True)
         joblib.dump(self.docs_trending, self.docs_trending_file, compress=True)
 
+
     def get_similarity_score(self, set1, set2):
         if len(set1) >= len(set2):
             m = float(len(set2))
