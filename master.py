@@ -16,10 +16,11 @@ from sklearn.externals import joblib
 warnings.filterwarnings('ignore', category=UserWarning)
 
 TRENDING_MERGE_THRESHOLD = 0.5
+HOUR_TO_RESET = 3
 
 class master:
     def __init__(self):
-        self.crawler = crawler()
+        self.crawler = crawler(HOUR_TO_RESET)
         self.text_clf = classification(root_dir='text_classification')
         self.text_clf.run()
         self.docs_trending = {}
@@ -114,7 +115,7 @@ class master:
     def check_date(self):
         present = datetime.datetime.now()
         diff = present.date() - self.date
-        if diff.days >= 1 and present.hour == 3:
+        if diff.days >= 1 and present.hour == HOUR_TO_RESET:
             self.date = present.date()
             return True
         return False
