@@ -9,11 +9,12 @@ import warnings
 
 
 class crawler:
-    def __init__(self):
+    def __init__(self, hour_to_reset=3):
         self.ids = {}
         self.new_stories = []
         self.domain = 'http://baomoi.com'
         warnings.filterwarnings("ignore", category=UserWarning, module='bs4')
+        self.hour_to_reset = hour_to_reset
 
 
     def is_exist(self, doc_id):
@@ -94,9 +95,9 @@ class crawler:
     def is_old_article(self, bs):
         try:
             datetime_artical = self.get_time(bs).date()
-            now = datetime.now().date()
-            diff = now - datetime_artical
-            if diff.days != 0:
+            now = datetime.now()
+            diff = now.date() - datetime_artical
+            if diff.days != 0 and now.hour == self.hour_to_reset:
                 return True
             return False
         except: return False
