@@ -64,7 +64,7 @@
                         aria-selected="true">Chinh tri Xa hoi</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" id="doi-song-tab" data-toggle="tab" href="#doi-song" role="tab" aria-controls="doisong" aria-selected="false">Doi song</a>
+                    <a class="nav-link" id="doi-song-van-hoa-tab" data-toggle="tab" href="#doi-song-van-hoa" role="tab" aria-controls="doisongvanhoa" aria-selected="false">Doi song Van hoa</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" id="khoa-hoc-cong-nghe-tab" data-toggle="tab" href="#khoa-hoc-cong-nghe" role="tab" aria-controls="khoahoccongnghe" aria-selected="false">Khoa hoc Cong nghe</a>
@@ -80,9 +80,6 @@
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" id="the-thao-tab" data-toggle="tab" href="#the-thao" role="tab" aria-controls="thethao" aria-selected="false">The thao</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" id="van-hoa-tab" data-toggle="tab" href="#van-hoa" role="tab" aria-controls="vanhoa" aria-selected="false">Van hoa</a>
                 </li>
                 
             </ul>
@@ -121,19 +118,19 @@
                     </div>
                 </div>
             </div>
-            <div class="tab-pane fade" id="doi-song" role="tabpanel" aria-labelledby="doi-song-tab">
+            <div class="tab-pane fade" id="doi-song-van-hoa" role="tabpanel" aria-labelledby="doi-song-van-hoa-tab">
                 <div class="row">
                     <div class="col-6" id="eventContainer-doi-song">
-                        <div id="eventList-doi-song">
+                        <div id="eventList-doi-song-van-hoa">
                             <div>
-                                <div id="accordion-doi-song">
+                                <div id="accordion-doi-song-van-hoa">
 
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="col-6" id="newsContent-doi-song">
+                    <div class="col-6" id="newsContent-doi-song-van-hoa">
                     </div>
 
                 </div>
@@ -295,46 +292,14 @@
                     </div>
                 </div>
 
-            </div>
-
-
-            <div class="tab-pane fade" id="van-hoa" role="tabpanel" aria-labelledby="van-hoa-tab">
-                <div class="row">
-                    <div class="col-6" id="eventContainer-van-hoa">
-                        <div id="eventList-van-hoa">
-                            <div>
-                                <div id="accordion-van-hoa">
-
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-6" id="newsContent-van-hoa">
-                    </div>
-
-                </div>
-
-                <br>
-                <div class="row">
-                    <div class="col-12">
-                        <br>
-                        <br>
-                        <img src="van-hoa/documents_distribution.png" class="img-rounded" style="height: 100%;" alt="Topics distribution">
-                    </div>
-                </div>
-
-            </div>
-
-
-            
+            </div>            
         </div>
 
 
     </div>
     <script type='text/javascript'>
 
-        var TOPIC_IDS = ['chinh-tri-xa-hoi', 'doi-song', 'khoa-hoc-cong-nghe', 'kinh-doanh', 'suc-khoe', 'the-gioi', 'the-thao', 'van-hoa'];
+        var TOPIC_IDS = ['chinh-tri-xa-hoi', 'doi-song-van-hoa', 'khoa-hoc-cong-nghe', 'kinh-doanh', 'suc-khoe', 'the-gioi', 'the-thao'];
 
 
         String.prototype.format = function () {
