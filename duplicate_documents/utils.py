@@ -4,7 +4,6 @@ __author__ = 'nobita'
 import os
 from io import open
 import random, string
-import math
 import datetime
 
 
@@ -69,15 +68,6 @@ def id_generator(size=10, chars=string.ascii_letters + string.digits):
     return ''.join(random.choice(chars) for _ in range(size))
 
 
-'''
-input: s - similarity sroce
-       r - number rows
-       b - number bands
-'''
-def get_probability_share_bucket(s, r, b):
-    return round(1 - math.pow(1 - math.pow(s, r), b), 5)
-
-
 def get_date_now():
     time = datetime.datetime.now()
     return time.strftime("%Y%m%d")
@@ -89,7 +79,6 @@ def get_previous_date(days=7):
     earlier = today - DD
     earlier_str = earlier.strftime("%Y%m%d")
     return earlier_str
-
 
 
 

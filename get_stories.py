@@ -7,12 +7,11 @@ import config
 
 
 class get_stories:
-    def __init__(self, hour_to_reset=3):
+    def __init__(self):
         self.contentId = 0
         self.ids = {}
         self.new_stories = []
         self.new_titles = []
-        self.hour_to_reset = hour_to_reset
 
 
     def run(self):
@@ -36,6 +35,7 @@ class get_stories:
                 continue
             self.new_stories.append(story.strip())
             self.new_titles.append(title)
+            # if len(self.new_stories) > 1000: break
         print('There are %d new stories' % len(self.new_stories))
 
         connection.close()
@@ -46,7 +46,7 @@ class get_stories:
         datetime_obj = datetime.strptime(date_str, '%Y-%m-%d').date()
         now = datetime.now()
         diff = now.date() - datetime_obj
-        if diff.days != 0 and now.hour == self.hour_to_reset:
+        if diff.days != 0:
             return True
         return False
 

@@ -13,17 +13,20 @@ from sklearn.externals import joblib
 from nlp_tools import tokenizer
 import config
 from pymongo import MongoClient
+from duplicate_documents.minhash_lsh import duplicate_docs as lsh
+from duplicate_documents import config as lsh_config
 
 
 
 warnings.filterwarnings('ignore', category=UserWarning)
 
 TRENDING_MERGE_THRESHOLD = 0.5
-HOUR_TO_RESET = 3
+HOUR_TO_RESET = 3  # reset at 3h AM
 
 class master:
     def __init__(self):
-        self.crawler = get_stories(HOUR_TO_RESET)
+        self.crawler = get_stories()
+        self.lsh = lsh()
         self.text_clf = classification(root_dir='text_classification')
         self.text_clf.run()
         self.docs_trending = {}
@@ -49,6 +52,8 @@ class master:
                 time.sleep(900)
                 continue
 
+
+
             print('tokenize new stories...')
             new_tokenized_stories = self.tokenize_stories(self.crawler.new_titles,
                                                           self.crawler.new_stories)
@@ -69,6 +74,10 @@ class master:
             self.save_trending_to_mongo(json_trending)
 
             self.save_trending_to_file()
+
+            print('remove duplicate stories...')
+            # new_titles, new_stories = self.lsh.run(self.crawler.new_titles,
+            #                                        self.crawler.new_stories)
 
             print('sleep in 900 seconds...')
             time.sleep(900)
@@ -153,6 +162,7 @@ class master:
         self.trending_titles = {}
         self.docs_trending = {}
         self.crawler.remove_old_documents()
+        self.lsh.clear()
         self.text_clf.reset()
         self.titles.clear()
         for domain in my_map.name2label.keys():
