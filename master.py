@@ -1,8 +1,8 @@
 # -*- encoding: utf-8 -*-
 
-import os
+import os, sys, json
 from event_detection.detect_event import event_detection
-from baomoi_crawler.crawler import crawler
+from get_stories import get_stories
 from text_classification.classification import classification
 from text_classification import my_map, utils
 from collections import Counter
@@ -10,16 +10,20 @@ from multiprocessing import Process
 import time, datetime
 import warnings
 from sklearn.externals import joblib
+from nlp_tools import tokenizer
+import config
+from pymongo import MongoClient
 
 
 
 warnings.filterwarnings('ignore', category=UserWarning)
 
 TRENDING_MERGE_THRESHOLD = 0.5
+HOUR_TO_RESET = 3
 
 class master:
     def __init__(self):
-        self.crawler = crawler()
+        self.crawler = get_stories(HOUR_TO_RESET)
         self.text_clf = classification(root_dir='text_classification')
         self.text_clf.run()
         self.docs_trending = {}
@@ -30,6 +34,7 @@ class master:
         self.trending_result_dir = 'trending_result'
         self.trending_titles_file = os.path.join(self.trending_result_dir, 'trending_titles.pkl')
         self.docs_trending_file = os.path.join(self.trending_result_dir, 'docs_trending.pkl')
+        self.titles = {}
 
 
     def run(self):
@@ -44,19 +49,65 @@ class master:
                 time.sleep(900)
                 continue
 
+            print('tokenize new stories...')
+            new_tokenized_stories = self.tokenize_stories(self.crawler.new_titles,
+                                                          self.crawler.new_stories)
+
             print('run text classification...')
             self.text_clf.reset()
-            labels = self.text_clf.predict(self.crawler.new_stories)
-            self.text_clf.save_to_dir(self.crawler.new_stories, labels)
+            labels = self.text_clf.predict(new_tokenized_stories)
+            self.text_clf.save_to_dir(new_tokenized_stories, labels)
 
             self.update_counter(labels)
 
             print('run event detection...')
             trending_titles, docs_trending = self.run_event_detection()
             self.merge_trending(trending_titles, docs_trending)
+            self.get_original_titles()
+
+            json_trending = self.build_json_trending()
+            self.save_trending_to_mongo(json_trending)
+
             self.save_trending_to_file()
 
+            print('sleep in 900 seconds...')
             time.sleep(900)
+
+
+    def tokenize_stories(self, titles, stories):
+        tokenized_stories = []
+        for i in xrange(len(stories)):
+            story = stories[i]
+            title = titles[i]
+            tokenized_story = tokenizer.predict(story)
+            tokenized_title = tokenized_story.split(u'\n')[0]
+            tokenized_stories.append(tokenized_story)
+            self.titles.update({tokenized_title.lower() : title})
+            print '\rtokenized %d stories' % (i + 1),
+            sys.stdout.flush()
+        print('')
+        return tokenized_stories
+
+
+    def get_original_titles(self):
+        print('get original titles...')
+        for domain in self.trending_titles.keys():
+            for k in self.trending_titles[domain]:
+                try:
+                    tokenized_title = self.trending_titles[domain][k]
+                    original_title = self.titles[tokenized_title.lower()]
+                    self.trending_titles[domain][k] = original_title
+                    for i in xrange(len(self.docs_trending[domain][k])):
+                        try:
+                            tokenized_title = self.docs_trending[domain][k][i]
+                            original_title = self.titles[tokenized_title.lower()]
+                            self.docs_trending[domain][k][i] = original_title
+                        except:
+                            print('tokenized_title error: %s' % (tokenized_title))
+                            continue
+                except:
+                    print('tokenized_title error: %s' % (tokenized_title))
+                    continue
 
 
     def merge_trending(self, trending_titles, docs_trending):
@@ -103,6 +154,7 @@ class master:
         self.docs_trending = {}
         self.crawler.remove_old_documents()
         self.text_clf.reset()
+        self.titles.clear()
         for domain in my_map.name2label.keys():
             event = event_detection(domain, None, root_dir='event_detection')
             event.reset_all()
@@ -114,7 +166,7 @@ class master:
     def check_date(self):
         present = datetime.datetime.now()
         diff = present.date() - self.date
-        if diff.days >= 1 and present.hour == 3:
+        if diff.days >= 1 and present.hour == HOUR_TO_RESET:
             self.date = present.date()
             return True
         return False
@@ -167,6 +219,50 @@ class master:
         utils.mkdir(self.trending_result_dir)
         joblib.dump(self.trending_titles, self.trending_titles_file, compress=True)
         joblib.dump(self.docs_trending, self.docs_trending_file, compress=True)
+
+
+    def build_trending_domain(self, trending_titles, docs_trending):
+        # build json content
+        trending = []
+        for k, title in trending_titles.items():
+            event = {}
+            docs = docs_trending[k]
+            event.update({u'title': title})
+            # sub_title = []
+            sub_title = [{u'title': name} for name in docs]
+            event.update({u'subTitles': sub_title})
+            trending.append(event)
+        return trending
+
+
+    def build_json_trending(self):
+        hot_events = []
+        for domain in self.trending_titles.keys():
+            json_content = {}
+            json_content.update({u'domain': domain, u'id': domain.replace(u' ', u'-').lower()})
+            trending_domain = self.build_trending_domain(self.trending_titles[domain],
+                                                         self.docs_trending[domain])
+            json_content.update({u'content': trending_domain})
+            hot_events.append(json_content)
+        hot_events = json.dumps(hot_events, ensure_ascii=False, encoding='utf-8')
+        json_trending = {u'hot_events' : hot_events, u'date' : self.date.strftime(u'%Y-%m-%d')}
+        return json_trending
+
+
+    def save_trending_to_mongo(self, json_trending):
+        print('save trending to mongodb...')
+        # connect to mongodb
+        connection = MongoClient(config.MONGO_HOST, config.MONGO_PORT)
+        db = connection[config.MONGO_DB]
+        # db.authenticate(config.MONGO_USER, config.MONGO_PASS)
+        try:
+            connection = db.get_collection(config.MONGO_COLLECTION_HOT_EVENTS)
+        except:
+            connection = db.create_collection(config.MONGO_COLLECTION_HOT_EVENTS)
+        documents = connection.find({u'date' : {u'$eq' : self.date.strftime(u'%Y-%m-%d')}})
+        for doc in documents:
+            connection.remove(doc[u'_id'])
+        connection.insert_one(json_trending)
 
 
     def get_similarity_score(self, set1, set2):

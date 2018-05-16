@@ -32,7 +32,8 @@ def load_dataset(dataset):
 def load_dataset_ex(list_samples):
     result = []
     for sample in list_samples:
-        sample = r.run(tokenizer.predict(sample))
+        # sample = r.run(tokenizer.predict(sample))
+        sample = r.run(sample)
         result.append(sample)
     return result
 
