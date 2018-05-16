@@ -9,8 +9,7 @@ import warnings
 
 
 class crawler:
-    def __init__(self, hour_to_reset=3):
-        self.hour_to_reset = hour_to_reset
+    def __init__(self):
         self.ids = {}
         self.new_stories = []
         self.domain = 'http://baomoi.com'
@@ -97,7 +96,7 @@ class crawler:
             datetime_artical = self.get_time(bs).date()
             now = datetime.now()
             diff = now.date() - datetime_artical
-            if diff.days != 0 and now.hour == self.hour_to_reset:
+            if diff.days != 0:
                 return True
             return False
         except: return False

@@ -20,7 +20,7 @@ HOUR_TO_RESET = 3
 
 class master:
     def __init__(self):
-        self.crawler = crawler(HOUR_TO_RESET)
+        self.crawler = crawler()
         self.text_clf = classification(root_dir='text_classification')
         self.text_clf.run()
         self.docs_trending = {}
