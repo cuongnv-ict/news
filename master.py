@@ -52,7 +52,7 @@ class master:
             print('run crawler...')
             self.crawler.run()
             if len(self.crawler.new_stories) == 0:
-                time.sleep(900)
+                time.sleep(300)
                 continue
 
             print('tokenize new stories...')
@@ -82,8 +82,8 @@ class master:
             print('summary stories...')
             self.save_summary_to_mongo(new_tokenized_titles, new_tokenized_stories)
 
-            print('sleep in 900 seconds...')
-            time.sleep(900)
+            print('sleep in 300 seconds...')
+            time.sleep(300)
 
 
     def tokenize_stories(self, titles, stories):
