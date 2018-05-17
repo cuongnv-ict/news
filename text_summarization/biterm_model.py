@@ -90,10 +90,10 @@ class biterm:
             self.vectorizer.max_features = 100
         elif num_sen >= self.NUM_SEN_LONG_TEXT:
             self.K = 15
-            self.vectorizer.max_features = 150
+            self.vectorizer.max_features = 200
         else:
             self.K = 10
-            self.vectorizer.max_features = 125
+            self.vectorizer.max_features = 150
 
 
     def get_sentences(self, data):
