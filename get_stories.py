@@ -35,7 +35,6 @@ class get_stories:
                 continue
             self.new_stories.append(story.strip())
             self.new_titles.append(title)
-            # if len(self.new_stories) > 1000: break
         print('There are %d new stories' % len(self.new_stories))
 
         connection.close()
@@ -54,15 +53,19 @@ class get_stories:
     def get_content(self, doc):
         doc_id = doc[u'_id']
         if self.is_exist(doc_id):
-            return u''
+            return u'', u''
+        contentId = doc[u'contentId']
         title = doc[u'title'].strip()
-        print(title)
+        if title != u'':
+            title = u' == '.join([unicode(contentId), title])
+            print(title)
+        else:
+            return u'', u''
         description = doc[u'description'].strip()
         raw_body = json.loads(doc[u'body'], encoding='utf-8')
         body = self.get_body(raw_body)
         story = u'\n'.join([title, description, body])
 
-        contentId = doc[u'contentId']
         if contentId > self.contentId:
             self.contentId = contentId
 

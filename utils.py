@@ -3,12 +3,11 @@ __author__ = 'nobita'
 
 import os
 from io import open
-import shutil
-
+import numpy as np
 
 
 # return list of string
-def load_data_from_dict(data_file):
+def load_data_to_dict(data_file):
     d = {}
     with open(data_file, 'r', encoding='utf-8') as f:
         for data in f:
@@ -17,7 +16,7 @@ def load_data_from_dict(data_file):
     return d
 
 
-def load_data_from_list(data_file):
+def load_data_to_list(data_file):
     l = []
     with open(data_file, 'r', encoding='utf-8') as f:
         for data in f:
@@ -25,21 +24,9 @@ def load_data_from_list(data_file):
     return l
 
 
-
 def mkdir(dir):
     if (os.path.exists(dir) == False):
-        try:
-            os.mkdir(dir)
-        except Exception as e:
-            print(e.message)
-
-
-def delete_dir(dir):
-    ## Try to remove tree; if failed show an error using try...except on screen
-    try:
-        shutil.rmtree(dir)
-    except OSError, e:
-        print ("Warning: %s - %s." % (e.filename, e.strerror))
+        os.mkdir(dir)
 
 
 def push_data_to_stack(stack, file_path, file_name):

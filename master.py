@@ -14,7 +14,8 @@ from nlp_tools import tokenizer
 import config
 from pymongo import MongoClient
 from duplicate_documents.minhash_lsh import duplicate_docs as lsh
-from duplicate_documents import config as lsh_config
+from text_summarization.summary import summary
+import regex
 
 
 
@@ -29,6 +30,7 @@ class master:
         self.lsh = lsh()
         self.text_clf = classification(root_dir='text_classification')
         self.text_clf.run()
+        self.summary = summary(root_dir='text_summarization')
         self.docs_trending = {}
         self.trending_titles = {}
         self.date = datetime.datetime.now().date()
@@ -38,6 +40,7 @@ class master:
         self.trending_titles_file = os.path.join(self.trending_result_dir, 'trending_titles.pkl')
         self.docs_trending_file = os.path.join(self.trending_result_dir, 'docs_trending.pkl')
         self.titles = {}
+        self.re = regex.regex()
 
 
     def run(self):
@@ -52,11 +55,9 @@ class master:
                 time.sleep(900)
                 continue
 
-
-
             print('tokenize new stories...')
-            new_tokenized_stories = self.tokenize_stories(self.crawler.new_titles,
-                                                          self.crawler.new_stories)
+            new_tokenized_titles, new_tokenized_stories = self.tokenize_stories(self.crawler.new_titles,
+                                                                                self.crawler.new_stories)
 
             print('run text classification...')
             self.text_clf.reset()
@@ -76,26 +77,38 @@ class master:
             self.save_trending_to_file()
 
             print('remove duplicate stories...')
-            # new_titles, new_stories = self.lsh.run(self.crawler.new_titles,
-            #                                        self.crawler.new_stories)
+            new_tokenized_titles, new_tokenized_stories = self.lsh.run(new_tokenized_titles,
+                                                                       new_tokenized_stories)
+            print('summary stories...')
+            self.save_summary_to_mongo(new_tokenized_titles, new_tokenized_stories)
 
             print('sleep in 900 seconds...')
             time.sleep(900)
 
 
     def tokenize_stories(self, titles, stories):
+        tokenized_titles = []
         tokenized_stories = []
         for i in xrange(len(stories)):
             story = stories[i]
             title = titles[i]
+
+            story = self.re.detect_url.sub(u'', story)
+
             tokenized_story = tokenizer.predict(story)
             tokenized_title = tokenized_story.split(u'\n')[0]
+
             tokenized_stories.append(tokenized_story)
-            self.titles.update({tokenized_title.lower() : title})
+            tokenized_titles.append(tokenized_title)
+
+            contentId = tokenized_title.split(u' == ')[0]
+
+            self.titles.update({contentId : title})
+
             print '\rtokenized %d stories' % (i + 1),
             sys.stdout.flush()
         print('')
-        return tokenized_stories
+        return tokenized_titles, tokenized_stories
 
 
     def get_original_titles(self):
@@ -104,12 +117,14 @@ class master:
             for k in self.trending_titles[domain]:
                 try:
                     tokenized_title = self.trending_titles[domain][k]
-                    original_title = self.titles[tokenized_title.lower()]
+                    contentId = tokenized_title.split(u' == ')[0]
+                    original_title = self.titles[contentId]
                     self.trending_titles[domain][k] = original_title
                     for i in xrange(len(self.docs_trending[domain][k])):
                         try:
                             tokenized_title = self.docs_trending[domain][k][i]
-                            original_title = self.titles[tokenized_title.lower()]
+                            contentId = tokenized_title.split(u' == ')[0]
+                            original_title = self.titles[contentId]
                             self.docs_trending[domain][k][i] = original_title
                         except:
                             print('tokenized_title error: %s' % (tokenized_title))
@@ -237,10 +252,13 @@ class master:
         for k, title in trending_titles.items():
             event = {}
             docs = docs_trending[k]
-            event.update({u'title': title})
-            # sub_title = []
-            sub_title = [{u'title': name} for name in docs]
-            event.update({u'subTitles': sub_title})
+            event.update({u'event_name': title.split(u' == ')[1]})
+            sub_title = []
+            for name in docs:
+                name = name.split(u' == ')
+                sub_title.append({u'title': name[1], u'contentId' : int(name[0])})
+            # sub_title = [{u'title': name} for name in docs]
+            event.update({u'stories': sub_title})
             trending.append(event)
         return trending
 
@@ -266,13 +284,45 @@ class master:
         db = connection[config.MONGO_DB]
         # db.authenticate(config.MONGO_USER, config.MONGO_PASS)
         try:
-            connection = db.get_collection(config.MONGO_COLLECTION_HOT_EVENTS)
+            collection = db.get_collection(config.MONGO_COLLECTION_HOT_EVENTS)
         except:
-            connection = db.create_collection(config.MONGO_COLLECTION_HOT_EVENTS)
-        documents = connection.find({u'date' : {u'$eq' : self.date.strftime(u'%Y-%m-%d')}})
+            collection = db.create_collection(config.MONGO_COLLECTION_HOT_EVENTS)
+        documents = collection.find({u'date' : {u'$eq' : self.date.strftime(u'%Y-%m-%d')}})
         for doc in documents:
-            connection.remove(doc[u'_id'])
-        connection.insert_one(json_trending)
+            collection.remove(doc[u'_id'])
+        collection.insert_one(json_trending)
+        connection.close()
+
+
+    def save_summary_to_mongo(self, new_tokenized_titles, new_tokenized_stories):
+        print('save summary to mongodb...')
+        # connect to mongodb
+        connection = MongoClient(config.MONGO_HOST, config.MONGO_PORT)
+        db = connection[config.MONGO_DB]
+        # db.authenticate(config.MONGO_USER, config.MONGO_PASS)
+
+        try:
+            collection = db.get_collection(config.MONGO_COLLECTION_SUMMRIES)
+        except:
+            collection = db.create_collection(config.MONGO_COLLECTION_SUMMRIES)
+        begin_time = time.time()
+        for i in xrange(len(new_tokenized_stories)):
+            summ = self.summary.run(new_tokenized_stories[i])
+            tokenized_title = new_tokenized_titles[i].split(u' == ')
+            contentId = tokenized_title[0]
+            try:
+                title = self.titles[tokenized_title[0]].split(u' == ')[1]
+            except:
+                title = tokenized_title[1].replace(u'_', u' ')
+            summary = {u'contentId' : int(contentId), u'title' : title, u'summaries' : summ}
+            collection.insert_one(summary)
+            print '\rsummaried %d stories' % (i+1),
+            sys.stdout.flush()
+        end_time = time.time()
+        print('')
+        print ('time to summary = %.2f minutes' % (float(end_time - begin_time) / float(60)))
+        connection.close()
+
 
 
     def get_similarity_score(self, set1, set2):
