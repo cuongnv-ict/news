@@ -69,7 +69,11 @@ class biterm:
         if self.vectorizer.max_df * len(clean_sentences) < self.vectorizer.min_df:
             self.vectorizer.max_df = 1.0
         # print len(clean_sentences)
-        self.vectorizer.fit(clean_sentences)
+        try:
+            self.vectorizer.fit(clean_sentences)
+        except:
+            self.vectorizer.max_df = 1.0
+            self.vectorizer.fit(clean_sentences)
         self.W = len(self.vectorizer.vocabulary_)
         # print ('Vocab length = %d' % (self.W))
         docs = []
