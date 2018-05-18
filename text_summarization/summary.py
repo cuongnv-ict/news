@@ -83,7 +83,7 @@ class summary:
                         docs_sorted)
         if len(result) == 0:
             result = docs_sorted
-        cosine_dis.sort()
+        # cosine_dis.sort()
         # print zip(docs_sorted[:bounary], cosine_dis[:bounary])
         result.sort()
         return result
