@@ -5,7 +5,6 @@ from flask import jsonify
 from event_detection import demo
 from master import master
 from threading import Thread
-import os, json, time
 from sklearn.externals import joblib
 
 
@@ -23,9 +22,9 @@ def build_trending_domain(trending_titles, docs_trending):
     for k, title in trending_titles.items():
         event = {}
         docs = docs_trending[k]
-        event.update({u'title': title + u' - %d docs' % (len(docs))})
+        event.update({u'title': title.split(u' == ')[1] + u' - %d docs' % (len(docs))})
         # sub_title = []
-        sub_title = [{u'title': name} for name in docs]
+        sub_title = [{u'title': name.split(u' == ')[1]} for name in docs]
         event.update({u'subTitles': sub_title})
         trending.append(event)
     return trending

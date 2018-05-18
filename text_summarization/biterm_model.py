@@ -12,7 +12,6 @@ from io import open
 import utils
 from regex import regex
 from nlp_tools import spliter
-from pyvi.pyvi import ViPosTagger
 
 
 importance_pos = {'N':True, 'Np':True, 'Ny':True, 'V':True}

@@ -127,10 +127,10 @@ class master:
                             original_title = self.titles[contentId]
                             self.docs_trending[domain][k][i] = original_title
                         except:
-                            print('tokenized_title error: %s' % (tokenized_title))
+                            # print('tokenized_title error: %s' % (tokenized_title))
                             continue
                 except:
-                    print('tokenized_title error: %s' % (tokenized_title))
+                    # print('tokenized_title error: %s' % (tokenized_title))
                     continue
 
 
@@ -140,14 +140,15 @@ class master:
             try:
                 for k1 in trending_titles[domain].keys():
                     for k2 in self.trending_titles[domain].keys():
-                        docs1 = set(docs_trending[domain][k1])
-                        docs2 = set(self.docs_trending[domain][k2])
+                        docs1 = [d.split(u' == ')[0] for d in docs_trending[domain][k1]]
+                        docs2 = [d.split(u' == ')[0] for d in self.docs_trending[domain][k2]]
                         similarity = self.get_similarity_score(docs1, docs2)
                         if similarity >= TRENDING_MERGE_THRESHOLD:
                             print('[%s] Similarity = %.2f -- MERGE -- %s <==> %s' %
                                   (domain, similarity, trending_titles[domain][k1],
                                    self.trending_titles[domain][k2]))
-                            self.docs_trending[domain][k2] = list(docs1.union(docs2))
+                            # union
+                            self.union(self.docs_trending[domain][k2], docs_trending[domain][k1])
                             print ('Delete -- %s' % (trending_titles[domain][k1]))
                             del trending_titles[domain][k1]
                             del docs_trending[domain][k1]
@@ -163,6 +164,21 @@ class master:
                 kk = len(self.trending_titles[domain])
                 self.trending_titles[domain].update({kk : trending_titles[domain][k]})
                 self.docs_trending[domain].update({kk : docs_trending[domain][k]})
+
+
+    def union(self, doc1, doc2):
+        contentID = {}
+        for name in doc1:
+            name = name.split(u' == ')
+            contentID.update({name[0] : name[1]})
+        for name in doc2:
+            x = name.split(u' == ')
+            try:
+                _ = contentID[x[0]]
+                continue
+            except:
+                doc1.append(name)
+
 
 
     def update_counter(self, labels):
@@ -324,8 +340,9 @@ class master:
         connection.close()
 
 
-
-    def get_similarity_score(self, set1, set2):
+    def get_similarity_score(self, docs1, docs2):
+        set1 = set(docs1)
+        set2 = set(docs2)
         if len(set1) >= len(set2):
             m = float(len(set2))
         else:
