@@ -35,14 +35,12 @@ class get_stories:
                 continue
             self.new_stories.append(story.strip())
             self.new_titles.append(title)
-            if len(self.new_stories) > 9: break
         print('There are %d new stories' % len(self.new_stories))
 
         connection.close()
 
 
     def check_date(self, raw_date):
-        return False
         date_str = raw_date.split(u'T')[0]
         datetime_obj = datetime.strptime(date_str, '%Y-%m-%d').date()
         now = datetime.now()
