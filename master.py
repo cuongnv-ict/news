@@ -143,7 +143,7 @@ class master:
                         docs1 = [d.split(u' == ')[0] for d in docs_trending[domain][k1]]
                         docs2 = [d.split(u' == ')[0] for d in self.docs_trending[domain][k2]]
                         similarity = self.get_similarity_score(docs1, docs2)
-                        if similarity >= TRENDING_MERGE_THRESHOLD:
+                        if similarity > TRENDING_MERGE_THRESHOLD:
                             print('[%s] Similarity = %.2f -- MERGE -- %s <==> %s' %
                                   (domain, similarity, trending_titles[domain][k1],
                                    self.trending_titles[domain][k2]))
