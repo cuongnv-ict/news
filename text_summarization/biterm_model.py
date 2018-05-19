@@ -71,8 +71,13 @@ class biterm:
         try:
             self.vectorizer.fit(clean_sentences)
         except:
-            self.vectorizer.max_df = 1.0
-            self.vectorizer.fit(clean_sentences)
+            try:
+                self.vectorizer.max_df = 1.0
+                self.vectorizer.fit(clean_sentences)
+            except:
+                try:
+                    self.vectorizer.fit(raw_sentences)
+                except: return []
         self.W = len(self.vectorizer.vocabulary_)
         # print ('Vocab length = %d' % (self.W))
         docs = []
@@ -227,6 +232,8 @@ class biterm:
     def run_gibbs_sampling(self, data_train, save_result=False):
         # print 'run gibbs sampling ...'
         docs = self.load_data(data_train)
+        if len(docs) == 0:
+            return []
         self.init_model()
         # run gibbs sampling epoch
         # print 'run gibbs sampling\'s iterations ...'

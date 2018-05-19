@@ -59,6 +59,8 @@ class summary:
 
         btm = biterm(num_iters=30, root_dir=self.root_dir)
         docs = btm.run_gibbs_sampling(data, save_result=False)
+        if len(docs) == 0:
+            return {u'error': u'story is too short'}
         topic_docs = np.array([d.topic_proportion for d in docs])
         btm.theta = np.array([btm.theta])
 
