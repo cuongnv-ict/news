@@ -15,7 +15,7 @@ from sklearn.externals import joblib
 
 warnings.filterwarnings('ignore', category=UserWarning)
 
-TRENDING_MERGE_THRESHOLD = 0.5
+TRENDING_MERGE_THRESHOLD = 0.0
 HOUR_TO_RESET = 3
 
 class master:
@@ -69,7 +69,7 @@ class master:
                         docs1 = set(docs_trending[domain][k1])
                         docs2 = set(self.docs_trending[domain][k2])
                         similarity = self.get_similarity_score(docs1, docs2)
-                        if similarity >= TRENDING_MERGE_THRESHOLD:
+                        if similarity > TRENDING_MERGE_THRESHOLD:
                             print('[%s] Similarity = %.2f -- MERGE -- %s <==> %s' %
                                   (domain, similarity, trending_titles[domain][k1],
                                    self.trending_titles[domain][k2]))
