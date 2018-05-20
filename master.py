@@ -16,7 +16,7 @@ from sklearn.externals import joblib
 warnings.filterwarnings('ignore', category=UserWarning)
 
 TRENDING_MERGE_THRESHOLD = 0.0
-HOUR_TO_RESET = 3
+HOUR_TO_RESET = 0
 
 class master:
     def __init__(self):
