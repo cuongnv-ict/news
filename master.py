@@ -76,8 +76,9 @@ class master:
             print('remove duplicate stories...')
             new_tokenized_titles, new_tokenized_stories, new_duplicate_stories = \
                 self.lsh.run(new_tokenized_titles, new_tokenized_stories)
-            self.update_duplicate(new_duplicate_stories)
-            self.remove_duplicate_trending_docs()
+            if len(new_duplicate_stories) > 0:
+                self.update_duplicate(new_duplicate_stories)
+                self.remove_duplicate_trending_docs()
 
             json_trending = self.build_json_trending()
             self.save_trending_to_mongo(json_trending)
