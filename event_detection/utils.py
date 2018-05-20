@@ -39,7 +39,7 @@ def delete_dir(dir):
     try:
         shutil.rmtree(dir)
     except OSError, e:
-        print ("Error: %s - %s." % (e.filename, e.strerror))
+        print ("Warning: %s - %s." % (e.filename, e.strerror))
 
 
 def push_data_to_stack(stack, file_path, file_name):

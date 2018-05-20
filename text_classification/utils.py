@@ -113,7 +113,7 @@ def delete_dir(dir):
     try:
         shutil.rmtree(dir)
     except OSError, e:
-        print ("Error: %s - %s." % (e.filename, e.strerror))
+        print ("Warning: %s - %s." % (e.filename, e.strerror))
 
 
 
