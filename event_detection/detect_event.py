@@ -10,7 +10,7 @@ from sklearn.cluster import DBSCAN
 
 
 MIN_DOCS = 5
-MIN_TRENDING_DOCS = 10
+MIN_TRENDING_DOCS = 8
 
 class event_detection:
     def __init__(self, domain, dataset, root_dir='.'):
@@ -72,7 +72,7 @@ class event_detection:
             if len(cluster) < MIN_DOCS:
                 continue
             percent = float(len(cluster)) / float(total)
-            if percent < trending_threshold or len(cluster) < MIN_TRENDING_DOCS:
+            if percent < trending_threshold and len(cluster) < MIN_TRENDING_DOCS:
                 continue
             docs_trending.update({k : [titles[i] for i in cluster]})
             index = randint(0, len(cluster) - 1)
