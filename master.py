@@ -23,6 +23,7 @@ warnings.filterwarnings('ignore', category=UserWarning)
 
 TRENDING_MERGE_THRESHOLD = 0.0
 HOUR_TO_RESET = 0  # reset at 3h AM
+TIME_TO_SLEEP = 300
 
 class master:
     def __init__(self):
@@ -35,10 +36,11 @@ class master:
         self.trending_titles = {}
         self.date = datetime.datetime.now().date()
         self.first_run = True
-        self.counter = {label:0 for label in my_map.label2name.keys()}
+        self.counter = {label:0 for label in my_map.label2domain.keys()}
         self.trending_result_dir = 'trending_result'
         self.trending_titles_file = os.path.join(self.trending_result_dir, 'trending_titles.pkl')
         self.docs_trending_file = os.path.join(self.trending_result_dir, 'docs_trending.pkl')
+        self.duplicate_docs = {}
         self.titles = {}
         self.re = regex.regex()
 
@@ -52,7 +54,7 @@ class master:
             print('run crawler...')
             self.crawler.run()
             if len(self.crawler.new_stories) == 0:
-                time.sleep(300)
+                time.sleep(TIME_TO_SLEEP)
                 continue
 
             print('tokenize new stories...')
@@ -71,19 +73,51 @@ class master:
             self.merge_trending(trending_titles, docs_trending)
             self.get_original_titles()
 
+            print('remove duplicate stories...')
+            new_tokenized_titles, new_tokenized_stories, new_duplicate_stories = \
+                self.lsh.run(new_tokenized_titles, new_tokenized_stories)
+            self.update_duplicate(new_duplicate_stories)
+            self.remove_duplicate_trending_docs()
+
             json_trending = self.build_json_trending()
             self.save_trending_to_mongo(json_trending)
-
             self.save_trending_to_file()
 
-            print('remove duplicate stories...')
-            new_tokenized_titles, new_tokenized_stories = self.lsh.run(new_tokenized_titles,
-                                                                       new_tokenized_stories)
             print('summary stories...')
             self.save_summary_to_mongo(new_tokenized_titles, new_tokenized_stories)
 
-            print('sleep in 300 seconds...')
-            time.sleep(300)
+            print('sleep in %d seconds...' % (TIME_TO_SLEEP))
+            time.sleep(TIME_TO_SLEEP)
+
+
+    def update_duplicate(self, new_duplicate_stories):
+        new_duplicate_contents = []
+        new_duplicate_contentId = new_duplicate_stories.keys()
+        for contentId in new_duplicate_stories.keys():
+            new_duplicate_contents.append(new_duplicate_stories[contentId])
+        new_duplicate_labels = self.text_clf.predict(new_duplicate_contents)
+        for i in xrange(len(new_duplicate_labels)):
+            domain = my_map.label2domain[new_duplicate_labels[i]]
+            contentId = new_duplicate_contentId[i]
+            try:
+                self.duplicate_docs[domain].update({contentId : True})
+            except:
+                self.duplicate_docs.update({domain : {contentId : True}})
+
+
+    def remove_duplicate_trending_docs(self):
+        for domain in self.docs_trending:
+            try:
+                duplicate_docs = self.duplicate_docs[domain]
+                for k in self.docs_trending[domain].keys():
+                    for i in xrange(len(self.docs_trending[domain][k])):
+                        contentId = self.docs_trending[domain][k][i].split(u' == ')[0]
+                        try:
+                            _ = duplicate_docs[contentId]
+                            del self.docs_trending[domain][k][i]
+                        except: continue
+            except: continue
+
 
 
     def tokenize_stories(self, titles, stories):
@@ -196,7 +230,8 @@ class master:
         self.lsh.clear()
         self.text_clf.reset()
         self.titles.clear()
-        for domain in my_map.name2label.keys():
+        self.duplicate_docs.clear()
+        for domain in my_map.domain2label.keys():
             event = event_detection(domain, None, root_dir='event_detection')
             event.reset_all()
         for l in self.counter.keys():
@@ -220,7 +255,7 @@ class master:
         domains = []; events = {}
         for i, label in enumerate(self.counter.keys()):
             # if label != 0: continue # Chinh tri Xa hoi
-            domain = my_map.label2name[label]
+            domain = my_map.label2domain[label]
             ndocs = self.counter[label]
             event = self.config_event_detection(domain, ndocs)
             if event == None:

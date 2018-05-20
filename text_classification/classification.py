@@ -48,9 +48,9 @@ class classification:
 
     def save_to_dir(self, list_document, labels):
         utils.mkdir(self.result_dir)
-        _ = map(lambda x: utils.mkdir(os.path.join(self.result_dir, x)), my_map.name2label.keys())
+        _ = map(lambda x: utils.mkdir(os.path.join(self.result_dir, x)), my_map.domain2label.keys())
         for i in xrange(len(labels)):
-            output_dir = os.path.join(self.result_dir, my_map.label2name[labels[i]])
+            output_dir = os.path.join(self.result_dir, my_map.label2domain[labels[i]])
             with open(os.path.join(output_dir, utils.id_generator()), 'w', encoding='utf-8') as fw:
                 fw.write(unicode(list_document[i]))
 

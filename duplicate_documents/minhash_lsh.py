@@ -34,17 +34,18 @@ class duplicate_docs:
 
     # load data from list documents
     def run(self, list_titles, list_docs):
-        num_duplicate = 0
         total_files = len(list_docs)
         clean_docs = []
         clean_titles = []
+        duplicate_docs = {}
         for i in xrange(len(list_docs)):
             raw_doc = list_docs[i]
             data = unicodedata.normalize('NFKC', raw_doc.strip())
             doc = document(data)
             did = self.insert(doc, check_duplication=True)
             if did == None:
-                num_duplicate += 1
+                contentId = list_titles[i].split(u' == ')[0]
+                duplicate_docs.update({contentId : raw_doc})
             else:
                 clean_docs.append(raw_doc)
                 clean_titles.append(list_titles[i])
@@ -52,8 +53,8 @@ class duplicate_docs:
             sys.stdout.flush()
         print('')
         print ('total files = %d' % (total_files))
-        print ('number of duplicate document = %d' % (num_duplicate))
-        return clean_titles, clean_docs
+        print ('number of duplicate document = %d' % (len(duplicate_docs)))
+        return clean_titles, clean_docs, duplicate_docs
 
 
     # insert a document object
