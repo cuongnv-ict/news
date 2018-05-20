@@ -77,7 +77,7 @@ class master:
             new_tokenized_titles, new_tokenized_stories, new_duplicate_stories = \
                 self.lsh.run(new_tokenized_titles, new_tokenized_stories)
             if len(new_duplicate_stories) > 0:
-                self.update_duplicate(new_duplicate_stories)
+                self.update_duplicate_docs(new_duplicate_stories)
                 self.remove_duplicate_trending_docs()
 
             json_trending = self.build_json_trending()
@@ -91,7 +91,7 @@ class master:
             time.sleep(TIME_TO_SLEEP)
 
 
-    def update_duplicate(self, new_duplicate_stories):
+    def update_duplicate_docs(self, new_duplicate_stories):
         new_duplicate_contents = []
         new_duplicate_contentId = new_duplicate_stories.keys()
         for contentId in new_duplicate_stories.keys():
