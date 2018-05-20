@@ -17,6 +17,7 @@ warnings.filterwarnings('ignore', category=UserWarning)
 
 TRENDING_MERGE_THRESHOLD = 0.0
 HOUR_TO_RESET = 0
+TIME_TO_SLEEP = 900
 
 class master:
     def __init__(self):
@@ -27,7 +28,7 @@ class master:
         self.trending_titles = {}
         self.date = datetime.datetime.now().date()
         self.first_run = True
-        self.counter = {label:0 for label in my_map.label2name.keys()}
+        self.counter = {label:0 for label in my_map.label2domain.keys()}
         self.trending_result_dir = 'trending_result'
         self.trending_titles_file = os.path.join(self.trending_result_dir, 'trending_titles.pkl')
         self.docs_trending_file = os.path.join(self.trending_result_dir, 'docs_trending.pkl')
@@ -42,7 +43,7 @@ class master:
             print('run crawler...')
             self.crawler.run()
             if len(self.crawler.new_stories) == 0:
-                time.sleep(900)
+                time.sleep(TIME_TO_SLEEP)
                 continue
 
             print('run text classification...')
@@ -57,7 +58,8 @@ class master:
             self.merge_trending(trending_titles, docs_trending)
             self.save_trending_to_file()
 
-            time.sleep(900)
+            print('sleep in %s seconds...' % (TIME_TO_SLEEP))
+            time.sleep(TIME_TO_SLEEP)
 
 
     def merge_trending(self, trending_titles, docs_trending):
@@ -104,7 +106,7 @@ class master:
         self.docs_trending = {}
         self.crawler.remove_old_documents()
         self.text_clf.reset()
-        for domain in my_map.name2label.keys():
+        for domain in my_map.domain2label.keys():
             event = event_detection(domain, None, root_dir='event_detection')
             event.reset_all()
         for l in self.counter.keys():
@@ -128,7 +130,7 @@ class master:
         domains = []; events = {}
         for i, label in enumerate(self.counter.keys()):
             # if label != 0: continue # Chinh tri Xa hoi
-            domain = my_map.label2name[label]
+            domain = my_map.label2domain[label]
             ndocs = self.counter[label]
             event = self.config_event_detection(domain, ndocs)
             if event == None:

@@ -11,7 +11,7 @@ from nlp_tools import tokenizer
 r = regex.regex()
 
 def load_dataset(dataset):
-    list_samples = {k:[] for k in my_map.name2label.keys()}
+    list_samples = {k:[] for k in my_map.domain2label.keys()}
     stack = os.listdir(dataset)
     print 'loading data in ' + dataset
     while (len(stack) > 0):
