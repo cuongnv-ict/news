@@ -120,7 +120,15 @@ class crawler:
         description = bs.find_all('div', {'class' : 'article__sapo'})
         article.append(u'\n'.join([t.text for t in description]).strip())
         body = bs.find_all('p', {'class' : 'body-text'})
+        tags_raw = bs.find_all('div', {'class' : 'article__tag'})
+        tags = []
+        for tag in tags_raw:
+            tag = tag.text.strip().split(u'/')
+            tag = map(lambda x: x.strip(), tag)
+            tags += tag
+        tags = u'[tags] : ' + u' , '.join(tags)
         article.append(u'\n'.join([t.text for t in body]).strip())
+        article.append(tags)
         return u'\n'.join(article)
 
 
