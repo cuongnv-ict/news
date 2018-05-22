@@ -47,48 +47,52 @@ class master:
 
     def run(self):
         while(True):
-            if self.check_date() or self.first_run:
-                self.reset_all()
-                self.first_run = False
+            try:
+                if self.check_date() or self.first_run:
+                    self.reset_all()
+                    self.first_run = False
 
-            print('run crawler...')
-            self.crawler.run()
-            if len(self.crawler.new_stories) == 0:
+                print('run crawler...')
+                self.crawler.run()
+                if len(self.crawler.new_stories) == 0:
+                    time.sleep(TIME_TO_SLEEP)
+                    continue
+
+                print('tokenize new stories...')
+                new_tokenized_titles, new_tokenized_stories = self.tokenize_stories(self.crawler.new_titles,
+                                                                                    self.crawler.new_stories)
+
+                print('run text classification...')
+                self.text_clf.reset()
+                labels = self.text_clf.predict(new_tokenized_stories)
+                self.text_clf.save_to_dir(new_tokenized_stories, labels)
+
+                self.update_counter(labels)
+
+                print('run event detection...')
+                trending_titles, docs_trending = self.run_event_detection()
+                self.merge_trending(trending_titles, docs_trending)
+                self.get_original_titles()
+
+                print('remove duplicate stories...')
+                new_tokenized_titles, new_tokenized_stories, new_duplicate_stories = \
+                    self.lsh.run(new_tokenized_titles, new_tokenized_stories)
+                if len(new_duplicate_stories) > 0:
+                    self.update_duplicate_docs(new_duplicate_stories)
+                    self.remove_duplicate_trending_docs()
+
+                json_trending = self.build_json_trending()
+                self.save_trending_to_mongo(json_trending)
+                self.save_trending_to_file()
+
+                print('summary stories...')
+                self.save_summary_to_mongo(new_tokenized_titles, new_tokenized_stories)
+
+                print('sleep in %d seconds...' % (TIME_TO_SLEEP))
+                time.sleep(TIME_TO_SLEEP)
+            except:
                 time.sleep(TIME_TO_SLEEP)
                 continue
-
-            print('tokenize new stories...')
-            new_tokenized_titles, new_tokenized_stories = self.tokenize_stories(self.crawler.new_titles,
-                                                                                self.crawler.new_stories)
-
-            print('run text classification...')
-            self.text_clf.reset()
-            labels = self.text_clf.predict(new_tokenized_stories)
-            self.text_clf.save_to_dir(new_tokenized_stories, labels)
-
-            self.update_counter(labels)
-
-            print('run event detection...')
-            trending_titles, docs_trending = self.run_event_detection()
-            self.merge_trending(trending_titles, docs_trending)
-            self.get_original_titles()
-
-            print('remove duplicate stories...')
-            new_tokenized_titles, new_tokenized_stories, new_duplicate_stories = \
-                self.lsh.run(new_tokenized_titles, new_tokenized_stories)
-            if len(new_duplicate_stories) > 0:
-                self.update_duplicate_docs(new_duplicate_stories)
-                self.remove_duplicate_trending_docs()
-
-            json_trending = self.build_json_trending()
-            self.save_trending_to_mongo(json_trending)
-            self.save_trending_to_file()
-
-            print('summary stories...')
-            self.save_summary_to_mongo(new_tokenized_titles, new_tokenized_stories)
-
-            print('sleep in %d seconds...' % (TIME_TO_SLEEP))
-            time.sleep(TIME_TO_SLEEP)
 
 
     def update_duplicate_docs(self, new_duplicate_stories):

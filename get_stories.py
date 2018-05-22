@@ -22,6 +22,7 @@ class get_stories:
 
         collection = db.get_collection(config.MONGO_COLLECTION_ARTICLES)
         documents = collection.find({u'contentId' : {u'$gt' : self.contentId}})
+        # documents = collection.find({u'contentId' : {u'$eq' : 26108051}})
 
         del self.new_stories[:]
         del self.new_titles[:]
@@ -61,10 +62,12 @@ class get_stories:
             print(title)
         else:
             return u'', u''
+        tags = map(lambda x: x.strip(), json.loads(doc[u'tags'], encoding='utf-8'))
+        tags = u'[tags] : ' + u' , '.join(tags)
         description = doc[u'description'].strip()
         raw_body = json.loads(doc[u'body'], encoding='utf-8')
         body = self.get_body(raw_body)
-        story = u'\n'.join([title, description, body])
+        story = u'\n'.join([title, description, body, tags])
 
         if contentId > self.contentId:
             self.contentId = contentId

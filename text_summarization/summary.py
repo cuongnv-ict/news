@@ -39,17 +39,19 @@ class summary:
         return ratio
 
 
-    def get_description(self, content):
+    def get_des_and_remove_tags(self, content):
         sentences = content.split(u'\n')
         if len(sentences) < 3:
             return None, None
         des = sentences[1]
-        body = u'\n'.join(sentences[2:])
+        if u'[ tags ]' in sentences[len(sentences) - 1]:
+            body = u'\n'.join(sentences[2:len(sentences) - 1])
+        else: body = u'\n'.join(sentences[2:])
         return des, body
 
 
     def run(self, content=u''):
-        des, body = self.get_description(content)
+        des, body = self.get_des_and_remove_tags(content)
         if des == None or body == None:
             return {u'error' : u'story is too short'}
         data = des + u'\n' + body
