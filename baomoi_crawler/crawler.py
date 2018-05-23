@@ -132,7 +132,7 @@ class crawler:
         return u'\n'.join(article)
 
 
-    def remove_old_documents(self):
+    def clear(self):
         del self.new_stories[:]
         self.ids.clear()
 

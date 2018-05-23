@@ -55,7 +55,7 @@ class classification:
                 fw.write(unicode(list_document[i]))
 
 
-    def reset(self):
+    def clear(self):
         utils.delete_dir(self.result_dir)
 
 

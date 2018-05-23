@@ -47,7 +47,7 @@ class master:
                 continue
 
             print('run text classification...')
-            self.text_clf.reset()
+            self.text_clf.clear()
             labels = self.text_clf.predict(self.crawler.new_stories)
             self.text_clf.save_to_dir(self.crawler.new_stories, labels)
 
@@ -102,10 +102,10 @@ class master:
     def reset_all(self):
         print('reset all...')
         utils.delete_dir(self.trending_result_dir)
-        self.trending_titles = {}
-        self.docs_trending = {}
-        self.crawler.remove_old_documents()
-        self.text_clf.reset()
+        self.trending_titles.clear()
+        self.docs_trending.clear()
+        self.crawler.clear()
+        self.text_clf.clear()
         for domain in my_map.domain2label.keys():
             event = event_detection(domain, None, root_dir='event_detection')
             event.reset_all()
