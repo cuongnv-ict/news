@@ -63,7 +63,7 @@ class master:
                                                                                     self.crawler.new_stories)
 
                 print('run text classification...')
-                self.text_clf.reset()
+                self.text_clf.clear()
                 labels = self.text_clf.predict(new_tokenized_stories)
                 self.text_clf.save_to_dir(new_tokenized_stories, labels)
 
@@ -229,11 +229,11 @@ class master:
     def reset_all(self):
         print('reset all...')
         utils.delete_dir(self.trending_result_dir)
-        self.trending_titles = {}
-        self.docs_trending = {}
-        self.crawler.remove_old_documents()
+        self.trending_titles.clear()
+        self.docs_trending.clear()
+        self.crawler.clear()
         self.lsh.clear()
-        self.text_clf.reset()
+        self.text_clf.clear()
         self.titles.clear()
         self.duplicate_docs.clear()
         for domain in my_map.domain2label.keys():

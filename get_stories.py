@@ -95,7 +95,7 @@ class get_stories:
             return False
 
 
-    def remove_old_documents(self):
+    def clear(self):
         del self.new_stories[:]
         del self.new_titles[:]
         self.ids.clear()
