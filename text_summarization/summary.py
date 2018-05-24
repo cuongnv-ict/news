@@ -20,22 +20,22 @@ class summary:
     def get_ratio(self, btm, length, level=u'medium'):
         if level == u'medium':
             if length < btm.NUM_SEN_SHORT_TEXT:
-                ratio = 0.4
+                ratio = 0.45
             elif length > btm.NUM_SEN_LONG_TEXT:
                 ratio = 0.25
-            else: ratio = 0.3
+            else: ratio = 0.35
         elif level == u'short':
             if length < btm.NUM_SEN_SHORT_TEXT:
-                ratio = 0.35
+                ratio = 0.3
             elif length > btm.NUM_SEN_LONG_TEXT:
-                ratio = 0.2
+                ratio = 0.15
             else: ratio = 0.25
         else:
             if length < btm.NUM_SEN_SHORT_TEXT:
-                ratio = 0.5
+                ratio = 0.6
             elif length > btm.NUM_SEN_LONG_TEXT:
-                ratio = 0.3
-            else: ratio = 0.4
+                ratio = 0.4
+            else: ratio = 0.5
         return ratio
 
 
