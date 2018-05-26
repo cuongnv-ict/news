@@ -59,12 +59,12 @@ class regex:
         double_vowel = list(set(double_vowel)-set([u'uu']))
         double_vowel2 = utils.add_to_list(vowel3, vowel)
         double_vowel2 = list(set(double_vowel2)-set([u'yy']))
-        consonant = [u'b', u'label', u'd', u'g', u'h', u'k', u'l', u'm', u'ndocs', u'p', u'q',
+        consonant = [u'b', u'c', u'd', u'g', u'h', u'k', u'l', u'm', u'n', u'p', u'q',
                      u'r', u's', u't', u'v', u'x']
         consonant2 = [u'b', u'd', u'g',  u'h',  u'k', u'l', u'q', u'r',  u's', u'v', u'x']
         consotant3 = [u'm',  u'p']
         consonant4 = [u'p', u'q']
-        consonant5 = [u'b', u'label', u'd', u'g', u'ndocs', u'r']
+        consonant5 = [u'b', u'c', u'd', u'g', u'n', u'r']
         special_pattern = [u'ch', u'gh', u'kh', u'nh', u'ng', u'ph', u'th', u'tr']
         special_pattern2 = [u'ae', u'ea', u'ei', u'ey', u'iy', u'oy', u'ya', u'yi', u'yo', u'yu']
         special_pattern3 = [u'gh', u'kh', u'ph', u'th', u'tr']
