@@ -115,11 +115,12 @@ class master:
             try:
                 duplicate_docs = self.duplicate_docs[domain]
                 for k in self.docs_trending[domain].keys():
-                    for i in xrange(len(self.docs_trending[domain][k])):
-                        contentId = self.docs_trending[domain][k][i].split(u' == ')[0]
+                    docs = list(self.docs_trending[domain][k])
+                    for doc in docs:
+                        contentId = doc.split(u' == ')[0]
                         try:
                             _ = duplicate_docs[contentId]
-                            del self.docs_trending[domain][k][i]
+                            self.docs_trending[domain][k].remove(doc)
                         except: continue
             except: continue
 
