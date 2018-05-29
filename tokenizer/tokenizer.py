@@ -15,7 +15,7 @@ from vnspliter.sentence_spliter import SentenceSpliter
 
 
 class Tokenizer:
-    def __init__(self,run=True):
+    def __init__(self, run=True):
         self.re = regex()
         self.map = my_map()
         self.clf = None
@@ -27,7 +27,6 @@ class Tokenizer:
         self.max_length = None
         self.spliter = SentenceSpliter()
         if run: self.run()
-
 
 
     def load_vocab(self, vocab):
@@ -126,7 +125,7 @@ class Tokenizer:
                         map_index.update({index: i})
                         index += 1
                 i += 1
-            i += 2  # plus 2 for add '.\ndocs' to join sentence
+            i += 2  # plus 2 for add '.\n' to join sentence
         if len(X) > 0:
             label_predict = self.clf.predict(X)
             xxx += self.get_result(u'.\n'.join(sentences), label_predict, true_label, map_index)
@@ -295,7 +294,7 @@ class Tokenizer:
             prob = self.clf.predict_proba(X)
         else: # out of ambiguous
             res = [ambiguous_info[k][0] for k in xrange(len(ambiguous_info))]
-            return u'. '.join(res)
+            return u'\n'.join(res)
         for i, k in enumerate(ambiguous):
             words = ambiguous_info[k[1]][1]
             p1 = prob[i*2][1]; p2 = prob[i*2+1][1]
@@ -310,7 +309,7 @@ class Tokenizer:
         for k, v in ambiguous_info.items():
             v[0] = u' '.join(v[1])
         s = [x[0] for x in ambiguous_info.values()]
-        return u'. '.join(s)
+        return u'\n'.join(s)
 
 
     def process_ambiguous_ex(self, sentence, words, i, X):
