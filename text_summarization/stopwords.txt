@@ -200,3 +200,7 @@ kể_cả
 cho_là
 trước_kia
 tất_nhiên
+dù_sao
+bởi
+vì_thế
+sắp_tới
