@@ -11,7 +11,9 @@ import warnings
 class crawler:
     def __init__(self):
         self.ids = {}
+        self.contentId = 0
         self.new_stories = []
+        self.new_titles = []
         self.domain = 'http://baomoi.com'
         warnings.filterwarnings("ignore", category=UserWarning, module='bs4')
 
@@ -66,9 +68,10 @@ class crawler:
             doc_id = self.get_id(href)
             if '/c/' not in href or self.is_exist(doc_id):
                 continue
-            content = self.get_content(href)
+            title, content = self.get_content(href)
             if content.strip() == u'':
                 continue
+            self.new_titles.append(title)
             self.new_stories.append(content)
 
 
@@ -87,8 +90,8 @@ class crawler:
         bs = BeautifulSoup(source)
         if self.is_old_article(bs):
             return u''
-        content = self.get_content_baomoi(bs)
-        return content
+        title, content = self.get_content_baomoi(bs)
+        return title, content
 
 
     def is_old_article(self, bs):
@@ -115,7 +118,12 @@ class crawler:
     def get_content_baomoi(self, bs):
         article = []
         title = bs.find_all('h1', {'class' : 'article__header'})
-        article.append(u'\n'.join([t.text for t in title]).strip())
+        title = u'\n'.join([t.text for t in title]).strip()
+        if title != u'':
+            title = u' == '.join([unicode(self.contentId), title])
+            self.contentId += 1
+        else: return u'', u''
+        article.append(title)
         print('title: %s' % (article[0]))
         description = bs.find_all('div', {'class' : 'article__sapo'})
         article.append(u'\n'.join([t.text for t in description]).strip())
@@ -129,11 +137,13 @@ class crawler:
         tags = u'[tags] : ' + u' , '.join(tags)
         article.append(u'\n'.join([t.text for t in body]).strip())
         article.append(tags)
-        return u'\n'.join(article)
+        return title, u'\n'.join(article)
 
 
     def clear(self):
+        self.contentId = 0
         del self.new_stories[:]
+        del self.new_titles[:]
         self.ids.clear()
 
 

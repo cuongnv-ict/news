@@ -1,8 +1,8 @@
 # -*- encoding: utf-8 -*-
 
-import os
-from event_detection.detect_event import event_detection
+import os, sys, json
 from baomoi_crawler.crawler import crawler
+from event_detection.detect_event import event_detection
 from text_classification.classification import classification
 from text_classification import my_map, utils
 from collections import Counter
@@ -10,18 +10,22 @@ from multiprocessing import Process
 import time, datetime
 import warnings
 from sklearn.externals import joblib
+from nlp_tools import tokenizer
+from duplicate_documents.minhash_lsh import duplicate_docs as lsh
+import regex
 
 
 
 warnings.filterwarnings('ignore', category=UserWarning)
 
 TRENDING_MERGE_THRESHOLD = 0.0
-HOUR_TO_RESET = 0
-TIME_TO_SLEEP = 900
+HOUR_TO_RESET = 0  # reset at 3h AM
+TIME_TO_SLEEP = 300
 
 class master:
     def __init__(self):
         self.crawler = crawler()
+        self.lsh = lsh()
         self.text_clf = classification(root_dir='text_classification')
         self.text_clf.run()
         self.docs_trending = {}
@@ -32,34 +36,134 @@ class master:
         self.trending_result_dir = 'trending_result'
         self.trending_titles_file = os.path.join(self.trending_result_dir, 'trending_titles.pkl')
         self.docs_trending_file = os.path.join(self.trending_result_dir, 'docs_trending.pkl')
+        self.duplicate_docs = {}
+        self.titles = {}
+        self.re = regex.regex()
 
 
     def run(self):
         while(True):
-            if self.check_date() or self.first_run:
-                self.reset_all()
-                self.first_run = False
+            try:
+                if self.check_date() or self.first_run:
+                    self.reset_all()
+                    self.first_run = False
 
-            print('run crawler...')
-            self.crawler.run()
-            if len(self.crawler.new_stories) == 0:
+                print('run crawler...')
+                self.crawler.run()
+                if len(self.crawler.new_stories) == 0:
+                    time.sleep(TIME_TO_SLEEP)
+                    continue
+
+                print('tokenize new stories...')
+                new_tokenized_titles, new_tokenized_stories = self.tokenize_stories(self.crawler.new_titles,
+                                                                                    self.crawler.new_stories)
+
+                print('run text classification...')
+                self.text_clf.clear()
+                labels = self.text_clf.predict(new_tokenized_stories)
+                self.text_clf.save_to_dir(new_tokenized_stories, labels)
+
+                self.update_counter(labels)
+
+                print('run event detection...')
+                trending_titles, docs_trending = self.run_event_detection()
+                self.merge_trending(trending_titles, docs_trending)
+                self.get_original_titles()
+
+                print('remove duplicate stories...')
+                new_tokenized_titles, new_tokenized_stories, new_duplicate_stories = \
+                    self.lsh.run(new_tokenized_titles, new_tokenized_stories)
+                if len(new_duplicate_stories) > 0:
+                    self.update_duplicate_docs(new_duplicate_stories)
+                    self.remove_duplicate_trending_docs()
+
+                json_trending = self.build_json_trending()
+                self.save_trending_to_file()
+
+                print('sleep in %d seconds...' % (TIME_TO_SLEEP))
+                time.sleep(TIME_TO_SLEEP)
+            except:
                 time.sleep(TIME_TO_SLEEP)
                 continue
 
-            print('run text classification...')
-            self.text_clf.clear()
-            labels = self.text_clf.predict(self.crawler.new_stories)
-            self.text_clf.save_to_dir(self.crawler.new_stories, labels)
 
-            self.update_counter(labels)
+    def update_duplicate_docs(self, new_duplicate_stories):
+        new_duplicate_contents = []
+        new_duplicate_contentId = new_duplicate_stories.keys()
+        for contentId in new_duplicate_stories.keys():
+            new_duplicate_contents.append(new_duplicate_stories[contentId])
+        new_duplicate_labels = self.text_clf.predict(new_duplicate_contents)
+        for i in xrange(len(new_duplicate_labels)):
+            domain = my_map.label2domain[new_duplicate_labels[i]]
+            contentId = new_duplicate_contentId[i]
+            try:
+                self.duplicate_docs[domain].update({contentId : True})
+            except:
+                self.duplicate_docs.update({domain : {contentId : True}})
 
-            print('run event detection...')
-            trending_titles, docs_trending = self.run_event_detection()
-            self.merge_trending(trending_titles, docs_trending)
-            self.save_trending_to_file()
 
-            print('sleep in %s seconds...' % (TIME_TO_SLEEP))
-            time.sleep(TIME_TO_SLEEP)
+    def remove_duplicate_trending_docs(self):
+        for domain in self.docs_trending:
+            try:
+                duplicate_docs = self.duplicate_docs[domain]
+                for k in self.docs_trending[domain].keys():
+                    docs = list(self.docs_trending[domain][k])
+                    for doc in docs:
+                        contentId = doc.split(u' == ')[0]
+                        try:
+                            _ = duplicate_docs[contentId]
+                            self.docs_trending[domain][k].remove(doc)
+                        except: continue
+            except: continue
+
+
+
+    def tokenize_stories(self, titles, stories):
+        tokenized_titles = []
+        tokenized_stories = []
+        for i in xrange(len(stories)):
+            story = stories[i]
+            title = titles[i]
+
+            story = self.re.detect_url.sub(u'', story)
+
+            tokenized_story = tokenizer.predict(story)
+            tokenized_title = tokenized_story.split(u'\n')[0]
+
+            tokenized_stories.append(tokenized_story)
+            tokenized_titles.append(tokenized_title)
+
+            contentId = tokenized_title.split(u' == ')[0]
+
+            self.titles.update({contentId : title})
+
+            print '\rtokenized %d stories' % (i + 1),
+            sys.stdout.flush()
+        print('')
+        return tokenized_titles, tokenized_stories
+
+
+    def get_original_titles(self):
+        print('get original titles...')
+        for domain in self.trending_titles.keys():
+            for k in self.trending_titles[domain]:
+                try:
+                    tokenized_title = self.trending_titles[domain][k]
+                    contentId = tokenized_title.split(u' == ')[0]
+                    original_title = self.titles[contentId]
+                    self.trending_titles[domain][k] = original_title
+                    for i in xrange(len(self.docs_trending[domain][k])):
+                        try:
+                            tokenized_title = self.docs_trending[domain][k][i]
+                            contentId = tokenized_title.split(u' == ')[0]
+                            original_title = self.titles[contentId]
+                            self.docs_trending[domain][k][i] = original_title
+                        except:
+                            # print('tokenized_title error: %s' % (tokenized_title))
+                            continue
+                except:
+                    # print('tokenized_title error: %s' % (tokenized_title))
+                    continue
 
 
     def merge_trending(self, trending_titles, docs_trending):
@@ -68,14 +172,15 @@ class master:
             try:
                 for k1 in trending_titles[domain].keys():
                     for k2 in self.trending_titles[domain].keys():
-                        docs1 = set(docs_trending[domain][k1])
-                        docs2 = set(self.docs_trending[domain][k2])
+                        docs1 = [d.split(u' == ')[0] for d in docs_trending[domain][k1]]
+                        docs2 = [d.split(u' == ')[0] for d in self.docs_trending[domain][k2]]
                         similarity = self.get_similarity_score(docs1, docs2)
                         if similarity > TRENDING_MERGE_THRESHOLD:
                             print('[%s] Similarity = %.2f -- MERGE -- %s <==> %s' %
                                   (domain, similarity, trending_titles[domain][k1],
                                    self.trending_titles[domain][k2]))
-                            self.docs_trending[domain][k2] = list(docs1.union(docs2))
+                            # union
+                            self.union(self.docs_trending[domain][k2], docs_trending[domain][k1])
                             print ('Delete -- %s' % (trending_titles[domain][k1]))
                             del trending_titles[domain][k1]
                             del docs_trending[domain][k1]
@@ -93,6 +198,21 @@ class master:
                 self.docs_trending[domain].update({kk : docs_trending[domain][k]})
 
 
+    def union(self, doc1, doc2):
+        contentID = {}
+        for name in doc1:
+            name = name.split(u' == ')
+            contentID.update({name[0] : name[1]})
+        for name in doc2:
+            x = name.split(u' == ')
+            try:
+                _ = contentID[x[0]]
+                continue
+            except:
+                doc1.append(name)
+
+
+
     def update_counter(self, labels):
         c = Counter(labels)
         for l, ndoc in c.items():
@@ -105,7 +225,10 @@ class master:
         self.trending_titles.clear()
         self.docs_trending.clear()
         self.crawler.clear()
+        self.lsh.clear()
         self.text_clf.clear()
+        self.titles.clear()
+        self.duplicate_docs.clear()
         for domain in my_map.domain2label.keys():
             event = event_detection(domain, None, root_dir='event_detection')
             event.reset_all()
@@ -172,7 +295,40 @@ class master:
         joblib.dump(self.docs_trending, self.docs_trending_file, compress=True)
 
 
-    def get_similarity_score(self, set1, set2):
+    def build_trending_domain(self, trending_titles, docs_trending):
+        # build json content
+        trending = []
+        for k, title in trending_titles.items():
+            event = {}
+            docs = docs_trending[k]
+            event.update({u'event_name': title.split(u' == ')[1]})
+            sub_title = []
+            for name in docs:
+                name = name.split(u' == ')
+                sub_title.append({u'title': name[1], u'contentId' : int(name[0])})
+            # sub_title = [{u'title': name} for name in docs]
+            event.update({u'stories': sub_title})
+            trending.append(event)
+        return trending
+
+
+    def build_json_trending(self):
+        hot_events = []
+        for domain in self.trending_titles.keys():
+            json_content = {}
+            json_content.update({u'domain': domain, u'id': domain.replace(u' ', u'-').lower()})
+            trending_domain = self.build_trending_domain(self.trending_titles[domain],
+                                                         self.docs_trending[domain])
+            json_content.update({u'content': trending_domain})
+            hot_events.append(json_content)
+        hot_events = json.dumps(hot_events, ensure_ascii=False, encoding='utf-8')
+        json_trending = {u'hot_events' : hot_events, u'date' : self.date.strftime(u'%Y-%m-%d')}
+        return json_trending
+
+
+    def get_similarity_score(self, docs1, docs2):
+        set1 = set(docs1)
+        set2 = set(docs2)
         if len(set1) >= len(set2):
             m = float(len(set2))
         else:
