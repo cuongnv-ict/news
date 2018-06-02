@@ -86,10 +86,10 @@ class crawler:
             source = requests.get(url_href, timeout=(5, 30)).content
         except Exception as e:
             print(e.message)
-            return u''
+            return u'', u''
         bs = BeautifulSoup(source)
         if self.is_old_article(bs):
-            return u''
+            return u'', u''
         title, content = self.get_content_baomoi(bs)
         return title, content
 

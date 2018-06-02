@@ -20,7 +20,7 @@ warnings.filterwarnings('ignore', category=UserWarning)
 
 TRENDING_MERGE_THRESHOLD = 0.0
 HOUR_TO_RESET = 0  # reset at 3h AM
-TIME_TO_SLEEP = 300
+TIME_TO_SLEEP = 900
 
 class master:
     def __init__(self):
@@ -77,7 +77,6 @@ class master:
                     self.update_duplicate_docs(new_duplicate_stories)
                     self.remove_duplicate_trending_docs()
 
-                json_trending = self.build_json_trending()
                 self.save_trending_to_file()
 
                 print('sleep in %d seconds...' % (TIME_TO_SLEEP))
@@ -310,20 +309,6 @@ class master:
             event.update({u'stories': sub_title})
             trending.append(event)
         return trending
-
-
-    def build_json_trending(self):
-        hot_events = []
-        for domain in self.trending_titles.keys():
-            json_content = {}
-            json_content.update({u'domain': domain, u'id': domain.replace(u' ', u'-').lower()})
-            trending_domain = self.build_trending_domain(self.trending_titles[domain],
-                                                         self.docs_trending[domain])
-            json_content.update({u'content': trending_domain})
-            hot_events.append(json_content)
-        hot_events = json.dumps(hot_events, ensure_ascii=False, encoding='utf-8')
-        json_trending = {u'hot_events' : hot_events, u'date' : self.date.strftime(u'%Y-%m-%d')}
-        return json_trending
 
 
     def get_similarity_score(self, docs1, docs2):
