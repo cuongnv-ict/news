@@ -81,7 +81,7 @@ class summary:
 
 
     def get_summary(self, cosine_dis, ratio):
-        bounary = int(len(cosine_dis) * ratio)
+        bounary = int(round(len(cosine_dis) * ratio))
         docs_sorted = list(np.argsort(cosine_dis)[:bounary])
         result = filter(lambda i: cosine_dis[i] <= self.DISTANCE_THRESHOLD,
                         docs_sorted)
