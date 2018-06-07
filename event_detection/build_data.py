@@ -29,7 +29,6 @@ def build_vocab(dataset, output_vocab, root_dir, title_map):
     if len(contents) < 50:
         vectorizer.max_df = 1.0
     vectorizer.fit(contents)
-    vectorizer.stop_words_ = None
     with open(output_vocab, 'w', encoding='utf-8') as f:
         vocab = {w:i for i, w in enumerate(vectorizer.vocabulary_.keys())}
         f.write(u'\n'.join(vocab.keys()))

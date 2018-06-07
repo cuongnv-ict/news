@@ -18,5 +18,4 @@ SHINGLE_CONFIG = {
     'k': 1
 }
 
-
-TIME_TO_DELETE = 7 # time by day
+TIME_TO_DELETE = 2

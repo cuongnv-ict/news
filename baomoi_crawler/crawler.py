@@ -11,9 +11,7 @@ import warnings
 class crawler:
     def __init__(self):
         self.ids = {}
-        self.contentId = 0
         self.new_stories = []
-        self.new_titles = []
         self.domain = 'http://baomoi.com'
         warnings.filterwarnings("ignore", category=UserWarning, module='bs4')
 
@@ -68,10 +66,9 @@ class crawler:
             doc_id = self.get_id(href)
             if '/c/' not in href or self.is_exist(doc_id):
                 continue
-            title, content = self.get_content(href)
+            content = self.get_content(href)
             if content.strip() == u'':
                 continue
-            self.new_titles.append(title)
             self.new_stories.append(content)
 
 
@@ -86,12 +83,12 @@ class crawler:
             source = requests.get(url_href, timeout=(5, 30)).content
         except Exception as e:
             print(e.message)
-            return u'', u''
+            return u''
         bs = BeautifulSoup(source)
         if self.is_old_article(bs):
-            return u'', u''
-        title, content = self.get_content_baomoi(bs)
-        return title, content
+            return u''
+        content = self.get_content_baomoi(bs)
+        return content
 
 
     def is_old_article(self, bs):
@@ -118,12 +115,7 @@ class crawler:
     def get_content_baomoi(self, bs):
         article = []
         title = bs.find_all('h1', {'class' : 'article__header'})
-        title = u'\n'.join([t.text for t in title]).strip()
-        if title != u'':
-            title = u' == '.join([unicode(self.contentId), title])
-            self.contentId += 1
-        else: return u'', u''
-        article.append(title)
+        article.append(u'\n'.join([t.text for t in title]).strip())
         print('title: %s' % (article[0]))
         description = bs.find_all('div', {'class' : 'article__sapo'})
         article.append(u'\n'.join([t.text for t in description]).strip())
@@ -137,13 +129,11 @@ class crawler:
         tags = u'[tags] : ' + u' , '.join(tags)
         article.append(u'\n'.join([t.text for t in body]).strip())
         article.append(tags)
-        return title, u'\n'.join(article)
+        return u'\n'.join(article)
 
 
     def clear(self):
-        self.contentId = 0
         del self.new_stories[:]
-        del self.new_titles[:]
         self.ids.clear()
 
 
