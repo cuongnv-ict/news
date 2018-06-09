@@ -14,7 +14,7 @@ from nlp_tools import spliter
 class summary:
     def __init__(self, root_dir='.'):
         self.root_dir = root_dir
-        self.DISTANCE_THRESHOLD = 0.5
+        self.DISTANCE_THRESHOLD = 0.6
 
 
     def get_ratio(self, btm, length, level=u'medium'):
