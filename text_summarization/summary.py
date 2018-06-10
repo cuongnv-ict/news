@@ -41,31 +41,40 @@ class summary:
 
     def get_des_and_remove_tags(self, content):
         sentences = content.split(u'\n')
+
         if len(sentences) < 3:
             return None, None
+
         des = sentences[1]
         if u'[ tags ]' in sentences[len(sentences) - 1]:
             body = u'\n'.join(sentences[2:len(sentences) - 1])
         else: body = u'\n'.join(sentences[2:])
+
         return des, body
 
 
     def run(self, content=u''):
         des, body = self.get_des_and_remove_tags(content)
+
         if des == None or body == None:
             return {u'error' : u'story is too short'}
+
         data = des + u'\n' + body
         data = unicodedata.normalize('NFKC', data.strip())
+
         if len(data) == 0:
             return {u'error' : u'story is too short'}
 
         btm = biterm(num_iters=100, root_dir=self.root_dir)
         docs = btm.run_gibbs_sampling(data, save_result=False)
+
         if len(docs) == 0:
             return {u'error': u'story is too short'}
+
         topic_docs = np.array([d.topic_proportion for d in docs])
         btm.theta = np.array([btm.theta])
 
+        # cosine_distance = 1 - cosine_similarity
         cosine_dis = cosine_distances(topic_docs, btm.theta)
         cosine_dis = map(lambda x: x[0], cosine_dis)
 
@@ -77,6 +86,7 @@ class summary:
             summ = [docs[i].content for i in result]
             summ = u'\r\n'.join(summ).replace(u'_', u' ')
             summary_result.update({level : summ})
+
         return summary_result
 
 
