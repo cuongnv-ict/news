@@ -79,6 +79,8 @@ class get_stories:
         clean_body = []
         for content in raw_body:
             try:
+                if content[u'type'] != u'text':
+                    continue
                 clean_content = BeautifulSoup(content[u'content']).text.strip()
                 clean_body.append(clean_content)
             except:

@@ -15,7 +15,6 @@ import config
 from pymongo import MongoClient
 from duplicate_documents.minhash_lsh import duplicate_docs as lsh
 from text_summarization.summary import summary
-import regex
 
 
 
@@ -42,7 +41,6 @@ class master:
         self.docs_trending_file = os.path.join(self.trending_result_dir, 'docs_trending.pkl')
         self.duplicate_docs = {}
         self.titles = {}
-        self.re = regex.regex()
 
 
     def run(self):
@@ -132,8 +130,6 @@ class master:
         for i in xrange(len(stories)):
             story = stories[i]
             title = titles[i]
-
-            story = self.re.detect_url.sub(u'', story)
 
             tokenized_story = tokenizer.predict(story)
             tokenized_title = tokenized_story.split(u'\n')[0]
