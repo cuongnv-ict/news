@@ -91,13 +91,13 @@ class biterm:
     def set_num_topic(self, num_sen):
         if num_sen < self.NUM_SEN_SHORT_TEXT:
             self.K = 5
-            self.vectorizer.max_features = 100
+            self.vectorizer.max_features = 150
         elif num_sen >= self.NUM_SEN_LONG_TEXT:
             self.K = 15
-            self.vectorizer.max_features = 200
+            self.vectorizer.max_features = 300
         else:
             self.K = 10
-            self.vectorizer.max_features = 150
+            self.vectorizer.max_features = 200
 
 
     def get_sentences(self, data):
