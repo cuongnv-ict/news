@@ -1,10 +1,13 @@
 # -*- encoding: utf-8 -*-
 __author__ = 'nobita'
 
-
 from biterm_info import biterm_info
-from pyvi.pyvi import ViPosTagger
 from nlp_tools import spliter
+try:
+    from pyvi.pyvi import ViPosTagger
+except:
+    from pyvi import ViPosTagger
+
 
 
 class document:
