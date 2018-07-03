@@ -335,7 +335,7 @@ class master:
         # connect to mongodb
         connection = MongoClient(config.MONGO_HOST, config.MONGO_PORT)
         db = connection[config.MONGO_DB]
-        # db.authenticate(config.MONGO_USER, config.MONGO_PASS)
+        db.authenticate(config.MONGO_USER, config.MONGO_PASS)
         try:
             collection = db.get_collection(config.MONGO_COLLECTION_HOT_EVENTS)
         except:
@@ -352,7 +352,7 @@ class master:
         # connect to mongodb
         connection = MongoClient(config.MONGO_HOST, config.MONGO_PORT)
         db = connection[config.MONGO_DB]
-        # db.authenticate(config.MONGO_USER, config.MONGO_PASS)
+        db.authenticate(config.MONGO_USER, config.MONGO_PASS)
 
         try:
             collection = db.get_collection(config.MONGO_COLLECTION_SUMMRIES)
@@ -360,13 +360,13 @@ class master:
             collection = db.create_collection(config.MONGO_COLLECTION_SUMMRIES)
         begin_time = time.time()
         for i in xrange(len(new_tokenized_stories)):
-            summ = self.summary.run(new_tokenized_stories[i])
             tokenized_title = new_tokenized_titles[i].split(u' == ')
             contentId = tokenized_title[0]
             try:
                 title = self.titles[tokenized_title[0]].split(u' == ')[1]
             except:
                 title = tokenized_title[1].replace(u'_', u' ')
+            summ = self.summary.run(title=title, content=new_tokenized_stories[i])
             summary = {u'contentId' : int(contentId), u'title' : title, u'summaries' : summ}
             collection.insert_one(summary)
             print '\rsummaried %d stories' % (i+1),

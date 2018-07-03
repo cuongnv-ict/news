@@ -18,7 +18,7 @@ class get_stories:
         # connect to mongodb
         connection = MongoClient(config.MONGO_HOST, config.MONGO_PORT)
         db = connection[config.MONGO_DB]
-        # db.authenticate(config.MONGO_USER, config.MONGO_PASS)
+        db.authenticate(config.MONGO_USER, config.MONGO_PASS)
 
         collection = db.get_collection(config.MONGO_COLLECTION_ARTICLES)
         documents = collection.find({u'contentId' : {u'$gt' : self.contentId}})

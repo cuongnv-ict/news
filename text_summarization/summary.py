@@ -3,11 +3,12 @@ import unicodedata
 
 __author__ = 'nobita'
 
-
+from os import path
 from biterm_model import biterm
 from sklearn.metrics.pairwise import cosine_distances
 import numpy as np
 from nlp_tools import spliter
+import utils
 
 
 
@@ -15,6 +16,8 @@ class summary:
     def __init__(self, root_dir='.'):
         self.root_dir = root_dir
         self.DISTANCE_THRESHOLD = 0.5
+        self.skip_title = utils.load_data_to_list(path.join(root_dir, 'skip_title.txt'))
+        self.skip_content = utils.load_data_to_list(path.join(root_dir, 'skip_content.txt'))
 
 
     def get_ratio(self, btm, length, level=u'medium'):
@@ -52,8 +55,35 @@ class summary:
 
         return des, body
 
+    def is_skip(self, title, content):
+        try:
+            new_title = title.replace(u'_', u' ').lower()
+            new_content = content.replace(u'_', u' ').lower()
 
-    def run(self, content=u''):
+            term = new_title.split()[0]
+            try:
+                _ = int(term)
+                return True
+            except:
+                pass
+            for skip in self.skip_title:
+                if new_title.find(skip) != -1:
+                    return True
+
+            for skip in self.skip_content:
+                if new_content.find(skip) != -1:
+                    return True
+
+            return False
+        except:
+            return True
+
+
+    def run(self, title=u'', content=u''):
+        if self.is_skip(title, content):
+            print(u'Not summary doc: %s' % (title))
+            return {u'error' : u'Not support kind of this document'}
+
         des, body = self.get_des_and_remove_tags(content)
 
         if des == None or body == None:
@@ -65,7 +95,7 @@ class summary:
         if len(data) == 0:
             return {u'error' : u'story is too short'}
 
-        btm = biterm(num_iters=100, root_dir=self.root_dir)
+        btm = biterm(num_iters=50, root_dir=self.root_dir)
         docs = btm.run_gibbs_sampling(data, save_result=False)
 
         if len(docs) == 0:
