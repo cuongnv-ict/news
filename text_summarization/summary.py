@@ -60,12 +60,21 @@ class summary:
             new_title = title.replace(u'_', u' ').lower()
             new_content = content.replace(u'_', u' ').lower()
 
-            term = new_title.split()[0]
+            # check title has form: number + clause
+            # example: 7 sao Hoa ngữ là mẹ kế, cha dượng
+            words = new_title.split()[0]
             try:
-                _ = int(term)
+                _ = int(words[0])
                 return True
             except:
-                pass
+                # check title has form: top + number + clause
+                # example: Top 5 dấu ấn CĐV ấn tượng nhất World Cup 2018 hiện tại
+                if words[0] == u'top':
+                    try:
+                        _ = int(words[1])
+                        return True
+                    except: pass
+
             for skip in self.skip_title:
                 if new_title.find(skip) != -1:
                     return True

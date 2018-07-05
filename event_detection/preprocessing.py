@@ -2,6 +2,7 @@
 
 import os, utils
 from io import open
+import unicodedata
 from nlp_tools import tokenizer, spliter
 try:
     from pyvi.pyvi import ViPosTagger
