@@ -3,23 +3,19 @@ from bs4 import BeautifulSoup
 from pymongo import MongoClient
 from datetime import datetime
 import config
+from sklearn.externals import joblib
 
 
 
 class get_stories:
     def __init__(self):
-        self.contentId = 0
+        self.contentId = self.load_contentId()
         self.ids = {}
         self.new_stories = []
         self.new_titles = []
 
 
-    def run(self):
-        # connect to mongodb
-        connection = MongoClient(config.MONGO_HOST, config.MONGO_PORT)
-        db = connection[config.MONGO_DB]
-        db.authenticate(config.MONGO_USER, config.MONGO_PASS)
-
+    def run(self, db):
         collection = db.get_collection(config.MONGO_COLLECTION_ARTICLES)
         documents = collection.find({u'contentId' : {u'$gt' : self.contentId}})
         # documents = collection.find({u'contentId' : {u'$eq' : 26108051}})
@@ -36,9 +32,10 @@ class get_stories:
                 continue
             self.new_stories.append(story.strip())
             self.new_titles.append(title)
+
         print('There are %d new stories' % len(self.new_stories))
 
-        connection.close()
+        self.save_contentId()
 
 
     def check_date(self, raw_date):
@@ -101,6 +98,17 @@ class get_stories:
         del self.new_stories[:]
         del self.new_titles[:]
         self.ids.clear()
+
+
+    def save_contentId(self):
+        joblib.dump(self.contentId, 'contentId.pkl')
+
+
+    def load_contentId(self):
+        try:
+            contentId = joblib.load('contentId.pkl')
+            return contentId
+        except: return 0
 
 
 

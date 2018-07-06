@@ -8,3 +8,5 @@ MONGO_DB = 'dbMongo'
 MONGO_COLLECTION_ARTICLES = 'articles'
 MONGO_COLLECTION_HOT_EVENTS = 'hot_events'
 MONGO_COLLECTION_SUMMRIES = 'summaries'
+
+MONGO_COLLECTION_DONG_SEA = 'dong_sea_articles'

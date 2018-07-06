@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 __author__ = 'nobita'
 
-import os
+import os, shutil
 from io import open
-import numpy as np
+from pymongo import MongoClient
+
 
 
 # return list of string
@@ -64,6 +65,32 @@ def get_max(l):
 def vector_normarize(v):
     total = sum(v)
     return map(lambda x: float(x) / float(total), v)
+
+def delete_dir(dir):
+    ## Try to remove tree; if failed show an error using try...except on screen
+    try:
+        shutil.rmtree(dir)
+    except OSError, e:
+        print ("Warning: %s - %s." % (e.filename, e.strerror))
+
+
+def get_similarity_score(docs1, docs2):
+    set1 = set(docs1)
+    set2 = set(docs2)
+    if len(set1) >= len(set2):
+        m = float(len(set2))
+    else:
+        m = float(len(set1))
+    if m == 0: return 0.0
+    intersection = float(len(set1.intersection(set2)))
+    return intersection / m
+
+
+def connect2mongo(host, port, user, pwd, db_name):
+    connection = MongoClient(host, port)
+    db = connection[db_name]
+    db.authenticate(user, pwd)
+    return connection, db
 
 
 if __name__ == '__main__':

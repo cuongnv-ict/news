@@ -9,12 +9,12 @@ from collections import Counter
 from multiprocessing import Process
 import time, datetime
 import warnings
+import config, utils
 from sklearn.externals import joblib
 from nlp_tools import tokenizer
-import config
-from pymongo import MongoClient
 from duplicate_documents.minhash_lsh import duplicate_docs as lsh
 from text_summarization.summary import summary
+import get_Dong_sea_articles as dong_sea
 
 
 
@@ -50,12 +50,21 @@ class master:
                     self.reset_all()
                     self.first_run = False
 
+                print('connect to mongodb')
+                connection, db = utils.connect2mongo(config.MONGO_HOST, config.MONGO_PORT,
+                                                     config.MONGO_USER, config.MONGO_PASS,
+                                                     config.MONGO_DB)
+
                 print('run crawler...')
-                self.crawler.run()
+                self.crawler.run(db)
                 if len(self.crawler.new_stories) == 0:
                     time.sleep(TIME_TO_SLEEP)
                     continue
 
+
+                print('get articles talk about Dong sea')
+                dong_sea.get_articeles(db, self.crawler.new_titles, self.crawler.new_stories)
+                
                 print('tokenize new stories...')
                 new_tokenized_titles, new_tokenized_stories = self.tokenize_stories(self.crawler.new_titles,
                                                                                     self.crawler.new_stories)
@@ -80,15 +89,20 @@ class master:
                     self.remove_duplicate_trending_docs()
 
                 json_trending = self.build_json_trending()
-                self.save_trending_to_mongo(json_trending)
+                self.save_trending_to_mongo(db, json_trending)
                 self.save_trending_to_file()
 
                 print('summary stories...')
-                self.save_summary_to_mongo(new_tokenized_titles, new_tokenized_stories)
+                self.save_summary_to_mongo(db, new_tokenized_titles, new_tokenized_stories)
+
+                connection.close()
 
                 print('sleep in %d seconds...' % (TIME_TO_SLEEP))
                 time.sleep(TIME_TO_SLEEP)
             except:
+                try:
+                    connection.close()
+                except: pass
                 time.sleep(TIME_TO_SLEEP)
                 continue
 
@@ -121,7 +135,6 @@ class master:
                             self.docs_trending[domain][k].remove(doc)
                         except: continue
             except: continue
-
 
 
     def tokenize_stories(self, titles, stories):
@@ -178,7 +191,7 @@ class master:
                     for k2 in self.trending_titles[domain].keys():
                         docs1 = [d.split(u' == ')[0] for d in docs_trending[domain][k1]]
                         docs2 = [d.split(u' == ')[0] for d in self.docs_trending[domain][k2]]
-                        similarity = self.get_similarity_score(docs1, docs2)
+                        similarity = utils.get_similarity_score(docs1, docs2)
                         if similarity > TRENDING_MERGE_THRESHOLD:
                             print('[%s] Similarity = %.2f -- MERGE -- %s <==> %s' %
                                   (domain, similarity, trending_titles[domain][k1],
@@ -330,12 +343,8 @@ class master:
         return json_trending
 
 
-    def save_trending_to_mongo(self, json_trending):
+    def save_trending_to_mongo(self, db, json_trending):
         print('save trending to mongodb...')
-        # connect to mongodb
-        connection = MongoClient(config.MONGO_HOST, config.MONGO_PORT)
-        db = connection[config.MONGO_DB]
-        db.authenticate(config.MONGO_USER, config.MONGO_PASS)
         try:
             collection = db.get_collection(config.MONGO_COLLECTION_HOT_EVENTS)
         except:
@@ -344,20 +353,16 @@ class master:
         for doc in documents:
             collection.remove(doc[u'_id'])
         collection.insert_one(json_trending)
-        connection.close()
 
 
-    def save_summary_to_mongo(self, new_tokenized_titles, new_tokenized_stories):
+    def save_summary_to_mongo(self, db, new_tokenized_titles, new_tokenized_stories):
         print('save summary to mongodb...')
-        # connect to mongodb
-        connection = MongoClient(config.MONGO_HOST, config.MONGO_PORT)
-        db = connection[config.MONGO_DB]
-        db.authenticate(config.MONGO_USER, config.MONGO_PASS)
 
         try:
             collection = db.get_collection(config.MONGO_COLLECTION_SUMMRIES)
         except:
             collection = db.create_collection(config.MONGO_COLLECTION_SUMMRIES)
+
         begin_time = time.time()
         for i in xrange(len(new_tokenized_stories)):
             tokenized_title = new_tokenized_titles[i].split(u' == ')
@@ -374,19 +379,7 @@ class master:
         end_time = time.time()
         print('')
         print ('time to summary = %.2f minutes' % (float(end_time - begin_time) / float(60)))
-        connection.close()
 
-
-    def get_similarity_score(self, docs1, docs2):
-        set1 = set(docs1)
-        set2 = set(docs2)
-        if len(set1) >= len(set2):
-            m = float(len(set2))
-        else:
-            m = float(len(set1))
-        if m == 0: return 0.0
-        intersection = float(len(set1.intersection(set2)))
-        return intersection / m
 
 
 
