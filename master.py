@@ -50,7 +50,7 @@ class master:
                     self.reset_all()
                     self.first_run = False
 
-                print('connect to mongodb')
+                print('connect to mongodb...')
                 connection, db = utils.connect2mongo(config.MONGO_HOST, config.MONGO_PORT,
                                                      config.MONGO_USER, config.MONGO_PASS,
                                                      config.MONGO_DB)
@@ -62,9 +62,9 @@ class master:
                     continue
 
 
-                print('get articles talk about Dong sea')
+                print('get articles talk about Dong sea...')
                 dong_sea.get_articeles(db, self.crawler.new_titles, self.crawler.new_stories)
-                
+
                 print('tokenize new stories...')
                 new_tokenized_titles, new_tokenized_stories = self.tokenize_stories(self.crawler.new_titles,
                                                                                     self.crawler.new_stories)
