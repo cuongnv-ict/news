@@ -1,3 +1,6 @@
+import datetime
+
+
 LSH_CONFIG = {
     'num_permutation': 150,
     'b': 30,
@@ -11,7 +14,7 @@ LSH_CONFIG = {
 
 MINHASH_CONFIG = {
     'num_permutation': 150,
-    'seed': 10
+    'seed': datetime.datetime.now().microsecond
 }
 
 SHINGLE_CONFIG = {
