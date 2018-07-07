@@ -1,6 +1,5 @@
 import json
 from bs4 import BeautifulSoup
-from pymongo import MongoClient
 from datetime import datetime
 import config
 from sklearn.externals import joblib

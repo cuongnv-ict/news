@@ -61,10 +61,6 @@ class master:
                     time.sleep(TIME_TO_SLEEP)
                     continue
 
-
-                print('get articles talk about Dong sea...')
-                dong_sea.get_articeles(db, self.crawler.new_titles, self.crawler.new_stories)
-
                 print('tokenize new stories...')
                 new_tokenized_titles, new_tokenized_stories = self.tokenize_stories(self.crawler.new_titles,
                                                                                     self.crawler.new_stories)
@@ -94,6 +90,9 @@ class master:
 
                 print('summary stories...')
                 self.save_summary_to_mongo(db, new_tokenized_titles, new_tokenized_stories)
+
+                print('get articles talk about Dong sea...')
+                dong_sea.get_articles(db, new_tokenized_titles, new_tokenized_stories, self.titles)
 
                 connection.close()
 
@@ -227,7 +226,6 @@ class master:
                 continue
             except:
                 doc1.append(name)
-
 
 
     def update_counter(self, labels):
