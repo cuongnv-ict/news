@@ -3,14 +3,13 @@
 import config
 
 
-skip_titles = [u'dự báo thời tiết']
+forecast_weather_titles = [u'dự báo thời tiết']
 
-skip_contents = [u'Trung tâm Dự báo Khí tượng Thủy văn Quốc gia',
-                 u'Trung tâm Dự báo Khí tượng Thủy văn Trung ương',
-                 u'Trung tâm DBKTTV TƯ', u'TT DBKTTV TƯ']
+forecast_weather_contents = [u'trung tâm ựd báo khí tượng thủy văn quốc gia',
+                 u'trung tâm dự báo khí tượng thủy văn trung ương',
+                 u'trung tâm dbkttv tư', u'tt dbkttv tư']
 
-keywords = [u'biển đông', u'trường sa', u'hoàng sa',
-           u'quần đảo trường sa', u'quần đảo hoàng sa']
+keywords = [u'biển đông']
 
 
 def parser_title(raw_title):
@@ -41,11 +40,14 @@ def is_Dong_sea_article(tags):
 
 
 def is_weather_forecast(title, content):
-    for t in skip_titles:
+    title = title.lower()
+    content = content.lower()
+
+    for t in forecast_weather_titles:
         if title.find(t) != -1:
             return True
 
-    for c in skip_contents:
+    for c in forecast_weather_contents:
         if content.find(c) != -1:
             return True
 
