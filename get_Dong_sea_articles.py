@@ -5,9 +5,14 @@ import config
 
 forecast_weather_titles = [u'dự báo thời tiết']
 
-forecast_weather_contents = [u'trung tâm ựd báo khí tượng thủy văn quốc gia',
-                 u'trung tâm dự báo khí tượng thủy văn trung ương',
-                 u'trung tâm dbkttv tư', u'tt dbkttv tư']
+forecast_weather_contents = [u'trung tâm dự báo khí tượng thủy văn',
+                             u'trung tâm khí tượng thủy văn quốc gia',
+                             u'trung tâm khí tượng thủy văn trung ương',
+                             u'trung tâm dự báo khí tượng thủy văn quốc gia',
+                             u'trung tâm dự báo khí tượng thủy văn trung ương',
+                             u'trung tâm dbkttv tư', u'tt dbkttv tư',
+                             u'bão', u'áp thấp', u'lũ', u'lốc',
+                             u'sạt lở đất', u'rét', u'thiên tai']
 
 keywords = [u'biển đông']
 
