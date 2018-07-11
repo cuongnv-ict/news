@@ -10,7 +10,7 @@ from sklearn.cluster import DBSCAN
 
 
 MIN_DOCS = 6
-MIN_TRENDING_DOCS = 20
+MIN_TRENDING_DOCS = 12
 
 class event_detection:
     def __init__(self, domain, dataset, root_dir='.'):
