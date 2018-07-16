@@ -94,8 +94,8 @@ class master:
 
                 print('sleep in %d seconds...' % (TIME_TO_SLEEP))
                 time.sleep(TIME_TO_SLEEP)
-            except Exception as e:
-                print(e.message)
+            except:
+                print(u'Exception occured in master module')
                 try:
                     connection.close()
                 except: pass
@@ -267,16 +267,18 @@ class master:
         trending_titles = {}
         domains = []; events = {}
         for domain in self.counter.keys():
-            ndocs = self.counter[domain]
-            x = articles_category[domain]
-            event = self.config_event_detection(domain, articles_category[domain], ndocs)
-            if event == None:
+            try:
+                ndocs = self.counter[domain]
+                event = self.config_event_detection(domain, articles_category[domain], ndocs)
+                if event == None:
+                    continue
+                events.update({domain : event})
+                handle = Process(target=events[domain].run, kwargs={'save2file':True})
+                handle.start()
+                handles.append(handle)
+                domains.append(domain)
+            except:
                 continue
-            events.update({domain : event})
-            handle = Process(target=events[domain].run, kwargs={'save2file':True})
-            handle.start()
-            handles.append(handle)
-            domains.append(domain)
         for i in xrange(len(handles)):
             handles[i].join()
         print('All process have finished')
