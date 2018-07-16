@@ -94,7 +94,8 @@ class master:
 
                 print('sleep in %d seconds...' % (TIME_TO_SLEEP))
                 time.sleep(TIME_TO_SLEEP)
-            except:
+            except Exception as e:
+                print(e.message)
                 try:
                     connection.close()
                 except: pass
