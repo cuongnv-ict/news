@@ -12,25 +12,27 @@ class get_stories:
         self.ids = {}
         self.new_stories = []
         self.new_titles = []
+        self.new_categories = []
 
 
     def run(self, db):
         collection = db.get_collection(config.MONGO_COLLECTION_ARTICLES)
         documents = collection.find({u'contentId' : {u'$gt' : self.contentId}})
-        # documents = collection.find({u'contentId' : {u'$eq' : 26108051}})
 
         del self.new_stories[:]
         del self.new_titles[:]
+        del self.new_categories[:]
 
         for doc in documents:
             date = doc[u'date']
             if self.check_date(date):
                 continue
-            title, story = self.get_content(doc)
+            title, story, category = self.get_content(doc)
             if story == u'' or title == u'':
                 continue
             self.new_stories.append(story.strip())
             self.new_titles.append(title)
+            self.new_categories.append(category.lower())
 
         print('There are %d new stories' % len(self.new_stories))
 
@@ -50,14 +52,14 @@ class get_stories:
     def get_content(self, doc):
         doc_id = doc[u'_id']
         if self.is_exist(doc_id):
-            return u'', u''
+            return u'', u'', u''
         contentId = doc[u'contentId']
         title = doc[u'title'].strip()
         if title != u'':
             title = u' == '.join([unicode(contentId), title])
             print(title)
         else:
-            return u'', u''
+            return u'', u'', u''
         tags = map(lambda x: x.strip(), json.loads(doc[u'tags'], encoding='utf-8'))
         tags = u'[tags] : ' + u' , '.join(tags)
         description = doc[u'description'].strip()
@@ -68,7 +70,9 @@ class get_stories:
         if contentId > self.contentId:
             self.contentId = contentId
 
-        return title, story
+        category = doc[u'parentCategoryName'].strip().lower()
+
+        return title, story, category
 
 
     def get_body(self, raw_body):
@@ -96,6 +100,7 @@ class get_stories:
     def clear(self):
         del self.new_stories[:]
         del self.new_titles[:]
+        del self.new_categories[:]
         self.ids.clear()
 
 

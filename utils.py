@@ -3,6 +3,7 @@ __author__ = 'nobita'
 
 import os, shutil
 from io import open
+import random, string
 from pymongo import MongoClient
 
 
@@ -84,6 +85,10 @@ def get_similarity_score(docs1, docs2):
     if m == 0: return 0.0
     intersection = float(len(set1.intersection(set2)))
     return intersection / m
+
+
+def id_generator(size=10, chars=string.ascii_letters + string.digits):
+    return ''.join(random.choice(chars) for _ in range(size))
 
 
 def connect2mongo(host, port, user, pwd, db_name):

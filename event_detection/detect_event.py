@@ -45,12 +45,11 @@ class event_detection:
 
 
     def prepare_data(self):
-        # prepare LDA dataset
         title_map = self.load_title_map()
         if title_map == None:
             title_map = {}
-        build_data.update_title_map(self.dataset, title_map)
-        preprocessing.remove_stop_postag(self.dataset, self.clean_dataset_dir)
+        names = build_data.update_title_map(self.dataset, title_map)
+        preprocessing.remove_stop_postag(self.dataset, self.clean_dataset_dir, names)
         vectorizer, contents, titles = build_data.build_vocab(self.clean_dataset_dir,
                                                               self.vocab_file,
                                                               self.root_dir, title_map)
@@ -99,6 +98,7 @@ class event_detection:
     def run(self, save2file=False):
         utils.mkdir(self.root_output_dir)
         utils.mkdir(self.domain_output_dir)
+
         titles, X = self.prepare_data()
 
         clustering = DBSCAN(eps=0.4, min_samples=3, metric='cosine')

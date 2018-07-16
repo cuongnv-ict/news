@@ -1,7 +1,6 @@
 # -*- encoding: utf-8 -*-
 
 from io import open
-import unicodedata
 from sklearn.feature_extraction.text import TfidfVectorizer
 import utils
 import os
@@ -37,18 +36,13 @@ def build_vocab(dataset, output_vocab, root_dir, title_map):
 
 
 def update_title_map(dataset, title_map):
-    stack = os.listdir(dataset)
-    while (len(stack) > 0):
-        file_name = stack.pop()
-        file_path = os.path.join(dataset, file_name)
-        if (os.path.isdir(file_path)):  # neu la thu muc thi day vao strong stack
-            utils.push_data_to_stack(stack, file_path, file_name)
-        else:
-            with open(file_path, 'r', encoding='utf-8') as f:
-                data = unicodedata.normalize('NFKC', f.read().strip())
-                title = data.lower().split(u'\n')[0]
-                base = os.path.basename(file_name)
-                title_map.update({base : title})
+    names = []
+    for data in dataset:
+        name = utils.id_generator()
+        title = data.strip().lower().split(u'\n')[0]
+        title_map.update({name : title})
+        names.append(name)
+    return names
 
 
 def save_titles_to_file(titles, output_dir, output_file):

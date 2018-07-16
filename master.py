@@ -3,8 +3,6 @@
 import os, sys, json
 from event_detection.detect_event import event_detection
 from get_stories import get_stories
-from text_classification.classification import classification
-from text_classification import my_map, utils
 from collections import Counter
 from multiprocessing import Process
 import time, datetime
@@ -28,14 +26,12 @@ class master:
     def __init__(self):
         self.crawler = get_stories()
         self.lsh = lsh()
-        self.text_clf = classification(root_dir='text_classification')
-        self.text_clf.run()
         self.summary = summary(root_dir='text_summarization')
         self.docs_trending = {}
         self.trending_titles = {}
         self.date = datetime.datetime.now().date()
         self.first_run = True
-        self.counter = {label:0 for label in my_map.label2domain.keys()}
+        self.counter = {domain.lower() : 0 for domain in config.categories}
         self.trending_result_dir = 'trending_result'
         self.trending_titles_file = os.path.join(self.trending_result_dir, 'trending_titles.pkl')
         self.docs_trending_file = os.path.join(self.trending_result_dir, 'docs_trending.pkl')
@@ -65,23 +61,21 @@ class master:
                 new_tokenized_titles, new_tokenized_stories = self.tokenize_stories(self.crawler.new_titles,
                                                                                     self.crawler.new_stories)
 
-                print('run text classification...')
-                self.text_clf.clear()
-                labels = self.text_clf.predict(new_tokenized_stories)
-                self.text_clf.save_to_dir(new_tokenized_stories, labels)
+                articles_category = self.get_article_by_category(new_tokenized_stories,
+                                                                 self.crawler.new_categories)
 
-                self.update_counter(labels)
+                self.update_counter(self.crawler.new_categories)
 
                 print('run event detection...')
-                trending_titles, docs_trending = self.run_event_detection()
+                trending_titles, docs_trending = self.run_event_detection(articles_category)
                 self.merge_trending(trending_titles, docs_trending)
                 self.get_original_titles()
 
                 print('remove duplicate stories...')
-                new_tokenized_titles, new_tokenized_stories, new_duplicate_stories = \
-                    self.lsh.run(new_tokenized_titles, new_tokenized_stories)
-                if len(new_duplicate_stories) > 0:
-                    self.update_duplicate_docs(new_duplicate_stories)
+                new_tokenized_titles_clean, new_tokenized_stories_clean, new_duplicate_categories = \
+                    self.lsh.run(new_tokenized_titles, new_tokenized_stories, self.crawler.new_categories)
+                if len(new_duplicate_categories) > 0:
+                    self.update_duplicate_docs(new_duplicate_categories)
                     self.remove_duplicate_trending_docs()
 
                 json_trending = self.build_json_trending()
@@ -89,10 +83,12 @@ class master:
                 self.save_trending_to_file()
 
                 print('summary stories...')
-                self.save_summary_to_mongo(db, new_tokenized_titles, new_tokenized_stories)
+                self.save_summary_to_mongo(db, new_tokenized_titles_clean,
+                                           new_tokenized_stories_clean)
 
                 print('get articles talk about Dong sea...')
-                dong_sea.get_articles(db, new_tokenized_titles, new_tokenized_stories, self.titles)
+                dong_sea.get_articles(db, new_tokenized_titles_clean,
+                                      new_tokenized_stories_clean, self.titles)
 
                 connection.close()
 
@@ -106,15 +102,18 @@ class master:
                 continue
 
 
-    def update_duplicate_docs(self, new_duplicate_stories):
-        new_duplicate_contents = []
-        new_duplicate_contentId = new_duplicate_stories.keys()
-        for contentId in new_duplicate_stories.keys():
-            new_duplicate_contents.append(new_duplicate_stories[contentId])
-        new_duplicate_labels = self.text_clf.predict(new_duplicate_contents)
-        for i in xrange(len(new_duplicate_labels)):
-            domain = my_map.label2domain[new_duplicate_labels[i]]
-            contentId = new_duplicate_contentId[i]
+    def get_article_by_category(self, new_tokenized_stories, categories):
+        articles = {}
+        for i in xrange(len(categories)):
+            try:
+                articles[categories[i].lower()].append(new_tokenized_stories[i])
+            except:
+                articles.update({categories[i].lower() : [new_tokenized_stories[i]]})
+        return articles
+
+
+    def update_duplicate_docs(self, new_duplicate_categories):
+        for contentId, domain in new_duplicate_categories.items():
             try:
                 self.duplicate_docs[domain].update({contentId : True})
             except:
@@ -175,10 +174,8 @@ class master:
                             original_title = self.titles[contentId]
                             self.docs_trending[domain][k][i] = original_title
                         except:
-                            # print('tokenized_title error: %s' % (tokenized_title))
                             continue
                 except:
-                    # print('tokenized_title error: %s' % (tokenized_title))
                     continue
 
 
@@ -231,7 +228,10 @@ class master:
     def update_counter(self, labels):
         c = Counter(labels)
         for l, ndoc in c.items():
-            self.counter[l] += ndoc
+            try:
+                self.counter[l] += ndoc
+            except Exception as e:
+                print(u'Exception in update_counter. %s is not in self.counter' % (e.message))
 
 
     def reset_all(self):
@@ -241,17 +241,16 @@ class master:
         self.docs_trending.clear()
         self.crawler.clear()
         self.lsh.clear()
-        self.text_clf.clear()
         self.titles.clear()
         self.duplicate_docs.clear()
-        for domain in my_map.domain2label.keys():
+        for domain in config.categories:
             event = event_detection(domain, None, root_dir='event_detection')
             event.reset_all()
         for l in self.counter.keys():
             self.counter[l] = 0
 
 
-    # reset all if it is either the first run or at 3h AM on next day
+    # reset all if it is either the first run or at 00:00 on next day
     def check_date(self):
         present = datetime.datetime.now()
         diff = present.date() - self.date
@@ -261,16 +260,15 @@ class master:
         return False
 
 
-    def run_event_detection(self):
+    def run_event_detection(self, articles_category):
         handles = []
         docs_trending = {}
         trending_titles = {}
         domains = []; events = {}
-        for i, label in enumerate(self.counter.keys()):
-            # if label != 0: continue # Chinh tri Xa hoi
-            domain = my_map.label2domain[label]
-            ndocs = self.counter[label]
-            event = self.config_event_detection(domain, ndocs)
+        for domain in self.counter.keys():
+            ndocs = self.counter[domain]
+            x = articles_category[domain]
+            event = self.config_event_detection(domain, articles_category[domain], ndocs)
             if event == None:
                 continue
             events.update({domain : event})
@@ -285,11 +283,10 @@ class master:
         return trending_titles, docs_trending
 
 
-    def config_event_detection(self, domain, ndocs):
+    def config_event_detection(self, domain, dataset, ndocs):
         if ndocs < 10:
             return None
-        event = event_detection(domain,
-                                os.path.join(self.text_clf.result_dir, domain),
+        event = event_detection(domain, dataset,
                                 root_dir='event_detection')
         return event
 
