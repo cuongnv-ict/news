@@ -2,8 +2,8 @@ import datetime
 
 
 LSH_CONFIG = {
-    'num_permutation': 300,
-    'b': 60,
+    'num_permutation': 500,
+    'b': 100,
     'r': 5,
     'storage':{
         'type': 'redis',
@@ -13,7 +13,7 @@ LSH_CONFIG = {
 }
 
 MINHASH_CONFIG = {
-    'num_permutation': 300,
+    'num_permutation': 500,
     'seed': datetime.datetime.now().microsecond
 }
 
