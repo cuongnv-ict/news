@@ -9,7 +9,7 @@ LSH_CONFIG = {
         'type': 'redis',
         'redis': {'host': 'localhost', 'port': 6379}
    },
-    'similarity_threshold': 0.6
+    'similarity_threshold': 0.5
 }
 
 MINHASH_CONFIG = {
