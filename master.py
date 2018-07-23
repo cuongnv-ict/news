@@ -316,6 +316,8 @@ class master:
         for k, title in trending_titles.items():
             event = {}
             docs = docs_trending[k]
+            if len(docs) == 0:
+                continue
             event.update({u'event_name': title.split(u' == ')[1]})
             sub_title = []
             for name in docs:
