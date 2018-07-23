@@ -133,6 +133,9 @@ class master:
                             _ = duplicate_docs[contentId]
                             self.docs_trending[domain][k].remove(doc)
                         except: continue
+                    if len(self.docs_trending[domain][k]) == 0:
+                        del self.docs_trending[domain][k]
+                        del self.trending_titles[domain][k]
             except: continue
 
 
@@ -202,25 +205,26 @@ class master:
             except:
                 self.trending_titles.update({domain : {}})
                 self.docs_trending.update({domain : {}})
-                for i, k in enumerate(trending_titles[domain].keys()):
-                    self.trending_titles[domain].update({i : trending_titles[domain][k]})
-                    self.docs_trending[domain].update({i : docs_trending[domain][k]})
+                for k in trending_titles[domain].keys():
+                    id = utils.id_generator()
+                    self.trending_titles[domain].update({id : trending_titles[domain][k]})
+                    self.docs_trending[domain].update({id : docs_trending[domain][k]})
                 continue
             for k in trending_titles[domain].keys():
-                kk = len(self.trending_titles[domain])
-                self.trending_titles[domain].update({kk : trending_titles[domain][k]})
-                self.docs_trending[domain].update({kk : docs_trending[domain][k]})
+                id = utils.id_generator()
+                self.trending_titles[domain].update({id : trending_titles[domain][k]})
+                self.docs_trending[domain].update({id : docs_trending[domain][k]})
 
 
     def union(self, doc1, doc2):
-        contentID = {}
+        contentId = {}
         for name in doc1:
             name = name.split(u' == ')
-            contentID.update({name[0] : name[1]})
+            contentId.update({name[0] : name[1]})
         for name in doc2:
             x = name.split(u' == ')
             try:
-                _ = contentID[x[0]]
+                _ = contentId[x[0]]
                 continue
             except:
                 doc1.append(name)
@@ -316,8 +320,6 @@ class master:
         for k, title in trending_titles.items():
             event = {}
             docs = docs_trending[k]
-            if len(docs) == 0:
-                continue
             event.update({u'event_name': title.split(u' == ')[1]})
             sub_title = []
             for name in docs:
