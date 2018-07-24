@@ -13,6 +13,7 @@ from nlp_tools import tokenizer
 from duplicate_documents.minhash_lsh import duplicate_docs as lsh
 from text_summarization.summary import summary
 import get_Dong_sea_articles as dong_sea
+import copy
 
 
 
@@ -76,11 +77,11 @@ class master:
                     self.lsh.run(new_tokenized_titles, new_tokenized_stories, self.crawler.new_categories)
                 if len(new_duplicate_categories) > 0:
                     self.update_duplicate_docs(new_duplicate_categories)
-                    self.remove_duplicate_trending_docs()
+                trending_titles, docs_trending = self.remove_duplicate_trending_docs()
 
-                json_trending = self.build_json_trending()
+                json_trending = self.build_json_trending(trending_titles, docs_trending)
                 self.save_trending_to_mongo(db, json_trending)
-                self.save_trending_to_file()
+                self.save_trending_to_file(trending_titles, docs_trending)
 
                 print('summary stories...')
                 self.save_summary_to_mongo(db, new_tokenized_titles_clean,
@@ -122,21 +123,24 @@ class master:
 
 
     def remove_duplicate_trending_docs(self):
-        for domain in self.docs_trending:
+        trending_titles = copy.deepcopy(self.trending_titles)
+        docs_trending = copy.deepcopy(self.docs_trending)
+        for domain in docs_trending:
             try:
                 duplicate_docs = self.duplicate_docs[domain]
-                for k in self.docs_trending[domain].keys():
-                    docs = list(self.docs_trending[domain][k])
+                for k in docs_trending[domain].keys():
+                    docs = list(docs_trending[domain][k])
                     for doc in docs:
                         contentId = doc.split(u' == ')[0]
                         try:
                             _ = duplicate_docs[contentId]
-                            self.docs_trending[domain][k].remove(doc)
+                            docs_trending[domain][k].remove(doc)
                         except: continue
-                    if len(self.docs_trending[domain][k]) == 0:
-                        del self.docs_trending[domain][k]
-                        del self.trending_titles[domain][k]
+                    if len(docs_trending[domain][k]) == 0:
+                        del docs_trending[domain][k]
+                        del trending_titles[domain][k]
             except: continue
+        return trending_titles, docs_trending
 
 
     def tokenize_stories(self, titles, stories):
@@ -308,10 +312,10 @@ class master:
             except: continue
 
 
-    def save_trending_to_file(self):
+    def save_trending_to_file(self, trending_titles, docs_trending):
         utils.mkdir(self.trending_result_dir)
-        joblib.dump(self.trending_titles, self.trending_titles_file, compress=True)
-        joblib.dump(self.docs_trending, self.docs_trending_file, compress=True)
+        joblib.dump(trending_titles, self.trending_titles_file, compress=True)
+        joblib.dump(docs_trending, self.docs_trending_file, compress=True)
 
 
     def build_trending_domain(self, trending_titles, docs_trending):
@@ -331,13 +335,13 @@ class master:
         return trending
 
 
-    def build_json_trending(self):
+    def build_json_trending(self, trending_titles, docs_trending):
         hot_events = []
-        for domain in self.trending_titles.keys():
+        for domain in trending_titles.keys():
             json_content = {}
             json_content.update({u'domain': domain, u'id': domain.replace(u' ', u'-').lower()})
-            trending_domain = self.build_trending_domain(self.trending_titles[domain],
-                                                         self.docs_trending[domain])
+            trending_domain = self.build_trending_domain(trending_titles[domain],
+                                                         docs_trending[domain])
             json_content.update({u'content': trending_domain})
             hot_events.append(json_content)
         hot_events = json.dumps(hot_events, ensure_ascii=False, encoding='utf-8')
