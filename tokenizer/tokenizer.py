@@ -15,7 +15,7 @@ from vnspliter.sentence_spliter import SentenceSpliter
 
 
 class Tokenizer:
-    def __init__(self, run=True):
+    def __init__(self):
         self.re = regex()
         self.map = my_map()
         self.clf = None
@@ -26,7 +26,7 @@ class Tokenizer:
         self.vocab = None
         self.max_length = None
         self.spliter = SentenceSpliter()
-        if run: self.run()
+        Tokenizer.run(self)
 
 
     def load_vocab(self, vocab):
@@ -321,6 +321,7 @@ class Tokenizer:
         X.append(v2)
 
 
+    @staticmethod
     def run(self):
         self.load_vocab(env.VOCAB)
         self.clf = self.load(env.MODEL)
