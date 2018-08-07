@@ -101,7 +101,7 @@ class event_detection:
         utils.mkdir(self.domain_output_dir)
         titles, X = self.prepare_data()
 
-        clustering = DBSCAN(eps=0.7, min_samples=1, metric='cosine')
+        clustering = DBSCAN(eps=0.6, min_samples=1, metric='cosine')
         labels = clustering.fit_predict(X)
         clusters = self.get_cluster(labels)
         total = len(labels)
