@@ -103,7 +103,7 @@ class event_detection:
 
         # dbscan use cosine_distance is metric.
         # note that: cosine_distance = 1 - cosine_similarity
-        clustering = DBSCAN(eps=0.6, min_samples=1, metric='cosine')
+        clustering = DBSCAN(eps=0.5, min_samples=1, metric='cosine')
         labels = clustering.fit_predict(X)
         clusters = self.get_cluster(labels)
         total = len(labels)
