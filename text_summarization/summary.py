@@ -42,19 +42,6 @@ class summary:
         return ratio
 
 
-    def get_des_and_remove_tags(self, content):
-        sentences = content.split(u'\n')
-
-        if len(sentences) < 3:
-            return None, None
-
-        des = sentences[1]
-        if u'[ tags ]' in sentences[len(sentences) - 1]:
-            body = u'\n'.join(sentences[2:len(sentences) - 1])
-        else: body = u'\n'.join(sentences[2:])
-
-        return des, body
-
     def is_skip(self, title, content):
         try:
             new_title = title.replace(u'_', u' ').lower()
@@ -88,12 +75,10 @@ class summary:
             return True
 
 
-    def run(self, title=u'', content=u''):
-        if self.is_skip(title, content):
+    def run(self, title=u'', des=u'', body=u''):
+        if self.is_skip(title, u'\n'.join([des, body])):
             print(u'Not summary doc: %s' % (title))
             return {u'error' : u'Not support kind of this document'}
-
-        des, body = self.get_des_and_remove_tags(content)
 
         if des == None or body == None:
             return {u'error' : u'story is too short'}

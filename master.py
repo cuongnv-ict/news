@@ -13,6 +13,7 @@ from nlp_tools import tokenizer
 from duplicate_documents.minhash_lsh import duplicate_docs as lsh
 from text_summarization.summary import summary
 import get_Dong_sea_articles as dong_sea
+from news_normalization.normalization import normalization
 import copy
 
 
@@ -27,6 +28,7 @@ class master:
     def __init__(self):
         self.crawler = get_stories()
         self.lsh = lsh()
+        self.normalization = normalization(root_dir='news_normalization')
         self.summary = summary(root_dir='text_summarization')
         self.docs_trending = {}
         self.trending_titles = {}
@@ -79,17 +81,17 @@ class master:
                     self.update_duplicate_docs(new_duplicate_categories)
                 trending_titles, docs_trending = self.remove_duplicate_trending_docs()
 
-                json_trending = self.build_json_trending(trending_titles, docs_trending)
-                self.save_trending_to_mongo(db, json_trending)
-                self.save_trending_to_file(trending_titles, docs_trending)
+                # json_trending = self.build_json_trending(trending_titles, docs_trending)
+                # self.save_trending_to_mongo(db, json_trending)
+                # self.save_trending_to_file(trending_titles, docs_trending)
 
                 print('summary stories...')
                 self.save_summary_to_mongo(db, new_tokenized_titles_clean,
                                            new_tokenized_stories_clean)
 
-                print('get articles talk about Dong sea...')
-                dong_sea.get_articles(db, new_tokenized_titles_clean,
-                                      new_tokenized_stories_clean, self.titles)
+                # print('get articles talk about Dong sea...')
+                # dong_sea.get_articles(db, new_tokenized_titles_clean,
+                #                       new_tokenized_stories_clean, self.titles)
 
                 connection.close()
 
@@ -377,8 +379,19 @@ class master:
                 title = self.titles[tokenized_title[0]].split(u' == ')[1]
             except:
                 title = tokenized_title[1].replace(u'_', u' ')
-            summ = self.summary.run(title=title, content=new_tokenized_stories[i])
-            summary = {u'contentId' : int(contentId), u'title' : title, u'summaries' : summ}
+
+            # normalize article before summary
+            des, body = utils.get_des_and_remove_tags(new_tokenized_stories[i])
+            normalized_title = self.normalization.run(tokenized_title[1])
+            normalized_des = self.normalization.run(des)
+            normalized_body = self.normalization.run(body)
+            normalized_article = u'\n'.join([normalized_title, normalized_des, normalized_body])
+
+            summ = self.summary.run(title=normalized_title,
+                                    des=normalized_des,
+                                    body=normalized_body)
+            summary = {u'contentId' : int(contentId), u'title' : title,
+                       u'summaries' : summ, u'normalized_article' : normalized_article}
             collection.insert_one(summary)
             print '\rsummaried %d stories' % (i+1),
             sys.stdout.flush()

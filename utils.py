@@ -98,6 +98,22 @@ def connect2mongo(host, port, user, pwd, db_name):
     return connection, db
 
 
+def get_des_and_remove_tags(content):
+    sentences = content.split(u'\n')
+
+    if len(sentences) < 3:
+        return None, None
+
+    des = sentences[1]
+    if u'[ tags ]' in sentences[len(sentences) - 1]:
+        body = u'\n'.join(sentences[2:len(sentences) - 1])
+    else: body = u'\n'.join(sentences[2:])
+    return des, body
+
+
+
+
+
 if __name__ == '__main__':
     ind, m = get_max([1,4,2,3,5,0])
     pass

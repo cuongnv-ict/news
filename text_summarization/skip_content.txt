@@ -5,3 +5,5 @@ Trung tâm Dự báo Khí tượng Thủy văn Quốc gia
 Trung tâm Dự báo Khí tượng Thủy văn Trung ương
 Trung tâm DBKTTV TƯ
 TT DBKTTV TƯ
+- pv:
+- phóng viên:
