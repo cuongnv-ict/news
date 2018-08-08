@@ -202,10 +202,10 @@ class master:
                                    self.trending_titles[domain][k2]))
                             # union
                             self.union(self.docs_trending[domain][k2], docs_trending[domain][k1])
-                            # print ('Delete -- %s' % (trending_titles[domain][k1]))
-                            # del trending_titles[domain][k1]
-                            # del docs_trending[domain][k1]
-                            # break
+                            print ('Delete -- %s' % (trending_titles[domain][k1]))
+                            del trending_titles[domain][k1]
+                            del docs_trending[domain][k1]
+                            break
             except:
                 self.trending_titles.update({domain : {}})
                 self.docs_trending.update({domain : {}})
