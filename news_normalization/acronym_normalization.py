@@ -1,7 +1,6 @@
 # -*- encoding: utf-8 -*-
 from detect_acronym import detect_acronym
 from language_model import language_model
-from nlp_tools import tokenizer
 from io import open
 from numpy import argmax
 import utils
@@ -44,8 +43,9 @@ class acronym_normalization:
 
 
     def normalize(self, str):
-        tokenized_str = tokenizer.predict(str)
-        sentences = tokenized_str.split(u'\n')
+        # tokenized_str = tokenizer.predict(str)
+        # sentences = tokenized_str.split(u'\n')
+        sentences = str.split(u'\n')
         sentences = filter(lambda sen: not is_image_caption(sen), sentences)
         sentences = map(lambda sen: self.remove_dot(sen), sentences)
         sentences = map(lambda sen: self.normalize_sentence(sen), sentences)

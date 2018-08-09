@@ -81,17 +81,17 @@ class master:
                     self.update_duplicate_docs(new_duplicate_categories)
                 trending_titles, docs_trending = self.remove_duplicate_trending_docs()
 
-                # json_trending = self.build_json_trending(trending_titles, docs_trending)
-                # self.save_trending_to_mongo(db, json_trending)
-                # self.save_trending_to_file(trending_titles, docs_trending)
+                json_trending = self.build_json_trending(trending_titles, docs_trending)
+                self.save_trending_to_mongo(db, json_trending)
+                self.save_trending_to_file(trending_titles, docs_trending)
 
                 print('summary stories...')
                 self.save_summary_to_mongo(db, new_tokenized_titles_clean,
                                            new_tokenized_stories_clean)
 
-                # print('get articles talk about Dong sea...')
-                # dong_sea.get_articles(db, new_tokenized_titles_clean,
-                #                       new_tokenized_stories_clean, self.titles)
+                print('get articles talk about Dong sea...')
+                dong_sea.get_articles(db, new_tokenized_titles_clean,
+                                      new_tokenized_stories_clean, self.titles)
 
                 connection.close()
 
