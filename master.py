@@ -72,6 +72,7 @@ class master:
                 print('run event detection...')
                 trending_titles, docs_trending = self.run_event_detection(articles_category)
                 self.merge_trending(trending_titles, docs_trending)
+                self.merge_trending_ex()
                 self.get_original_titles()
 
                 print('remove duplicate stories...')
@@ -220,6 +221,29 @@ class master:
                 id = utils.id_generator()
                 self.trending_titles[domain].update({id : trending_titles[domain][k]})
                 self.docs_trending[domain].update({id : docs_trending[domain][k]})
+
+
+    def merge_trending_ex(self):
+        print('merge trending extra..')
+        for domain in self.trending_titles.keys():
+            try:
+                for k1 in self.trending_titles[domain].keys():
+                    for k2 in self.trending_titles[domain].keys():
+                        if k1 == k2: continue
+                        docs1 = [d.split(u' == ')[0] for d in self.docs_trending[domain][k1]]
+                        docs2 = [d.split(u' == ')[0] for d in self.docs_trending[domain][k2]]
+                        similarity = utils.get_similarity_score(docs1, docs2)
+                        if similarity > TRENDING_MERGE_THRESHOLD:
+                            print('[%s] Similarity = %.2f -- MERGE -- %s <==> %s' %
+                                  (domain, similarity, self.trending_titles[domain][k1],
+                                   self.trending_titles[domain][k2]))
+                            # union
+                            self.union(self.docs_trending[domain][k2], self.docs_trending[domain][k1])
+                            print ('Delete -- %s' % (self.trending_titles[domain][k1]))
+                            del self.trending_titles[domain][k1]
+                            del self.docs_trending[domain][k1]
+                            break
+            except: pass
 
 
     def union(self, doc1, doc2):
