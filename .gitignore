@@ -108,4 +108,4 @@ event_detection/event_result/
 text_classification/result/
 new_stories.pkl
 trending_result/
-news_normalization/model/
+news_normalization/
