@@ -118,11 +118,7 @@ class language_model:
         prob = 0.0
         '''
         p(w1w2w3w4) = p(w1).p(w2|w1).p(p3|w2).p(w4|w3)
-        p(w2|w1) = p(w1w2)/p(w1)
-        p(w1w2) = count(w1w2) / total_count(bigram)
-        p(w1) = count(w1) / total_count(unigram)
-        but both total_count(bigram) and total_count(unigram) are constant
-        so p(w2|w1) = count(w1w2) / count(w1)
+        p(w2|w1) = count(w2|w1) / count(w1)
         where w1 and w4 are constant so p(w1) is constant
         '''
         try:
