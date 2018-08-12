@@ -10,7 +10,7 @@ from sklearn.cluster import DBSCAN
 
 
 MIN_DOCS = 6
-MIN_TRENDING_DOCS = 15
+MIN_TRENDING_DOCS = 10
 
 class event_detection:
     def __init__(self, domain, dataset, root_dir='.'):
@@ -101,7 +101,7 @@ class event_detection:
         utils.mkdir(self.domain_output_dir)
         titles, X = self.prepare_data()
 
-        clustering = DBSCAN(eps=0.5, min_samples=3, metric='cosine')
+        clustering = DBSCAN(eps=0.4, min_samples=4, metric='cosine')
         labels = clustering.fit_predict(X)
         clusters = self.get_cluster(labels)
         total = len(labels)
