@@ -15,9 +15,9 @@ class document:
         if k < 1 or k > len(data):
             raise ValueError('value of k is in range (1, num_words_in_document)')
         shingles = set([])
-        data = data.split()
+        data = data.split(u' == ')[1].lower().split()
         for i in xrange(0, len(data) - k + 1):
-            shingles.update([u'_'.join(data[i : i+k])])
+            shingles.update([u' '.join(data[i : i+k])])
         return shingles
 
 
