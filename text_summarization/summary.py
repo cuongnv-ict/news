@@ -15,7 +15,8 @@ import utils
 class summary:
     def __init__(self, root_dir='.'):
         self.root_dir = root_dir
-        self.DISTANCE_THRESHOLD = 0.5
+        self.DISTANCE_THRESHOLD = 0.35
+        self.TOO_LONG = 50
         self.skip_title = utils.load_data_to_list(path.join(root_dir, 'skip_title.txt'))
         self.skip_content = utils.load_data_to_list(path.join(root_dir, 'skip_content.txt'))
 
@@ -93,7 +94,13 @@ class summary:
         docs = btm.run_gibbs_sampling(data, save_result=False)
 
         if len(docs) == 0:
-            return {u'error': u'story is too short'}
+            return {u'short': u'story is too short',
+                    u'medium' : u'story is too short',
+                    u'long' : u'story is too short'}
+        elif len(docs) > self.TOO_LONG:
+            return {u'short' : u'story is too long',
+                    u'medium' : u'story is too long',
+                    u'long' : u'story is too long'}
 
         topic_docs = np.array([d.topic_proportion for d in docs])
         btm.theta = np.array([btm.theta])

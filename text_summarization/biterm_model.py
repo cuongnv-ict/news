@@ -103,6 +103,9 @@ class biterm:
     def get_sentences(self, data):
         raw_sentences = []; clean_sentences = []
         sen = spliter.split(data)
+
+        sen = filter(lambda x: u'video' not in x.lower() and u':' not in x, sen)
+
         raw_sentences.extend(sen)
         clean_sentences.extend(map(self.preprocessing, sen))
         raw_sentences_final = []
