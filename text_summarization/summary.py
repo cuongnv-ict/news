@@ -88,7 +88,9 @@ class summary:
         data = unicodedata.normalize('NFKC', data.strip())
 
         if len(data) == 0:
-            return {u'error' : u'story is too short'}
+            return {u'short': u'story is too short',
+                    u'medium' : u'story is too short',
+                    u'long' : u'story is too short'}
 
         btm = biterm(num_iters=50, root_dir=self.root_dir)
         docs = btm.run_gibbs_sampling(data, save_result=False)
