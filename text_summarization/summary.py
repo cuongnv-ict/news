@@ -114,11 +114,15 @@ class summary:
         summary_result = {}
         for level in [u'short', u'medium', u'long']:
             ratio = self.get_ratio(btm, len(docs), level=level)
+
             result = self.get_summary(cosine_dis, ratio)
+
             self.insert_description(des, result, btm.MINIMUM_LENGTH_SENTENCE)
+
             summ = [docs[i].content for i in result]
             summ = u'\r\n'.join(summ).replace(u'_', u' ').\
                 replace(u'\"', u'').replace(u'”', u'').replace(u'“', u'')
+
             summary_result.update({level : summ})
 
         return summary_result
