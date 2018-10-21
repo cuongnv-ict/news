@@ -19,14 +19,15 @@ class document:
         self.btm_freq = {}
         self.content = u''
         self.topic_proportion = None
-        self.BTM_WINDOW_LENGTH = 0
+        self.BTM_WINDOW_LENGTH = 2
         self.importance_pos = {'N':True, 'Np':True, 'Ny':True, 'V':True}
 
 
     def get_doc_info(self, doc, vocab):
         self.content = doc
-        new_doc = self.remove_stop_postag(doc)
-        words = new_doc.lower().split(u' ')
+        # new_doc = self.remove_stop_postag(doc)
+        # words = new_doc.lower().split(u' ')
+        words = doc.lower().split()
         for w in words:
             try:
                 wid = vocab[w]
