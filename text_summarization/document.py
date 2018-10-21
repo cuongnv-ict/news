@@ -19,7 +19,7 @@ class document:
         self.btm_freq = {}
         self.content = u''
         self.topic_proportion = None
-        self.BTM_WINDOW_LENGTH = 3
+        self.BTM_WINDOW_LENGTH = 0
         self.importance_pos = {'N':True, 'Np':True, 'Ny':True, 'V':True}
 
 

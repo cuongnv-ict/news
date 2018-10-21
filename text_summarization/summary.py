@@ -92,7 +92,7 @@ class summary:
                     u'medium' : u'story is too short',
                     u'long' : u'story is too short'}
 
-        btm = biterm(num_iters=50, root_dir=self.root_dir)
+        btm = biterm(num_iters=100, root_dir=self.root_dir)
         docs = btm.run_gibbs_sampling(data, save_result=False)
 
         if len(docs) == 0:
@@ -117,7 +117,8 @@ class summary:
             result = self.get_summary(cosine_dis, ratio)
             self.insert_description(des, result, btm.MINIMUM_LENGTH_SENTENCE)
             summ = [docs[i].content for i in result]
-            summ = u'\r\n'.join(summ).replace(u'_', u' ')
+            summ = u'\r\n'.join(summ).replace(u'_', u' ').\
+                replace(u'\"', u'').replace(u'”', u'').replace(u'“', u'')
             summary_result.update({level : summ})
 
         return summary_result
