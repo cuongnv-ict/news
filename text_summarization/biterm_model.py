@@ -20,7 +20,7 @@ class biterm:
     def __init__(self, num_iters=100, root_dir='.'):
         self.K = 5 # number topic
         self.W = None # vocab size
-        self.alpha = 0.01 # hyperparameters of p(z)
+        self.alpha = 0.1 # hyperparameters of p(z)
         self.beta = 0.01 # hyperparameters of p(w|z)
         self.n_iters = num_iters # number iterator of gibbs sampling
         self.theta = None # p(z)
