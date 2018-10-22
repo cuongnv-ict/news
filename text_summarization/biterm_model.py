@@ -14,7 +14,7 @@ from regex import regex
 from nlp_tools import spliter
 
 
-importance_pos = {'N':True, 'Np':True, 'Ny':True, 'V':True}
+
 
 class biterm:
     def __init__(self, num_iters=100, root_dir='.'):
