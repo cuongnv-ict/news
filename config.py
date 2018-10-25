@@ -1,9 +1,14 @@
 # -*- encoding: utf-8 -*
 
-MONGO_HOST = '103.35.64.122'
-MONGO_PORT = 2200
-MONGO_USER = 'dbMongo'
-MONGO_PASS = 'SOh3TbYhx8ypJPxmt1oOfL'
+# MONGO_HOST = '103.35.64.122'
+# MONGO_PORT = 2200
+# MONGO_USER = 'dbMongo'
+# MONGO_PASS = 'SOh3TbYhx8ypJPxmt1oOfL'
+
+MONGO_HOST = '210.245.115.39'
+MONGO_PORT = 27017
+MONGO_USER = ''
+MONGO_PASS = ''
 
 MONGO_DB = 'dbMongo'
 
