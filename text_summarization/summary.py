@@ -117,7 +117,7 @@ class summary:
 
             result = self.get_summary(cosine_dis, ratio)
 
-            self.insert_description(des, result, btm.MINIMUM_LENGTH_SENTENCE)
+            # self.insert_description(des, result, btm.MINIMUM_LENGTH_SENTENCE)
 
             summ = [docs[i].content for i in result]
             summ = u'\r\n'.join(summ).replace(u'_', u' ').\
