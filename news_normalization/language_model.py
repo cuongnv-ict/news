@@ -6,7 +6,7 @@ import os, re, sys
 import regex
 from io import open
 import math
-# from nlp_tools import tokenizer
+from nlp_tools import tokenizer
 
 
 
@@ -35,48 +35,51 @@ class language_model:
         count_bigram = utils.load(os.path.join(self.root_dir, 'model/count_bigram.dat'))
         count_unigram = utils.load(os.path.join(self.root_dir, 'model/count_unigram.dat'))
         total_count = utils.load(os.path.join(self.root_dir, 'model/total_count_tokens.dat'))
-        if count_bigram != None and count_unigram != None and total_count != None:
+
+        if count_bigram is not None and \
+                count_unigram is not None and \
+                total_count is not None:
             return count_bigram, count_unigram, total_count
 
-        # stack = os.listdir(dataset)
-        # count_bigram = {}
-        # count_unigram = {}
-        # total_count = 0
-        # ndocs = 0
-        # print 'loading data in ' + dataset
-        # while (len(stack) > 0):
-        #     file_name = stack.pop()
-        #     file_path = dataset + '/' + file_name
-        #     if (os.path.isdir(file_path)):  # neu la thu muc thi day vao strong stack
-        #         utils.push_data_to_stack(stack, file_path, file_name)
-        #     else:
-        #         ndocs += 1
-        #         print ('\r%d - %s' % (ndocs, file_path)),
-        #         sys.stdout.flush()
-        #         try:
-        #             fp = open(file_path, 'r', encoding='utf-8')
-        #             sens = [sen for sen in fp]
-        #         except:
-        #             fp = open(file_path, 'r', encoding='utf-16')
-        #             sens = [sen for sen in fp]
-        #         for sen in sens:
-        #             sen = unicodedata.normalize('NFKC', sen.strip())
-        #             sen_nor = self.pre_processing(tokenizer.predict(sen).lower(), predict_mode=False)
-        #             sen_nor = sen_nor.split()
-        #             total_count += len(sen_nor)
-        #             previous_word = u''
-        #             for w in sen_nor:
-        #                 self.update_count_unigram(w, count_unigram)
-        #                 if previous_word != u'':
-        #                     self.update_count_bigram(w, previous_word, count_bigram)
-        #                 previous_word = w
-        #         fp.close()
-        # print(u'')
-        # # save model
-        # utils.save(count_bigram, os.path.join(self.root_dir, 'model/count_bigram.dat'))
-        # utils.save(count_unigram, os.path.join(self.root_dir, 'model/count_unigram.dat'))
-        # utils.save(total_count, os.path.join(self.root_dir, 'model/total_count_tokens.dat'))
-        # return count_bigram, count_unigram, total_count
+        stack = os.listdir(dataset)
+        count_bigram = {}
+        count_unigram = {}
+        total_count = 0
+        ndocs = 0
+        print 'loading data in ' + dataset
+        while (len(stack) > 0):
+            file_name = stack.pop()
+            file_path = dataset + '/' + file_name
+            if (os.path.isdir(file_path)):  # neu la thu muc thi day vao strong stack
+                utils.push_data_to_stack(stack, file_path, file_name)
+            else:
+                ndocs += 1
+                print ('\r%d - %s' % (ndocs, file_path)),
+                sys.stdout.flush()
+                try:
+                    fp = open(file_path, 'r', encoding='utf-8')
+                    sens = [sen for sen in fp]
+                except:
+                    fp = open(file_path, 'r', encoding='utf-16')
+                    sens = [sen for sen in fp]
+                for sen in sens:
+                    sen = unicodedata.normalize('NFKC', sen.strip())
+                    sen_nor = self.pre_processing(tokenizer.predict(sen).lower(), predict_mode=False)
+                    sen_nor = sen_nor.split()
+                    total_count += len(sen_nor)
+                    previous_word = u''
+                    for w in sen_nor:
+                        self.update_count_unigram(w, count_unigram)
+                        if previous_word != u'':
+                            self.update_count_bigram(w, previous_word, count_bigram)
+                        previous_word = w
+                fp.close()
+        print(u'')
+        # save model
+        utils.save(count_bigram, os.path.join(self.root_dir, 'model/count_bigram.dat'))
+        utils.save(count_unigram, os.path.join(self.root_dir, 'model/count_unigram.dat'))
+        utils.save(total_count, os.path.join(self.root_dir, 'model/total_count_tokens.dat'))
+        return count_bigram, count_unigram, total_count
 
 
     def update_count_bigram(self, current_token, previous_token, count_token):
@@ -167,4 +170,5 @@ class language_model:
 
 if __name__ == '__main__':
     lm = language_model()
+    lm.run()
     pass
