@@ -170,5 +170,5 @@ class language_model:
 
 if __name__ == '__main__':
     lm = language_model()
-    lm.run()
+    lm.run(lm)
     pass

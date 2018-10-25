@@ -109,4 +109,3 @@ text_classification/result/
 new_stories.pkl
 trending_result/
 *.pkl
-news_normalization/model/
