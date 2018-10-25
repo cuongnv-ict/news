@@ -94,7 +94,8 @@ def id_generator(size=10, chars=string.ascii_letters + string.digits):
 def connect2mongo(host, port, user, pwd, db_name):
     connection = MongoClient(host, port)
     db = connection[db_name]
-    db.authenticate(user, pwd)
+    if user != '' and pwd != '':
+        db.authenticate(user, pwd)
     return connection, db
 
 
