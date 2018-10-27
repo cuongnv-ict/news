@@ -40,6 +40,7 @@ class master:
         self.docs_trending_file = os.path.join(self.trending_result_dir, 'docs_trending.pkl')
         self.duplicate_docs = {}
         self.titles = {}
+        self.event_id = {}
 
 
     def run(self):
@@ -272,15 +273,21 @@ class master:
     def reset_all(self):
         print('reset all...')
         utils.delete_dir(self.trending_result_dir)
+
         self.trending_titles.clear()
         self.docs_trending.clear()
-        self.crawler.clear()
-        self.lsh.clear()
+        self.event_id.clear()
         self.titles.clear()
+
+        self.crawler.clear()
+
+        self.lsh.clear()
         self.duplicate_docs.clear()
+
         for domain in config.categories:
             event = event_detection(domain, None, root_dir='event_detection')
             event.reset_all()
+
         for l in self.counter.keys():
             self.counter[l] = 0
 
@@ -344,13 +351,24 @@ class master:
         joblib.dump(docs_trending, self.docs_trending_file, compress=True)
 
 
+    def get_event_id(self, event_name):
+        try:
+            event_id = self.event_id[event_name]
+        except:
+            event_id = utils.id_generator()
+            self.event_id.update({event_name: event_id})
+        return event_id
+
+
     def build_trending_domain(self, trending_titles, docs_trending):
         # build json content
         trending = []
         for k, title in trending_titles.items():
             event = {}
             docs = docs_trending[k]
-            event.update({u'event_name': title.split(u' == ')[1]})
+            event_name = title.split(u' == ')[1]
+            event_id = self.get_event_id(event_name)
+            event.update({u'event_name': event_name, u'event_id' : event_id})
             sub_title = []
             for name in docs:
                 name = name.split(u' == ')
