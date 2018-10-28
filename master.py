@@ -21,8 +21,8 @@ import copy
 warnings.filterwarnings('ignore', category=UserWarning)
 
 TRENDING_MERGE_THRESHOLD = 0.0
-HOUR_TO_RESET = 0  # reset at 3h AM
-TIME_TO_SLEEP = 60
+HOUR_TO_RESET = 0  # reset at 0h AM
+TIME_TO_SLEEP = 60 # sleep in 60s
 
 class master:
     def __init__(self):
@@ -46,7 +46,7 @@ class master:
     def run(self):
         while(True):
             try:
-                if self.check_date() or self.first_run:
+                if self.first_run or self.check_date():
                     self.reset_all()
                     self.first_run = False
 
@@ -296,7 +296,7 @@ class master:
     def check_date(self):
         present = datetime.datetime.now()
         diff = present.date() - self.date
-        if diff.days >= 1 and present.hour == HOUR_TO_RESET:
+        if diff.days > 0 and present.hour == HOUR_TO_RESET:
             self.date = present.date()
             return True
         return False
