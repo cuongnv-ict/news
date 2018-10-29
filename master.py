@@ -23,7 +23,7 @@ warnings.filterwarnings('ignore', category=UserWarning)
 
 TRENDING_MERGE_THRESHOLD = 0.0
 HOUR_TO_RESET = 0  # reset at 0h AM
-TIME_TO_SLEEP = 60 * 3 # sleep in 3 minutes
+TIME_TO_SLEEP = 60 * 1 # sleep in 1 minutes
 
 class master:
     def __init__(self):
