@@ -455,7 +455,8 @@ class master:
             collection = db.get_collection(config.MONGO_COLLECTION_HOT_EVENTS_BY_EDITOR)
             date_str = self.date.strftime(u'%Y-%m-%d')
             documents = collection.find({u'date' : {u'$eq' : date_str}})
-            hot_events_editor = {u'-'.join([doc[u'domain'], doc[u'event_id']]) : doc[u'_id']
+            hot_events_editor = {u'-'.join([doc[u'domain'], doc[u'event_id']]) :
+                                     [doc[u'_id'], len(doc[u'stories'])]
                                  for doc in documents}
 
             hot_events_machine = json.loads(json_trending[u'hot_events'])
@@ -475,7 +476,11 @@ class master:
                 if not utils.is_exist(events_id_editor, key):
                     continue
 
-                _id = events_id_editor[key]
+                num_stories = events_id_editor[key][1]
+                if len(event[u'stories']) <= num_stories:
+                    continue
+
+                _id = events_id_editor[key][0]
 
                 collection.update_one({u'_id':ObjectId(_id)},
                                       {u'$set' : {u'stories':event[u'stories']}},
