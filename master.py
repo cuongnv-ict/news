@@ -15,6 +15,7 @@ from text_summarization.summary import summary
 import get_Dong_sea_articles as dong_sea
 from news_normalization.normalization import normalization
 import copy
+from bson.objectid import ObjectId
 
 
 
@@ -77,17 +78,24 @@ class master:
                 self.get_original_titles()
 
                 print('remove duplicate stories...')
-                new_tokenized_titles_clean, new_tokenized_stories_clean, new_duplicate_categories = \
-                    self.lsh.run(new_tokenized_titles, new_tokenized_stories, self.crawler.new_categories)
+                new_tokenized_titles_clean, \
+                new_tokenized_stories_clean, \
+                new_duplicate_categories = self.lsh.run(new_tokenized_titles,
+                                                        new_tokenized_stories,
+                                                        self.crawler.new_categories)
                 if len(new_duplicate_categories) > 0:
                     self.update_duplicate_docs(new_duplicate_categories)
                 trending_titles, docs_trending = self.remove_duplicate_trending_docs()
 
+                print('save trending to mongo...')
                 json_trending = self.build_json_trending(trending_titles, docs_trending)
                 self.save_trending_to_mongo(db, json_trending)
                 self.save_trending_to_file(trending_titles, docs_trending)
 
-                print('summary stories...')
+                print('update hot events which are chosen by editor...')
+                self.update_hot_event_editor(db, json_trending)
+
+                print('summarize stories...')
                 self.save_summary_to_mongo(db, new_tokenized_titles_clean,
                                            new_tokenized_stories_clean)
 
@@ -440,6 +448,38 @@ class master:
         end_time = time.time()
         print('')
         print ('time to summary = %.2f minutes' % (float(end_time - begin_time) / float(60)))
+
+
+    def update_hot_event_editor(self, db, json_trending):
+        try:
+            collection = db.get_collection(config.MONGO_COLLECTION_HOT_EVENTS_BY_EDITOR)
+            date_str = self.date.strftime(u'%Y-%m-%d')
+            documents = collection.find({u'date' : {u'$eq' : date_str}})
+            hot_events_editor = {u'-'.join([doc[u'domain'], doc[u'event_id']]) : doc[u'_id']
+                                 for doc in documents}
+
+            hot_events_machine = json.loads(json_trending[u'hot_events'])
+            self.update_hot_event_editor_ex(hot_events_machine, hot_events_editor, collection)
+        except Exception as e:
+            print(e.message)
+
+
+    def update_hot_event_editor_ex(self, hot_events_machine, events_id_editor, collection):
+        for event_obj in hot_events_machine:
+            for event in event_obj[u'content']:
+                eid = event[u'event_id']
+                domain = event_obj[u'domain']
+
+                key = u'-'.join([domain, eid])
+
+                if not utils.is_exist(events_id_editor, key):
+                    continue
+
+                _id = events_id_editor[key]
+
+                collection.update_one({u'_id':ObjectId(_id)},
+                                      {u'$set' : {u'stories':event[u'stories']}},
+                                      upsert=False)
 
 
 

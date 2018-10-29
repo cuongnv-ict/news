@@ -112,6 +112,14 @@ def get_des_and_remove_tags(content):
     return des, body
 
 
+def is_exist(d, item):
+    try:
+        _ = d[item]
+        return True
+    except:
+        return False
+
+
 
 
 
