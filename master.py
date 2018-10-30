@@ -489,7 +489,8 @@ class master:
                 _id = events_id_editor[key][0]
 
                 collection.update_one({u'_id':ObjectId(_id)},
-                                      {u'$set' : {u'stories':event[u'stories']}},
+                                      {u'$set' : {u'num_story':len(event[u'stories']),
+                                                  u'stories':event[u'stories']}},
                                       upsert=False)
 
 
