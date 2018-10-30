@@ -506,7 +506,8 @@ class master:
                     contentId = story_info[0]
                     title = self.titles[contentId]
                     json_content = {u'contentId' : int(contentId),
-                                    u'title' : title}
+                                    u'title' : title,
+                                    u'category' : category}
                     collection.insert_one(json_content)
                 except:
                     continue
