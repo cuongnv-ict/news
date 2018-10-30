@@ -113,8 +113,8 @@ class master:
 
                 print('sleep in %d seconds...' % (TIME_TO_SLEEP))
                 time.sleep(TIME_TO_SLEEP)
-            except:
-                print(u'Exception occured in master module')
+            except Exception as e:
+                print(u'Exception occured in master module: %s' % (e.message))
                 try:
                     connection.close()
                 except: pass
