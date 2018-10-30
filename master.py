@@ -83,6 +83,12 @@ class master:
                 new_duplicate_categories = self.lsh.run(new_tokenized_titles,
                                                         new_tokenized_stories,
                                                         self.crawler.new_categories)
+
+                print('update new stories for follow events...')
+                articles_category_clean = self.get_article_by_category(new_tokenized_titles_clean,
+                                                                       self.crawler.new_categories)
+                self.update_new_stories_follow_events(db, articles_category_clean)
+
                 if len(new_duplicate_categories) > 0:
                     self.update_duplicate_docs(new_duplicate_categories)
                 trending_titles, docs_trending = self.remove_duplicate_trending_docs()
@@ -485,6 +491,25 @@ class master:
                 collection.update_one({u'_id':ObjectId(_id)},
                                       {u'$set' : {u'stories':event[u'stories']}},
                                       upsert=False)
+
+
+    def update_new_stories_follow_events(self, db, articles_category):
+        try:
+            collection = db.get_collection(config.MONGO_COLLECTION_NEW_ARTICLES_FOLLOW_EVENT)
+        except:
+            collection = db.create_collection(config.MONGO_COLLECTION_NEW_ARTICLES_FOLLOW_EVENT)
+
+        for category, stories in articles_category.items():
+            for story in stories:
+                try:
+                    story_info = story.split(u' == ')
+                    contentId = story_info[0]
+                    title = self.titles[contentId]
+                    json_content = {u'contentId' : int(contentId),
+                                    u'title' : title}
+                    collection.insert_one(json_content)
+                except:
+                    continue
 
 
 

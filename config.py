@@ -15,6 +15,7 @@ MONGO_DB = 'dbMongo'
 MONGO_COLLECTION_ARTICLES = 'articles'
 MONGO_COLLECTION_HOT_EVENTS = 'hot_events'
 MONGO_COLLECTION_HOT_EVENTS_BY_EDITOR = 'hot_events_editor'
+MONGO_COLLECTION_NEW_ARTICLES_FOLLOW_EVENT = 'new_articles_follow_event'
 MONGO_COLLECTION_SUMMRIES = 'summaries'
 
 MONGO_COLLECTION_DONG_SEA = 'dong_sea_articles'
