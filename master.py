@@ -505,7 +505,7 @@ class master:
                 try:
                     story_info = story.split(u' == ')
                     contentId = story_info[0]
-                    title = self.titles[contentId]
+                    title = self.titles[contentId].split(u' == ')[1]
                     json_content = {u'contentId' : int(contentId),
                                     u'title' : title,
                                     u'domain' : category}
