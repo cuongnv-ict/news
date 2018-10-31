@@ -159,7 +159,7 @@ class master:
     def remove_duplicate_trending_docs(self):
         trending_titles = copy.deepcopy(self.trending_titles)
         docs_trending = copy.deepcopy(self.docs_trending)
-        count = 0
+
         for domain in self.docs_trending:
             try:
                 duplicate_docs = self.duplicate_docs[domain]
@@ -170,7 +170,6 @@ class master:
                         try:
                             _ = duplicate_docs[contentId]
                             docs_trending[domain][k].remove(doc)
-                            count += 1
                         except: continue
                     if len(docs_trending[domain][k]) == 0:
                         del docs_trending[domain][k]
