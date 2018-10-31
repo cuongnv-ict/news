@@ -40,7 +40,8 @@ class master:
         self.trending_titles_file = os.path.join(self.trending_result_dir, 'trending_titles.pkl')
         self.docs_trending_file = os.path.join(self.trending_result_dir, 'docs_trending.pkl')
         self.duplicate_docs = {}
-        self.titles = {}
+        self.contentId2titles = {}
+        self.contentId2category = {}
         self.event_id = {}
 
 
@@ -85,8 +86,7 @@ class master:
                                                         self.crawler.new_categories)
 
                 print('update new stories for follow events...')
-                articles_category_clean = self.get_article_by_category(new_tokenized_titles_clean,
-                                                                       self.crawler.new_categories)
+                articles_category_clean = self.get_article_by_category_ex(new_tokenized_titles_clean)
                 self.update_new_stories_follow_events(db, articles_category_clean)
 
                 if len(new_duplicate_categories) > 0:
@@ -107,7 +107,7 @@ class master:
 
                 print('get articles talk about Dong sea...')
                 dong_sea.get_articles(db, new_tokenized_titles_clean,
-                                      new_tokenized_stories_clean, self.titles)
+                                      new_tokenized_stories_clean, self.contentId2titles)
 
                 connection.close()
 
@@ -129,6 +129,22 @@ class master:
                 articles[categories[i].lower()].append(new_tokenized_stories[i])
             except:
                 articles.update({categories[i].lower() : [new_tokenized_stories[i]]})
+            contentId = new_tokenized_stories[i].split(u' == ')[0]
+            try:
+                _ = self.contentId2category[contentId]
+            except:
+                self.contentId2category.update({contentId : categories[i].lower()})
+        return articles
+
+
+    def get_article_by_category_ex(self, new_tokenized_stories):
+        articles = {}
+        for i in xrange(len(new_tokenized_stories)):
+            contentId = new_tokenized_stories[i].split(u' == ')[0]
+            try:
+                articles[self.contentId2category[contentId]].append(new_tokenized_stories[i])
+            except:
+                articles.update({self.contentId2category[contentId] : [new_tokenized_stories[i]]})
         return articles
 
 
@@ -143,16 +159,18 @@ class master:
     def remove_duplicate_trending_docs(self):
         trending_titles = copy.deepcopy(self.trending_titles)
         docs_trending = copy.deepcopy(self.docs_trending)
-        for domain in docs_trending:
+        count = 0
+        for domain in self.docs_trending:
             try:
                 duplicate_docs = self.duplicate_docs[domain]
-                for k in docs_trending[domain].keys():
+                for k in self.docs_trending[domain]:
                     docs = list(docs_trending[domain][k])
                     for doc in docs:
                         contentId = doc.split(u' == ')[0]
                         try:
                             _ = duplicate_docs[contentId]
                             docs_trending[domain][k].remove(doc)
+                            count += 1
                         except: continue
                     if len(docs_trending[domain][k]) == 0:
                         del docs_trending[domain][k]
@@ -176,7 +194,7 @@ class master:
 
             contentId = tokenized_title.split(u' == ')[0]
 
-            self.titles.update({contentId : title})
+            self.contentId2titles.update({contentId : title})
 
             print '\rtokenized %d stories' % (i + 1),
             sys.stdout.flush()
@@ -191,13 +209,13 @@ class master:
                 try:
                     tokenized_title = self.trending_titles[domain][k]
                     contentId = tokenized_title.split(u' == ')[0]
-                    original_title = self.titles[contentId]
+                    original_title = self.contentId2titles[contentId]
                     self.trending_titles[domain][k] = original_title
                     for i in xrange(len(self.docs_trending[domain][k])):
                         try:
                             tokenized_title = self.docs_trending[domain][k][i]
                             contentId = tokenized_title.split(u' == ')[0]
-                            original_title = self.titles[contentId]
+                            original_title = self.contentId2titles[contentId]
                             self.docs_trending[domain][k][i] = original_title
                         except:
                             continue
@@ -291,7 +309,9 @@ class master:
         self.trending_titles.clear()
         self.docs_trending.clear()
         self.event_id.clear()
-        self.titles.clear()
+        self.contentId2titles.clear()
+
+        self.contentId2category.clear()
 
         self.crawler.clear()
 
@@ -432,7 +452,7 @@ class master:
             tokenized_title = new_tokenized_titles[i].split(u' == ')
             contentId = tokenized_title[0]
             try:
-                title = self.titles[tokenized_title[0]].split(u' == ')[1]
+                title = self.contentId2titles[tokenized_title[0]].split(u' == ')[1]
             except:
                 title = tokenized_title[1].replace(u'_', u' ')
 
@@ -505,7 +525,7 @@ class master:
                 try:
                     story_info = story.split(u' == ')
                     contentId = story_info[0]
-                    title = self.titles[contentId].split(u' == ')[1]
+                    title = self.contentId2titles[contentId].split(u' == ')[1]
                     json_content = {u'contentId' : int(contentId),
                                     u'title' : title,
                                     u'domain' : category}
