@@ -164,16 +164,18 @@ class master:
             try:
                 duplicate_docs = self.duplicate_docs[domain]
                 for k in self.docs_trending[domain]:
-                    docs = list(docs_trending[domain][k])
-                    for doc in docs:
-                        contentId = doc.split(u' == ')[0]
-                        try:
-                            _ = duplicate_docs[contentId]
-                            docs_trending[domain][k].remove(doc)
-                        except: continue
-                    if len(docs_trending[domain][k]) == 0:
-                        del docs_trending[domain][k]
-                        del trending_titles[domain][k]
+                    try:
+                        docs = list(docs_trending[domain][k])
+                        for doc in docs:
+                            contentId = doc.split(u' == ')[0]
+                            try:
+                                _ = duplicate_docs[contentId]
+                                docs_trending[domain][k].remove(doc)
+                            except: continue
+                        if len(docs_trending[domain][k]) == 0:
+                            del docs_trending[domain][k]
+                            del trending_titles[domain][k]
+                    except: continue
             except: continue
         return trending_titles, docs_trending
 
