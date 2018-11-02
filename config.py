@@ -18,6 +18,8 @@ MONGO_COLLECTION_HOT_EVENTS_BY_EDITOR = 'hot_events_editor'
 MONGO_COLLECTION_NEW_ARTICLES_FOLLOW_EVENT = 'new_articles_follow_event'
 MONGO_COLLECTION_SUMMRIES = 'summaries'
 
+MONGO_COLLECTION_NORMALIZED_ARTICLES = 'normalized_articles'
+
 MONGO_COLLECTION_DONG_SEA = 'dong_sea_articles'
 
 categories = [u'giáo dục', u'thể thao', u'giải trí',

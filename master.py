@@ -448,6 +448,11 @@ class master:
         except:
             collection = db.create_collection(config.MONGO_COLLECTION_SUMMRIES)
 
+        try:
+            collection_nor = db.get_collection(config.MONGO_COLLECTION_NORMALIZED_ARTICLES)
+        except:
+            collection_nor = db.create_collection(config.MONGO_COLLECTION_NORMALIZED_ARTICLES)
+
         begin_time = time.time()
         for i in xrange(len(new_tokenized_stories)):
             tokenized_title = new_tokenized_titles[i].split(u' == ')
@@ -464,11 +469,16 @@ class master:
             normalized_body = self.normalization.run(body)
             normalized_article = u'\n'.join([normalized_title, normalized_des, normalized_body])
 
+            collection_nor.insert_one({u'contentId': int(contentId),
+                                       u'title': title,
+                                       u'normalized_article': normalized_article})
+
             summ = self.summary.run(title=normalized_title,
                                     des=normalized_des,
                                     body=normalized_body)
-            summary = {u'contentId' : int(contentId), u'title' : title,
-                       u'summaries' : summ, u'normalized_article' : normalized_article}
+            summary = {u'contentId' : int(contentId),
+                       u'title' : title,
+                       u'summaries' : summ}
             collection.insert_one(summary)
             print '\rsummaried %d stories' % (i+1),
             sys.stdout.flush()
