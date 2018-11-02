@@ -93,7 +93,7 @@ class master:
                     self.update_duplicate_docs(new_duplicate_categories)
                 trending_titles, docs_trending = self.remove_duplicate_trending_docs()
 
-                print('save trending to mongo...')
+                print('save trending to mongodb...')
                 json_trending = self.build_json_trending(trending_titles, docs_trending)
                 self.save_trending_to_mongo(db, json_trending)
                 self.save_trending_to_file(trending_titles, docs_trending)
@@ -429,7 +429,6 @@ class master:
 
 
     def save_trending_to_mongo(self, db, json_trending):
-        print('save trending to mongodb...')
         try:
             collection = db.get_collection(config.MONGO_COLLECTION_HOT_EVENTS)
         except:
@@ -455,33 +454,36 @@ class master:
 
         begin_time = time.time()
         for i in xrange(len(new_tokenized_stories)):
-            tokenized_title = new_tokenized_titles[i].split(u' == ')
-            contentId = tokenized_title[0]
             try:
-                title = self.contentId2titles[tokenized_title[0]].split(u' == ')[1]
+                tokenized_title = new_tokenized_titles[i].split(u' == ')
+                contentId = tokenized_title[0]
+                try:
+                    title = self.contentId2titles[tokenized_title[0]].split(u' == ')[1]
+                except:
+                    title = tokenized_title[1].replace(u'_', u' ')
+
+                # normalize article before summary
+                des, body = utils.get_des_and_remove_tags(new_tokenized_stories[i])
+                normalized_title = self.normalization.run(tokenized_title[1])
+                normalized_des = self.normalization.run(des)
+                normalized_body = self.normalization.run(body)
+                normalized_article = u'\n'.join([normalized_title, normalized_des, normalized_body])
+
+                collection_nor.insert_one({u'contentId': int(contentId),
+                                           u'title': title,
+                                           u'normalized_article': normalized_article})
+
+                summ = self.summary.run(title=normalized_title,
+                                        des=normalized_des,
+                                        body=normalized_body)
+                summary = {u'contentId' : int(contentId),
+                           u'title' : title,
+                           u'summaries' : summ}
+                collection.insert_one(summary)
+                print '\rsummaried %d stories' % (i+1),
+                sys.stdout.flush()
             except:
-                title = tokenized_title[1].replace(u'_', u' ')
-
-            # normalize article before summary
-            des, body = utils.get_des_and_remove_tags(new_tokenized_stories[i])
-            normalized_title = self.normalization.run(tokenized_title[1])
-            normalized_des = self.normalization.run(des)
-            normalized_body = self.normalization.run(body)
-            normalized_article = u'\n'.join([normalized_title, normalized_des, normalized_body])
-
-            collection_nor.insert_one({u'contentId': int(contentId),
-                                       u'title': title,
-                                       u'normalized_article': normalized_article})
-
-            summ = self.summary.run(title=normalized_title,
-                                    des=normalized_des,
-                                    body=normalized_body)
-            summary = {u'contentId' : int(contentId),
-                       u'title' : title,
-                       u'summaries' : summ}
-            collection.insert_one(summary)
-            print '\rsummaried %d stories' % (i+1),
-            sys.stdout.flush()
+                continue
         end_time = time.time()
         print('')
         print ('time to summary = %.2f minutes' % (float(end_time - begin_time) / float(60)))
