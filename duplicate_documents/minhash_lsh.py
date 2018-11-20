@@ -101,13 +101,17 @@ class duplicate_docs:
 
 
     # remove all docs
-    def clear(self):
+    def clear(self, time=None):
         docs_id = self.docs.keys()
         for id in docs_id:
             self.remove(id)
+        if time is None:
+            time = utils.get_date_now()
         times = self.docs_time.keys()
         for t in times:
-            del self.docs_time[t]
+            diff = time - t
+            if diff.days >= config.TIME_TO_DELETE:
+                del self.docs_time[t]
 
 
     # check duplication

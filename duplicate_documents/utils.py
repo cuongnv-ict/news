@@ -70,7 +70,8 @@ def id_generator(size=10, chars=string.ascii_letters + string.digits):
 
 def get_date_now():
     time = datetime.datetime.now()
-    return time.strftime("%Y%m%d")
+    return time.date()
+    # return time.strftime("%Y%m%d")
 
 
 def get_previous_date(days=7):

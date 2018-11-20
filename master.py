@@ -316,7 +316,7 @@ class master:
 
         self.crawler.clear()
 
-        self.lsh.clear()
+        self.lsh.clear(time=self.date)
         self.duplicate_docs.clear()
 
         for domain in config.categories:

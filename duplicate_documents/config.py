@@ -22,4 +22,4 @@ SHINGLE_CONFIG = {
 }
 
 
-TIME_TO_DELETE = 7 # time by day
+TIME_TO_DELETE = 3 # time by day
