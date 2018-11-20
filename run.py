@@ -48,7 +48,8 @@ def build_trending_domain(trending_titles, docs_trending):
         docs = docs_trending[k]
         event.update({u'title': title.split(u' == ')[1] + u' - %d docs' % (len(docs))})
         # sub_title = []
-        sub_title = [{u'title': name.split(u' == ')[1]} for name in docs]
+        sub_title = [{u'title': name.split(u' == ')[1], u'contentId' : name.split(u' == ')[0]}
+                     for name in docs]
         event.update({u'subTitles': sub_title})
         trending.append(event)
     return trending
@@ -95,11 +96,9 @@ def update():
 
 @app.route('/get', methods = ['GET', 'POST'])
 def get_content():
-    return {}
-    title = request.form['title']
-    demo.load_document_content(dataset, documents_content)
-    content = demo.get_document_by_title(title, documents_content)
-    return jsonify(content)
+    contentId = request.form['contentId']
+    content = demo.get_document_content(contentId)
+    return {u'msg' : content}
 
 
 

@@ -45,7 +45,7 @@
         <div class="row">
             <div class="col-12">
                 <h3 class="text-center">Event Detection Service</h3>
-                <h4 class="text-center">&copy; ML-BKA</h4>
+                <h4 class="text-center">&copy; Dora Team</h4>
                 <h5 class="text-center">Version 1.0</h5>
             </div>
         </div>
@@ -385,7 +385,7 @@
             return title;
         }
         function update() {
-            console.log("In update")
+            console.log("In update funciton ...")
             clearAll();
             var url = "/update"
             var posting = $.post(url);
@@ -398,10 +398,10 @@
                     return;
                 }
                 //
-                console.log(typeof(data));
+                //console.log(typeof(data));
                 //data = JSON.parse(data);
                 //console.log(typeof(data));
-                console.log(data+ " "+data.length);
+                //console.log(data+ " "+data.length);
                 //alert(data)
 
                 try {
@@ -410,11 +410,11 @@
                         var t_name = data_t['domain']
                         var t_id = data_t['id']
                         var t_content = data_t['content']
-                        console.log(data_t)
                         for (var i = 0; i < t_content.length; i++) {
                             //recs = recs + data[i]["id"] + " #N: "+data[i]["name"]+" #S: "+data[i]["score"].toFixed(1) + "\n"
 
                             card = createCard(t_content[i], i,t_id)
+                            //console.log("t_content[i] = " + t_content[i])
                             $("#accordion-" + t_id).append(card)
                         }
                     }
@@ -425,9 +425,10 @@
             });
 
         }
-        function getContent(title) {
+        function getContent(contentId) {
+            console.log("In getContent funciton ...")
             var url = "/get"
-            var posting = $.post(url, { title: title });
+            var posting = $.post(url, { contentId: contentId });
             //console.log("Get: " + title)
             /* Alerts the results */
             posting.done(function (data) {
@@ -479,9 +480,10 @@
             for (i = 0; i < subTitles.length; ++i) {
                 subItemTitle = subTitles[i]['title']
                 upperTitle = toUpperTitle(subItemTitle);
-                //console.log("Sub title: "+subItemTitle);
+                contentId = subTitles[i]['contentId']
+                //console.log("Sub title: "+subTitles[i]);
                 li = '<li class="list-group-item">'
-                    + '<a href="javascript:getContent(\'' + subItemTitle + '\')";>' + upperTitle + '</a>'
+                    + '<a href="javascript:getContent(\'' + contentId + '\')";>' + upperTitle + '</a>'
                     + '</li>'
                 divTitle = divTitle + li
             }
