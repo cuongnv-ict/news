@@ -5,6 +5,7 @@ import os
 from io import open
 import shutil
 import random, string
+from pymongo import MongoClient
 
 
 
@@ -82,6 +83,14 @@ def vector_normarize(v):
 
 def id_generator(size=10, chars=string.ascii_letters + string.digits):
     return ''.join(random.choice(chars) for _ in range(size))
+
+
+def connect2mongo(host, port, user, pwd, db_name):
+    connection = MongoClient(host, port)
+    db = connection[db_name]
+    if user != '' and pwd != '':
+        db.authenticate(user, pwd)
+    return connection, db
 
 
 
