@@ -121,7 +121,7 @@
 
                     </div>
 
-                    <div class="col-6" id="newsContent-the-thao">
+                    <div class="col-6 newsContent">
 
 
                     </div>
@@ -139,7 +139,7 @@
                         </div>
                     </div>
 
-                    <div class="col-6" id="newsContent-giao-duc">
+                    <div class="col-6 newsContent">
                     </div>
 
                 </div>
@@ -158,7 +158,7 @@
                         </div>
                     </div>
 
-                    <div class="col-6" id="newsContent-giai-tri">
+                    <div class="col-6 newsContent">
                     </div>
 
                 </div>
@@ -178,7 +178,7 @@
                         </div>
                     </div>
 
-                    <div class="col-6" id="newsContent-the-gioi">
+                    <div class="col-6 newsContent">
                     </div>
 
                 </div>
@@ -200,7 +200,7 @@
                         </div>
                     </div>
 
-                    <div class="col-6" id="newsContent-xa-hoi">
+                    <div class="col-6 newsContent">
                     </div>
 
                 </div>
@@ -220,7 +220,7 @@
                         </div>
                     </div>
 
-                    <div class="col-6" id="newsContent-van-hoa">
+                    <div class="col-6 newsContent">
                     </div>
 
                 </div>
@@ -241,7 +241,7 @@
                         </div>
                     </div>
 
-                    <div class="col-6" id="newsContent-doi-song">
+                    <div class="col-6 newsContent">
                     </div>
 
                 </div>
@@ -260,7 +260,7 @@
                         </div>
                     </div>
 
-                    <div class="col-6" id="newsContent-phap-luat">
+                    <div class="col-6 newsContent">
                     </div>
 
                 </div>
@@ -279,7 +279,7 @@
                         </div>
                     </div>
 
-                    <div class="col-6" id="newsContent-kinh-te">
+                    <div class="col-6 newsContent">
                     </div>
 
                 </div>
@@ -297,7 +297,7 @@
                         </div>
                     </div>
 
-                    <div class="col-6" id="newsContent-nha-dat">
+                    <div class="col-6 newsContent">
                     </div>
 
                 </div>
@@ -315,7 +315,7 @@
                         </div>
                     </div>
 
-                    <div class="col-6" id="newsContent-khoa-hoc">
+                    <div class="col-6 newsContent">
                     </div>
 
                 </div>
@@ -333,7 +333,7 @@
                         </div>
                     </div>
 
-                    <div class="col-6" id="newsContent-cong-nghe">
+                    <div class="col-6 newsContent">
                     </div>
 
                 </div>
@@ -351,7 +351,7 @@
                         </div>
                     </div>
 
-                    <div class="col-6" id="newsContent-xe-co">
+                    <div class="col-6 newsContent">
                     </div>
 
                 </div>
@@ -385,7 +385,7 @@
             return title;
         }
         function update() {
-            console.log("In update funciton ...")
+            console.log("In update function ...")
             clearAll();
             var url = "/update"
             var posting = $.post(url);
@@ -426,7 +426,7 @@
 
         }
         function getContent(contentId) {
-            console.log("In getContent funciton ...")
+            console.log("In getContent function ...")
             var url = "/get"
             var posting = $.post(url, { contentId: contentId });
             //console.log("Get: " + title)
@@ -438,8 +438,8 @@
                     return;
                 }
 
-
-                $("#newsContent").html(data);
+                console.log(data)
+                $(".newsContent").html(data);
             });
 
         }
@@ -464,7 +464,7 @@
             divTitle = ' <div class="card"> '
                 + '<div class="card-header bg-light" id="heading{0}">'
                 + '<h5 class="mb-0">'
-                + '<button class="btn" data-toggle="collapse" data-target="#collapse{1}"' + 'aria-expanded="true" aria-controls="collapse{2}">'
+                + '<button style="white-space:normal" class="btn" data-toggle="collapse" data-target="#collapse{1}"' + 'aria-expanded="true" aria-controls="collapse{2}">'
                 + upperTitle
                 + '</button>'
                 + '</h5>'

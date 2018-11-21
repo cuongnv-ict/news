@@ -8,7 +8,7 @@ import config
 
 
 def normalize_html_format(normalized_content):
-    raw_content = normalized_content.read().strip().split(u'\n')
+    raw_content = normalized_content.strip().split(u'\n')
     new_content = []
     for i, sen in enumerate(raw_content):
         if i == 0:
@@ -32,6 +32,6 @@ def get_document_content(contentId):
         normalized_content = document[u'normalized_article']
         html_content = normalize_html_format(normalized_content)
     except:
-        html_content = u''
+        html_content = u'<h4>Can\'t get content of article</h4>'
     connection.close()
     return html_content

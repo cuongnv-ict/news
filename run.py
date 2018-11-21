@@ -81,24 +81,27 @@ def homepage():
 
 @app.route('/update', methods = ['GET', 'POST'])
 def update():
-    trending_titles = joblib.load(m.trending_titles_file)
-    docs_trending = joblib.load(m.docs_trending_file)
-    result = []
-    for domain in trending_titles.keys():
-        json_content = {}
-        json_content.update({u'domain' : domain, u'id' : accent2bare(domain.replace(u' ', u'-').lower())})
-        trending_domain = build_trending_domain(trending_titles[domain], docs_trending[domain])
-        json_content.update({u'content' : trending_domain})
-        result.append(json_content)
-    #result = json.dumps(result, ensure_ascii=False, encoding='utf-8')
-    return jsonify(result)
+    try:
+        trending_titles = joblib.load(m.trending_titles_file)
+        docs_trending = joblib.load(m.docs_trending_file)
+        result = []
+        for domain in trending_titles.keys():
+            json_content = {}
+            json_content.update({u'domain' : domain, u'id' : accent2bare(domain.replace(u' ', u'-').lower())})
+            trending_domain = build_trending_domain(trending_titles[domain], docs_trending[domain])
+            json_content.update({u'content' : trending_domain})
+            result.append(json_content)
+        #result = json.dumps(result, ensure_ascii=False, encoding='utf-8')
+        return jsonify(result)
+    except:
+        return jsonify([])
 
 
 @app.route('/get', methods = ['GET', 'POST'])
 def get_content():
     contentId = request.form['contentId']
     content = demo.get_document_content(contentId)
-    return {u'msg' : content}
+    return jsonify(content)
 
 
 
