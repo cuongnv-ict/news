@@ -100,7 +100,7 @@ def update():
 @app.route('/get', methods = ['GET', 'POST'])
 def get_content():
     contentId = request.form['contentId']
-    content = demo.get_document_content(contentId)
+    content = demo.get_summary_and_content(contentId)
     return jsonify(content)
 
 

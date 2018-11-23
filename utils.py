@@ -4,7 +4,7 @@ __author__ = 'nobita'
 import os, shutil
 from io import open
 import random, string
-from pymongo import MongoClient
+from pymongo import MongoClient, ASCENDING, DESCENDING
 
 
 
@@ -97,6 +97,16 @@ def connect2mongo(host, port, user, pwd, db_name):
     if user != '' and pwd != '':
         db.authenticate(user, pwd)
     return connection, db
+
+
+def create_mongo_index(collection, field, type=u'ascending'):
+    try:
+        if type == u'ascending':
+            collection.create_index([(field, ASCENDING)])
+        else: # descending
+            collection.create_index([(field, DESCENDING)])
+    except Exception as e:
+        print('exception raise in create_mongo_index: %s' % e.message)
 
 
 def get_des_and_remove_tags(content):
