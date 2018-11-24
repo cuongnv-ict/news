@@ -423,7 +423,7 @@ class master:
                                                          docs_trending[domain])
             json_content.update({u'content': trending_domain})
             hot_events.append(json_content)
-        hot_events = json.dumps(hot_events, ensure_ascii=False, encoding='utf-8')
+        # hot_events = json.dumps(hot_events, ensure_ascii=False, encoding='utf-8')
         json_trending = {u'hot_events' : hot_events, u'date' : self.date.strftime(u'%Y-%m-%d')}
         return json_trending
 
