@@ -9,8 +9,10 @@ from sklearn.cluster import DBSCAN
 
 
 
-MIN_DOCS = 6
-MIN_TRENDING_DOCS = 8
+MIN_DOCS = 3
+MIN_TRENDING_DOCS = 5
+MIN_SAMPLES = 4
+EPS = 0.5
 
 class event_detection:
     def __init__(self, domain, dataset, root_dir='.'):
@@ -103,7 +105,7 @@ class event_detection:
 
         # dbscan use cosine_distance is metric.
         # note that: cosine_distance = 1 - cosine_similarity
-        clustering = DBSCAN(eps=0.4, min_samples=6, metric='cosine')
+        clustering = DBSCAN(eps=EPS, min_samples=MIN_SAMPLES, metric='cosine')
         labels = clustering.fit_predict(X)
         clusters = self.get_cluster(labels)
         total = len(labels)
