@@ -29,7 +29,7 @@ class Tokenizer:
         Tokenizer.run(self)
 
 
-    def load_vocab(self, vocab):
+    def load_vocab(self):
         self.vocab = self.load(env.VOCAB)
         self.max_length = self.load(env.MAX_LENGTH)
 
@@ -100,7 +100,7 @@ class Tokenizer:
         q = self.longest_matching(query)
         sentences = self.get_sentences(q)
         q = u'\n'.join(sentences)
-        q, number, url, email, datetime, non_vnese, all_caps, \
+        q, number, url, url2, email, datetime, non_vnese, all_caps, \
         mark, mark2, mark3 = self.pre_processing(q)
         sentences = filter(lambda x: x != u'.' and len(x) > 0,
                            map(lambda xx: xx.strip(), q.split(u'\n')))
@@ -109,7 +109,7 @@ class Tokenizer:
         map_index = {}
         index = 0
         i = 0
-        xxx = u''
+        mlbka = u''
         for sen in sentences:
             # sentences[k] = self.detect_non_vnese_compound_2(sentences[k])
             sen = sen.strip(u'.').strip()
@@ -128,13 +128,13 @@ class Tokenizer:
             i += 2  # plus 2 for add '.\n' to join sentence
         if len(X) > 0:
             label_predict = self.clf.predict(X)
-            xxx += self.get_result(u'.\n'.join(sentences), label_predict, true_label, map_index)
-            xxx = self.restore_info(xxx, number, url, email, datetime, non_vnese, all_caps, mark, mark2, mark3)
-            xxx += u'.'
+            mlbka += self.get_result(u'.\n'.join(sentences), label_predict, true_label, map_index)
+            mlbka = self.restore_info(mlbka, number, url, url2, email, datetime, non_vnese, all_caps, mark, mark2, mark3)
+            mlbka += u'.'
         else:
-            xxx += self.restore_info(q, number, url, email, datetime, non_vnese, all_caps, mark, mark2, mark3)
-            xxx += u'.'
-        return xxx
+            mlbka += self.restore_info(q, number, url, url2, email, datetime, non_vnese, all_caps, mark, mark2, mark3)
+            mlbka += u'.'
+        return mlbka
 
 
     def get_result(self, data, label_predict, true_label, map_index):
@@ -153,7 +153,7 @@ class Tokenizer:
         else: return u' '
 
 
-    def restore_info(self, q, number, url, email, datetime, non_vnese, all_caps, mark, mark2, mark3):
+    def restore_info(self, q, number, url, url2, email, datetime, non_vnese, all_caps, mark, mark2, mark3):
         q = self.restore_info_ex(q, mark3, u'9')
         q = self.restore_info_ex(q, mark2, u'8')
         q = self.restore_info_ex(q, mark, u'7')
@@ -161,6 +161,7 @@ class Tokenizer:
         q = self.restore_info_ex(q, all_caps, u'6')
         q = self.restore_info_ex(q, datetime, u'4')
         q = self.restore_info_ex(q, email, u'3')
+        q = self.restore_info_ex(q, url2, u'0')
         q = self.restore_info_ex(q, url, u'2')
         q = self.restore_info_ex(q, number, u'1')
         return q
@@ -323,5 +324,12 @@ class Tokenizer:
 
     @staticmethod
     def run(self):
-        self.load_vocab(env.VOCAB)
+        self.load_vocab()
         self.clf = self.load(env.MODEL)
+
+
+
+if __name__ == '__main__':
+    t = Tokenizer()
+    s = u'Để mua vé online, độc giả phải truy cập vào các website: vebongdaonline.vn; vebongonline.com.vn; ticketonline.vff.org.vn; vebongda.vff.org.vn. Tại đây, người dùng sẽ đăng nhập vào tài khoản trực tuyến. Nếu chưa có tài khoản, độc giả sẽ phải đăng ký.'
+    print(t.predict(s))

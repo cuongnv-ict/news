@@ -7,10 +7,11 @@ import utils
 
 class regex:
     def __init__(self):
-        self.rm_except_chars = re.compile(u'[^\w\s\d\-–\./…_,\(\)$%%“”\"\'?!;:@#^&*\+=<>\[\]\{\}²³áÁàÀãÃảẢạẠăĂắẮằẰẳẲặẶẵẴâÂấẤầẦẩẨậẬẫẪđĐéÉèÈẻẺẽẼẹẸêÊếẾềỀễỄểỂệỆíÍìÌỉỈĩĨịỊóÓòÒỏỎõÕọỌôÔốỐồỒổỔỗỖộỘơƠớỚờỜởỞỡỠợỢúÚùÙủỦũŨụỤưƯứỨừỪửỬữỮựỰýÝỳỲỷỶỹỸỵỴ]')
+        self.rm_except_chars = re.compile(u'[^\w\s\d…\-–\./_,\(\)$%“”\"\'?!;:@#^&*\+=<>\[\]\{\}²³áÁàÀãÃảẢạẠăĂắẮằẰẳẲặẶẵẴâÂấẤầẦẩẨậẬẫẪđĐéÉèÈẻẺẽẼẹẸêÊếẾềỀễỄểỂệỆíÍìÌỉỈĩĨịỊóÓòÒỏỎõÕọỌôÔốỐồỒổỔỗỖộỘơƠớỚờỜởỞỡỠợỢúÚùÙủỦũŨụỤưƯứỨừỪửỬữỮựỰýÝỳỲỷỶỹỸỵỴ]')
         self.normalize_space = re.compile(u' +')
         self.detect_url = re.compile(u'(https|http|ftp|ssh)://[^\s\[\]\(\)\{\}]+', re.I)
-        self.detect_num = re.compile(u'(\d+,\d+\w*)|(\d+\.\d+\w*)|(\w*\d+\w*)')
+        self.detect_url2 = re.compile(u'[^\s\[\]\(\)\{\}]+(com|net|vn|org|info|biz|mobi|tv|ws|name|us|ca|uk)', re.I)
+        self.detect_num = re.compile(ur'(\d+\,\d+\w*)|(\d+\.\d+\w*)|(\w*\d+\w*)')
         self.detect_email = re.compile(u'[^@|\s]+@[^@|\s]+')
         self.detect_datetime = re.compile(u'\d+[\-/]\d+[\-/]*\d*')
         self.change_to_space = re.compile(u'\t')
@@ -20,6 +21,24 @@ class regex:
         self.detect_special_mark3 = re.compile(u'[/\-$%–@#^&*+=]')
         # detect non-vietnamese words
         self.detect_non_vnese = self.detect_non_vietnamese()
+
+
+    def run_regex_training(self, data):
+        s = self.detect_num.sub(u'1', data) # replaced number to 1
+        s = self.detect_url.sub(u'2', s)
+        s = self.detect_url2.sub(u'0', s)
+        s = self.detect_email.sub(u'3', s)
+        s = self.detect_datetime.sub(u'4', s)
+        s = self.change_to_space.sub(u' ', s)
+        s = self.rm_except_chars.sub(u'', s)
+        s = self.detect_all_caps(u'6', s)
+        s = self.detect_non_vnese.sub(u'5', s)
+        s = self.normalize_special_mark.sub(u' \g<special_mark> ', s)
+        s = self.detect_special_mark.sub(u'7', s)
+        s = self.detect_special_mark2.sub(u'8', s)
+        s = self.detect_special_mark3.sub(u'9', s)
+        s = self.normalize_space.sub(u' ', s)
+        return s.strip()
 
 
     def replace(self, reobj, mask, s):
@@ -36,6 +55,7 @@ class regex:
     def run_regex_predict(self, query):
         s, number = self.replace(self.detect_num, u'1', query)
         s, url = self.replace(self.detect_url, u'2', s)
+        s, url2 = self.replace(self.detect_url2, u'0', s)
         s, email = self.replace(self.detect_email, u'3', s)
         s, datetime = self.replace(self.detect_datetime, u'4', s)
         s = self.change_to_space.sub(u' ', s)
@@ -47,7 +67,7 @@ class regex:
         s, mark2 = self.replace(self.detect_special_mark2, u'8', s)
         s, mark3 = self.replace(self.detect_special_mark3, u'9', s)
         s = self.normalize_space.sub(u' ', s)
-        return s.strip(), number, url, email, datetime, \
+        return s.strip(), number, url, url2, email, datetime, \
                non_vnese, all_caps, mark, mark2, mark3
 
 
@@ -113,6 +133,6 @@ class regex:
 
 if __name__ == '__main__':
     r = regex()
-    s = u'Trung tâm TDTT Phú Thọ'
-    s = r.detect_all_caps.sub(u'6', s)
-    print(s)
+    s = u'bền k56k năm'
+    ss = r.detect_num.sub(u'1', s)
+    print ss

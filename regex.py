@@ -10,6 +10,7 @@ class regex:
         self.detect_exception_chars = re.compile(u'[^\w\s\d\-–\./…_,\(\)$%%“”\"\'?!;:@#^&*\+=<>\[\]\{\}²³áÁàÀãÃảẢạẠăĂắẮằẰẳẲặẶẵẴâÂấẤầẦẩẨậẬẫẪđĐéÉèÈẻẺẽẼẹẸêÊếẾềỀễỄểỂệỆíÍìÌỉỈĩĨịỊóÓòÒỏỎõÕọỌôÔốỐồỒổỔỗỖộỘơƠớỚờỜởỞỡỠợỢúÚùÙủỦũŨụỤưƯứỨừỪửỬữỮựỰýÝỳỲỷỶỹỸỵỴ]')
         self.normalize_space = re.compile(u' +')
         self.detect_url = re.compile(u'(https|http|ftp|ssh)://[^\s\[\]\(\)\{\}]+', re.I)
+        self.detect_url2 = re.compile(u'[^\s\[\]\(\)\{\}]+(com|net|vn|org|info|biz|mobi|tv|ws|name|us|ca|uk)', re.I)
         self.detect_num = re.compile(ur'(\d+,\d+\w*)|(\d+\.\d+\w*)|(\w*\d+\w*)')
         self.detect_email = re.compile(u'[^@|\s]+@[^@|\s]+')
         self.detect_datetime = re.compile(u'\d+[\-/]\d+[\-/]*\d*')
