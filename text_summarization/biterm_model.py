@@ -51,6 +51,7 @@ class biterm:
 
     def preprocessing(self, data):
         data = self.re.detect_url.sub(u'url', data)
+        data = self.re.detect_url2.sub(u'shorturl', data)
         data = self.re.detect_email.sub(u'email', data)
         data = self.re.detect_datetime.sub(u'datetime', data)
         data = self.re.detect_num.sub(u'number', data)

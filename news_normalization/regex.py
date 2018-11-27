@@ -10,6 +10,7 @@ class regex:
         self.rm_except_chars = re.compile(u'[^\w\s\d…\-–\./_,\(\)\$\%“”\"\'?!;:@#^&*\+=<>\[\]\{\}²³áÁàÀãÃảẢạẠăĂắẮằẰẳẲặẶẵẴâÂấẤầẦẩẨậẬẫẪđĐéÉèÈẻẺẽẼẹẸêÊếẾềỀễỄểỂệỆíÍìÌỉỈĩĨịỊóÓòÒỏỎõÕọỌôÔốỐồỒổỔỗỖộỘơƠớỚờỜởỞỡỠợỢúÚùÙủỦũŨụỤưƯứỨừỪửỬữỮựỰýÝỳỲỷỶỹỸỵỴ]')
         self.normalize_space = re.compile(u' +')
         self.detect_url = re.compile(u'(https|http|ftp|ssh)://[^\s\[\]\(\)\{\}]+', re.I)
+        self.detect_url2 = re.compile(u'[^\s\[\]\(\)\{\}]+(com|net|vn|org|info|biz|mobi|tv|ws|name|us|ca|uk)', re.I)
         self.detect_num = re.compile(ur'(\d+\,\d+\w*)|(\d+\.\d+\w*)|(\w*\d+\w*)')
         self.detect_email = re.compile(u'[^@|\s]+@[^@|\s]+')
         self.detect_datetime = re.compile(u'\d+[\-/]\d+[\-/]*\d*')
@@ -25,6 +26,7 @@ class regex:
     def run_regex_training(self, data):
         s = self.detect_num.sub(u'1', data) # replaced number to 1
         s = self.detect_url.sub(u'2', s)
+        s = self.detect_url2.sub(u'0', s)
         s = self.detect_email.sub(u'3', s)
         s = self.detect_datetime.sub(u'4', s)
         s = self.change_to_space.sub(u' ', s)
@@ -51,6 +53,7 @@ class regex:
     def run_regex_predict(self, query):
         s, number = self.replace(self.detect_num, u'1', query)
         s, url = self.replace(self.detect_url, u'2', s)
+        s, url2 = self.replace(self.detect_url2, u'0', s)
         s, email = self.replace(self.detect_email, u'3', s)
         s, datetime = self.replace(self.detect_datetime, u'4', s)
         s = self.change_to_space.sub(u' ', s)
@@ -60,7 +63,7 @@ class regex:
         s, mark2 = self.replace(self.detect_special_mark2, u'6', s)
         # s, mark3 = self.replace(self.detect_special_mark3, u'7', s)
         s = self.normalize_space.sub(u' ', s)
-        return s.strip(), number, url, email, datetime, \
+        return s.strip(), number, url, url2, email, datetime, \
                mark, mark2
 
 

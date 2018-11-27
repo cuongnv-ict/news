@@ -63,7 +63,7 @@ class acronym_normalization:
 
 
     def normalize_sentence(self, sentence):
-        regex_str, number, url, email, datetime, \
+        regex_str, number, url, url2, email, datetime, \
         mark, mark2 = self.language_model.pre_processing(sentence, predict_mode=True)
 
         words = regex_str.split()
@@ -112,7 +112,7 @@ class acronym_normalization:
         # result_words = map(lambda x: x.replace(u'_', u' '), result_words)
 
         final_str = self.language_model.restore_info(u' '.join(result_words),
-                                                     number, url, email, datetime,
+                                                     number, url, url2, email, datetime,
                                                      mark, mark2)
         return final_str
 

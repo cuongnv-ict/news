@@ -144,11 +144,12 @@ class language_model:
         return prob
 
 
-    def restore_info(self, q, number, url, email, datetime, mark, mark2):
+    def restore_info(self, q, number, url, url2, email, datetime, mark, mark2):
         q = self.restore_info_ex(q, mark2, u'6')
         q = self.restore_info_ex(q, mark, u'5')
         q = self.restore_info_ex(q, datetime, u'4')
         q = self.restore_info_ex(q, email, u'3')
+        q = self.restore_info_ex(q, url2, u'0')
         q = self.restore_info_ex(q, url, u'2')
         q = self.restore_info_ex(q, number, u'1')
         return q
