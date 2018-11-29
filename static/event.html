@@ -16,6 +16,12 @@
     -->
 
     <link rel="stylesheet" href="custom/custom.css">
+    <style>
+        .newsContent{
+            height:30em;
+            overflow:auto;
+        }
+    </style>
 
 </head>
 
@@ -38,72 +44,71 @@
 
     <div class="container">
 
+        <div id="header">
+            <div class="row">
 
-        <div class="row">
+            </div>
+            <div class="row">
+                <div class="col-12">
+                    <h3 class="text-center">Event Detection Service</h3>
+                    <h4 class="text-center">&copy; Dora Team</h4>
+                    <h5 class="text-center">Version 1.0</h5>
+                </div>
+            </div>
+            <!-- Content here -->
+            <div class="row">
+                <div class="col-12">
+                    <hr>
+                </div>
+            </div>
 
-        </div>
-        <div class="row">
-            <div class="col-12">
-                <h3 class="text-center">Event Detection Service</h3>
-                <h4 class="text-center">&copy; Dora Team</h4>
-                <h5 class="text-center">Version 1.0</h5>
+
+            <div class="row">
+                <ul class="nav nav-tabs" id="myTab" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link active" id="the-thao-tab" data-toggle="tab" href="#the-thao" role="tab" aria-controls="home"
+                            aria-selected="true">The thao</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="giao-duc-tab" data-toggle="tab" href="#giao-duc" role="tab" aria-controls="giaoduc" aria-selected="false">Giao duc</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="giai-tri-tab" data-toggle="tab" href="#giai-tri" role="tab" aria-controls="giaitri" aria-selected="false">Giai tri</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="the-gioi-tab" data-toggle="tab" href="#the-gioi" role="tab" aria-controls="thegioi" aria-selected="false">The gioi</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="xa-hoi-tab" data-toggle="tab" href="#xa-hoi" role="tab" aria-controls="xahoi" aria-selected="false">Xa hoi</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="van-hoa-tab" data-toggle="tab" href="#van-hoa" role="tab" aria-controls="vanhoa" aria-selected="false">Van hoa</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="doi-song-tab" data-toggle="tab" href="#doi-song" role="tab" aria-controls="doisong" aria-selected="false">Doi song</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="phap-luat-tab" data-toggle="tab" href="#phap-luat" role="tab" aria-controls="phapluat" aria-selected="false">Phap luat</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="kinh-te-tab" data-toggle="tab" href="#kinh-te" role="tab" aria-controls="kinhte" aria-selected="false">Kinh te</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="nha-dat-tab" data-toggle="tab" href="#nha-dat" role="tab" aria-controls="nhadat" aria-selected="false">Nha dat</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="khoa-hoc-tab" data-toggle="tab" href="#khoa-hoc" role="tab" aria-controls="khoahoc" aria-selected="false">Khoa hoc</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="cong-nghe-tab" data-toggle="tab" href="#cong-nghe" role="tab" aria-controls="congnghe" aria-selected="false">Cong nghe</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="xe-co-tab" data-toggle="tab" href="#xe-co" role="tab" aria-controls="xeco" aria-selected="false">Xe co</a>
+                    </li>
+
+                </ul>
             </div>
         </div>
-        <!-- Content here -->
-        <div class="row">
-            <div class="col-12">
-                <hr>
-            </div>
-        </div>
-
-
-        <div class="row">
-            <ul class="nav nav-tabs" id="myTab" role="tablist">
-                <li class="nav-item">
-                    <a class="nav-link active" id="the-thao-tab" data-toggle="tab" href="#the-thao" role="tab" aria-controls="home"
-                        aria-selected="true">The thao</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" id="giao-duc-tab" data-toggle="tab" href="#giao-duc" role="tab" aria-controls="giaoduc" aria-selected="false">Giao duc</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" id="giai-tri-tab" data-toggle="tab" href="#giai-tri" role="tab" aria-controls="giaitri" aria-selected="false">Giai tri</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" id="the-gioi-tab" data-toggle="tab" href="#the-gioi" role="tab" aria-controls="thegioi" aria-selected="false">The gioi</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" id="xa-hoi-tab" data-toggle="tab" href="#xa-hoi" role="tab" aria-controls="xahoi" aria-selected="false">Xa hoi</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" id="van-hoa-tab" data-toggle="tab" href="#van-hoa" role="tab" aria-controls="vanhoa" aria-selected="false">Van hoa</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" id="doi-song-tab" data-toggle="tab" href="#doi-song" role="tab" aria-controls="doisong" aria-selected="false">Doi song</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" id="phap-luat-tab" data-toggle="tab" href="#phap-luat" role="tab" aria-controls="phapluat" aria-selected="false">Phap luat</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" id="kinh-te-tab" data-toggle="tab" href="#kinh-te" role="tab" aria-controls="kinhte" aria-selected="false">Kinh te</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" id="nha-dat-tab" data-toggle="tab" href="#nha-dat" role="tab" aria-controls="nhadat" aria-selected="false">Nha dat</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" id="khoa-hoc-tab" data-toggle="tab" href="#khoa-hoc" role="tab" aria-controls="khoahoc" aria-selected="false">Khoa hoc</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" id="cong-nghe-tab" data-toggle="tab" href="#cong-nghe" role="tab" aria-controls="congnghe" aria-selected="false">Cong nghe</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" id="xe-co-tab" data-toggle="tab" href="#xe-co" role="tab" aria-controls="xeco" aria-selected="false">Xe co</a>
-                </li>
-                
-            </ul>
-        </div>
-
-
 
         <div class="tab-content" id="myTabContent">
             <div class="tab-pane fade show active" id="the-thao" role="tabpanel" aria-labelledby="the-thao-tab">
