@@ -89,7 +89,7 @@ class acronym_normalization:
 
             hard_rule = self.get_hard_rules(word)
             if hard_rule != None:
-                result_words.append(hard_rule)
+                result_words.append(hard_rule.replace(u' ', u'_'))
                 continue
 
             # skip acronym whose length is less than 2 or more than 4
@@ -105,7 +105,7 @@ class acronym_normalization:
 
             best_candidate = self.get_best_candidate(candidates, previous_word, next_word)
             if best_candidate is not None:
-                result_words.append(best_candidate)
+                result_words.append(best_candidate.replace(u' ', u'_'))
             else:
                 result_words.append(word)
 
