@@ -18,7 +18,7 @@
     <link rel="stylesheet" href="custom/custom.css">
     <style>
         .newsContent{
-            height:30em;
+            height:45em;
             overflow:auto;
         }
     </style>
@@ -37,7 +37,27 @@
     <!--
 <script src="bootstrap/js/bootstrap.min.js"></script>
 -->
+    <script>
+        $(function() {
+            var offset = $(".newsContent").offset();
+            var topPadding = 15;
+            $(window).scroll(function() {
+                if ($(window).scrollTop() > offset.top) {
+                    $(".newsContent").stop().animate({
+                        marginTop: $(window).scrollTop() - offset.top + topPadding
+                    });
+                } else {
+                    $(".newsContent").stop().animate({
+                        marginTop: 0
+                    });
+                };
+            });
+        });
 
+        $(document).on('click','.nav-link',function(){
+            $('.newsContent').empty();
+        })
+    </script>
 </head>
 
 <body>
