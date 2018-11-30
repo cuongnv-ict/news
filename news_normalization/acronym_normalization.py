@@ -74,11 +74,11 @@ class acronym_normalization:
                 continue
 
             if i > 0:
-                previous_word = words[i - 1]
+                previous_word = words[i - 1].lower()
             else:
                 previous_word = u''
             if i < len(words) - 1:
-                next_word = words[i + 1]
+                next_word = words[i + 1].lower()
             else:
                 next_word = u''
 

@@ -498,7 +498,7 @@ class master:
                                      [doc[u'_id'], len(doc[u'stories'])]
                                  for doc in documents}
 
-            hot_events_machine = json.loads(json_trending[u'hot_events'])
+            hot_events_machine = json_trending[u'hot_events']
             self.update_hot_event_editor_ex(hot_events_machine, hot_events_editor, collection)
         except Exception as e:
             print(e.message)
