@@ -25,8 +25,6 @@ class event_detection:
         self.title_dir = os.path.join(self.domain_output_dir, 'titles')
         self.title_file = os.path.join(self.title_dir, 'titles.dat')
         self.title_map_file = os.path.join(self.title_dir, 'title_map_file.pkl')
-        self.topic_result_dir = os.path.join(self.domain_output_dir, 'topics')
-        self.topic_result_file = os.path.join(self.topic_result_dir, 'topics.txt')
         self.vocab_file = os.path.join(self.domain_output_dir, 'vocab.dat')
         self.trending_titles_file = os.path.join(self.domain_output_dir, 'trending_titles.pkl')
         self.docs_trending_file = os.path.join(self.domain_output_dir, 'docs_trending.pkl')
