@@ -7,7 +7,7 @@ import config
 def normalize_html_format(short_summary, normalized_content):
     raw_content = normalized_content.strip().split(u'\n')
     new_content = []
-    html_content = u'<h2>Short summary:</h2><br>' + short_summary + u'<br><br>'
+    html_content = u'<h2>Medium summary:</h2><br>' + short_summary + u'<br><br>'
     for i, sen in enumerate(raw_content):
         if i == 0:
             # highlight title
@@ -35,9 +35,12 @@ def get_summary_and_content(contentId):
     try:
         collection = db.get_collection(config.MONGO_COLLECTION_SUMMRIES)
         document_summary = collection.find_one({u'contentId': {u'$eq': int(contentId)}}, max_time_ms=1000)
-        short_summary = document_summary[u'summaries'][u'short']
+        # short_summary = document_summary[u'summaries'][u'short']
+        medium_summary = document_summary[u'summaries'][u'medium']
     except:
-        short_summary = u'Can\'t get document summary'
-    html_content = normalize_html_format(short_summary, normalized_content)
+        # short_summary = u'Can\'t get document summary'
+        medium_summary = u'Can\'t get document summary'
+    # html_content = normalize_html_format(short_summary, normalized_content)
+    html_content = normalize_html_format(medium_summary, normalized_content)
     connection.close()
     return html_content
