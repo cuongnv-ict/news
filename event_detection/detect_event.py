@@ -10,7 +10,7 @@ from sklearn.cluster import DBSCAN
 
 
 MIN_DOCS = 5
-MIN_TRENDING_DOCS = 8
+MIN_TRENDING_DOCS = 10
 MIN_SAMPLES = 4
 EPS = 0.6  # cosine distance
 
