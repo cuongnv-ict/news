@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 
-import os, sys, json
+import os, sys
 from event_detection.detect_event import event_detection
 from get_stories import get_stories
 from collections import Counter
@@ -24,6 +24,8 @@ warnings.filterwarnings('ignore', category=UserWarning)
 TRENDING_MERGE_THRESHOLD = 0.0
 HOUR_TO_RESET = 0  # reset at 0h AM
 TIME_TO_SLEEP = 60 * 1 # sleep in 1 minutes
+MINIMUM_STORIES = 3
+MIN_SAMPLES_CHILD_EVENT = 0.25
 
 class master:
     def __init__(self):
@@ -93,8 +95,12 @@ class master:
                     self.update_duplicate_docs(new_duplicate_categories)
                 trending_titles, docs_trending = self.remove_duplicate_trending_docs()
 
-                print('save trending to mongodb...')
                 json_trending = self.build_json_trending(trending_titles, docs_trending)
+
+                print('get long event for hot events...')
+                json_trending = self.get_long_event(db, json_trending)
+
+                print('save trending to mongodb...')
                 self.save_trending_to_mongo(db, json_trending)
                 self.save_trending_to_file(trending_titles, docs_trending)
 
@@ -545,6 +551,71 @@ class master:
                     collection.insert_one(json_content)
                 except:
                     continue
+
+
+    def get_long_event(self, db, json_trending):
+        new_json_trending = copy.deepcopy(json_trending)
+        try:
+            collection = db.get_collection(config.MONGO_COLLECTION_LONG_EVENTS)
+            long_events = collection.find()
+            for hot_event in json_trending[u'hot_events']:
+                hot_domain = hot_event[u'domain']
+                for i, hot in enumerate(hot_event[u'content']):
+                    try:
+                        if hot[u'long_event'][u'event_id'] != hot[u'event_id']:
+                            continue
+                    except:
+                        pass
+                    hot_stories = hot[u'stories']
+                    if len(hot_stories) < MINIMUM_STORIES:
+                        new_json_trending[u'hot_events'][i].update({u'long_event' : {u'event_id' : hot[u'event_id'],
+                                                                                 u'event_name' : hot[u'event_name'],
+                                                                                 u'date' : json_trending[u'date'],
+                                                                                 u'domain' : hot_domain,
+                                                                                 u'num_story' : len(hot_stories),
+                                                                                 u'child_events' : []}})
+                        continue
+                    has_long = False
+                    for long in long_events:
+                        if long[u'domain'] != hot_domain:
+                            continue
+                        long_stories = long[u'stories']
+                        if self.is_child(hot_stories, long_stories):
+                            has_long = True
+                            new_json_trending[u'hot_events'][i].update({u'long_event' : {u'event_id' : long[u'event_id'],
+                                                                                     u'event_name' : long[u'event_name'],
+                                                                                     u'date' : long[u'date'],
+                                                                                     u'domain' : hot_domain,
+                                                                                     u'num_story' : long[u'num_story'],
+                                                                                     u'child_events' : long[u'child_events']}})
+                            break
+
+                    if has_long:
+                        continue
+
+                    new_json_trending[u'hot_events'][i].update({u'long_event': {u'event_id': hot[u'event_id'],
+                                                                            u'event_name': hot[u'event_name'],
+                                                                            u'date': json_trending[u'date'],
+                                                                            u'domain': hot_domain,
+                                                                            u'num_story': len(hot_stories),
+                                                                            u'child_events': []}})
+        except:
+            pass
+        finally:
+            return new_json_trending
+
+
+    # check whether stories2 is child of stories1 or not
+    def is_child(self, stories1, stories2):
+        contenId1 = set([story[u'contentId'] for story in stories1])
+        contentId2 = set([story[u'contentId'] for story in stories2])
+        intersection = contenId1.intersection(contentId2)
+        similar_score = float(len(intersection)) / float(min(len(contenId1), len(contentId2)))
+        if similar_score >= MIN_SAMPLES_CHILD_EVENT:
+            return True
+        else:
+            return False
+
 
 
 
