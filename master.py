@@ -18,14 +18,15 @@ import copy
 from bson.objectid import ObjectId
 
 
-
 warnings.filterwarnings('ignore', category=UserWarning)
 
 TRENDING_MERGE_THRESHOLD = 0.0
 HOUR_TO_RESET = 0  # reset at 0h AM
 TIME_TO_SLEEP = 60 * 1 # sleep in 1 minutes
 MINIMUM_STORIES = 3
-MIN_SAMPLES_CHILD_EVENT = 0.25
+MIN_SAMPLES_CHILD_EVENT = 2
+MIN_SAMPLES_CHILD_EVENT_RATE = 0.25
+
 
 class master:
     def __init__(self):
@@ -611,7 +612,8 @@ class master:
         contentId2 = set([story[u'contentId'] for story in stories2])
         intersection = contenId1.intersection(contentId2)
         similar_score = float(len(intersection)) / float(min(len(contenId1), len(contentId2)))
-        if similar_score >= MIN_SAMPLES_CHILD_EVENT:
+        if len(intersection) > MIN_SAMPLES_CHILD_EVENT and \
+                similar_score >= MIN_SAMPLES_CHILD_EVENT_RATE:
             return True
         else:
             return False
