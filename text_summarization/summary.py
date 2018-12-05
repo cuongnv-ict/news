@@ -82,10 +82,15 @@ class summary:
         if self.is_skip(title, u'\n'.join([des, body])):
             print(u'Not summary doc: %s' % (title))
             num_sens = len(spliter.split(u'\n'.join([des, body])))
-            if des != u'' and num_sens <= self.NUM_SENTENCES_SHORT:
-                return {u'short': des,
-                        u'medium': des,
-                        u'long': des}
+            if des != u'':
+                if num_sens > self.NUM_SENTENCES_SHORT:
+                    return {u'short': des,
+                            u'medium': des,
+                            u'long': des}
+                else:
+                    return {u'short' : u'\n'.join([des, body]),
+                            u'medium' : u'\n'.join([des, body]),
+                            u'long' : u'\n'.join([des, body])}
             return {u'short' : u'Not support kind of this document',
                     u'medium' : u'Not support kind of this document',
                     u'long' : u'Not support kind of this document'}
