@@ -92,9 +92,9 @@ class master:
                                                         new_tokenized_stories,
                                                         self.crawler.new_categories)
 
-                print('update new stories for follow events...')
-                articles_category_clean = self.get_article_by_category_ex(new_tokenized_titles_clean)
-                self.update_new_stories_follow_events(db, articles_category_clean)
+                # print('update new stories for follow events...')
+                # articles_category_clean = self.get_article_by_category_ex(new_tokenized_titles_clean)
+                # self.update_new_stories_follow_events(db, articles_category_clean)
 
                 if len(new_duplicate_categories) > 0:
                     self.update_duplicate_docs(new_duplicate_categories)
@@ -427,9 +427,9 @@ class master:
             sub_title = []
             for name in docs:
                 name = name.split(u' == ')
-                contentId = int(name[0])
+                contentId = name[0]
                 sub_title.append({u'title': name[1],
-                                  u'contentId' : contentId,
+                                  u'contentId' : int(contentId),
                                   u'date' : self.contentId2dates[contentId],
                                   u'publisher' : self.contentId2publishers[contentId]})
             event.update({u'stories': sub_title})

@@ -5,6 +5,7 @@ import os, shutil
 from io import open
 import random, string
 from pymongo import MongoClient, ASCENDING, DESCENDING
+from datetime import datetime
 
 
 
@@ -128,6 +129,11 @@ def is_exist(d, item):
         return True
     except:
         return False
+
+
+def get_time_at_present():
+    now = datetime.now()
+    return now.strftime('%Y-%m-%dT%H:%M:%S.%f')
 
 
 
