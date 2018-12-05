@@ -569,7 +569,7 @@ class master:
                         pass
                     hot_stories = hot[u'stories']
                     if len(hot_stories) < MINIMUM_STORIES:
-                        new_json_trending[u'hot_events'][i].update({u'long_event' : {u'event_id' : hot[u'event_id'],
+                        new_json_trending[u'hot_events'][u'content'][i].update({u'long_event' : {u'event_id' : hot[u'event_id'],
                                                                                  u'event_name' : hot[u'event_name'],
                                                                                  u'date' : json_trending[u'date'],
                                                                                  u'domain' : hot_domain,
@@ -583,7 +583,7 @@ class master:
                         long_stories = long[u'stories']
                         if self.is_child(hot_stories, long_stories):
                             has_long = True
-                            new_json_trending[u'hot_events'][i].update({u'long_event' : {u'event_id' : long[u'event_id'],
+                            new_json_trending[u'hot_events'][u'content'][i].update({u'long_event' : {u'event_id' : long[u'event_id'],
                                                                                      u'event_name' : long[u'event_name'],
                                                                                      u'date' : long[u'date'],
                                                                                      u'domain' : hot_domain,
@@ -594,7 +594,7 @@ class master:
                     if has_long:
                         continue
 
-                    new_json_trending[u'hot_events'][i].update({u'long_event': {u'event_id': hot[u'event_id'],
+                    new_json_trending[u'hot_events'][u'content'][i].update({u'long_event': {u'event_id': hot[u'event_id'],
                                                                             u'event_name': hot[u'event_name'],
                                                                             u'date': json_trending[u'date'],
                                                                             u'domain': hot_domain,
