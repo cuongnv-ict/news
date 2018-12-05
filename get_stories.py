@@ -108,6 +108,8 @@ class get_stories:
         del self.new_stories[:]
         del self.new_titles[:]
         del self.new_categories[:]
+        del self.new_dates[:]
+        del self.new_publisher[:]
         self.ids.clear()
 
 
