@@ -13,6 +13,8 @@ class get_stories:
         self.new_stories = []
         self.new_titles = []
         self.new_categories = []
+        self.new_dates = []
+        self.new_publisher = []
 
 
     def run(self, db):
@@ -22,14 +24,19 @@ class get_stories:
         del self.new_stories[:]
         del self.new_titles[:]
         del self.new_categories[:]
+        del self.new_dates[:]
+        del self.new_publisher[:]
 
         for doc in documents:
             date = doc[u'date']
+            publisher = doc[u'publisherName'].strip()
             if self.check_date(date):
                 continue
             title, story, category = self.get_content(doc)
             if story == u'' or title == u'':
                 continue
+            self.new_dates.append(date)
+            self.new_publisher.append(publisher)
             self.new_stories.append(story.strip())
             self.new_titles.append(title)
             self.new_categories.append(category.lower())
@@ -119,5 +126,13 @@ class get_stories:
 
 
 if __name__ == '__main__':
+    import utils
+
+    connection, db = utils.connect2mongo(config.MONGO_HOST, config.MONGO_PORT,
+                                         config.MONGO_USER, config.MONGO_PASS,
+                                         config.MONGO_DB)
+
     stories = get_stories()
-    stories.run()
+    stories.run(db)
+
+    connection.close()

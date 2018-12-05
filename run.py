@@ -48,7 +48,9 @@ def build_trending_domain(trending_titles, docs_trending):
         docs = docs_trending[k]
         event.update({u'title': title.split(u' == ')[1] + u' - %d docs' % (len(docs))})
         # sub_title = []
-        sub_title = [{u'title': name.split(u' == ')[1], u'contentId' : name.split(u' == ')[0]}
+        sub_title = [{u'title': u' - '.join([name.split(u' == ')[1],
+                                             u'Báo ' + m.contentId2publishers[int(name.split(u' == ')[0])]]),
+                      u'contentId' : name.split(u' == ')[0]}
                      for name in docs]
         event.update({u'subTitles': sub_title})
         trending.append(event)

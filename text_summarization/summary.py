@@ -17,6 +17,7 @@ class summary:
         self.root_dir = root_dir
         self.DISTANCE_THRESHOLD = 0.5
         self.TOO_LONG = 100
+        self.NUM_SENTENCES_SHORT = 10
         self.skip_title = utils.load_data_to_list(path.join(root_dir, 'skip_title.txt'))
         self.skip_content = utils.load_data_to_list(path.join(root_dir, 'skip_content.txt'))
 
@@ -80,10 +81,19 @@ class summary:
     def run(self, title=u'', des=u'', body=u''):
         if self.is_skip(title, u'\n'.join([des, body])):
             print(u'Not summary doc: %s' % (title))
-            return {u'error' : u'Not support kind of this document'}
+            num_sens = len(spliter.split(u'\n'.join([des, body])))
+            if des != u'' and num_sens <= self.NUM_SENTENCES_SHORT:
+                return {u'short': des,
+                        u'medium': des,
+                        u'long': des}
+            return {u'short' : u'Not support kind of this document',
+                    u'medium' : u'Not support kind of this document',
+                    u'long' : u'Not support kind of this document'}
 
         if des == None or body == None:
-            return {u'error' : u'story is too short'}
+            return {u'short' : u'story is too short',
+                    u'medium' : u'story is too short',
+                    u'long' : u'story is too short'}
 
         data = des + u'\n' + body
         data = unicodedata.normalize('NFKC', data.strip())

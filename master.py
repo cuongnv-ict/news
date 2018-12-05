@@ -45,6 +45,8 @@ class master:
         self.duplicate_docs = {}
         self.contentId2titles = {}
         self.contentId2category = {}
+        self.contentId2dates = {}
+        self.contentId2publishers = {}
         self.event_id = {}
 
 
@@ -68,7 +70,9 @@ class master:
 
                 print('tokenize new stories...')
                 new_tokenized_titles, new_tokenized_stories = self.tokenize_stories(self.crawler.new_titles,
-                                                                                    self.crawler.new_stories)
+                                                                                    self.crawler.new_stories,
+                                                                                    self.crawler.new_dates,
+                                                                                    self.crawler.new_publisher)
 
                 articles_category = self.get_article_by_category(new_tokenized_stories,
                                                                  self.crawler.new_categories)
@@ -109,8 +113,8 @@ class master:
                 self.update_hot_event_editor(db, json_trending)
 
                 print('summarize stories...')
-                self.save_summary_to_mongo(db, new_tokenized_titles_clean,
-                                           new_tokenized_stories_clean)
+                self.save_summary_and_normalized_to_mongo(db, new_tokenized_titles_clean,
+                                                          new_tokenized_stories_clean)
 
                 print('get articles talk about Dong sea...')
                 dong_sea.get_articles(db, new_tokenized_titles_clean,
@@ -187,12 +191,14 @@ class master:
         return trending_titles, docs_trending
 
 
-    def tokenize_stories(self, titles, stories):
+    def tokenize_stories(self, titles, stories, dates, publishers):
         tokenized_titles = []
         tokenized_stories = []
         for i in xrange(len(stories)):
             story = stories[i]
             title = titles[i]
+            date = dates[i]
+            publisher = publishers[i]
 
             tokenized_story = tokenizer.predict(story)
             tokenized_title = tokenized_story.split(u'\n')[0]
@@ -203,6 +209,8 @@ class master:
             contentId = tokenized_title.split(u' == ')[0]
 
             self.contentId2titles.update({contentId : title})
+            self.contentId2dates.update({contentId : date})
+            self.contentId2publishers.update({contentId : publisher})
 
             print '\rtokenized %d stories' % (i + 1),
             sys.stdout.flush()
@@ -319,6 +327,10 @@ class master:
         self.event_id.clear()
         self.contentId2titles.clear()
 
+        self.contentId2dates.clear()
+
+        self.contentId2publishers.clear()
+
         self.contentId2category.clear()
 
         self.crawler.clear()
@@ -410,12 +422,16 @@ class master:
             docs = docs_trending[k]
             event_name = title.split(u' == ')[1]
             event_id = self.get_event_id(event_name)
-            event.update({u'event_name': event_name, u'event_id' : event_id})
+            event.update({u'event_name': event_name,
+                          u'event_id' : event_id})
             sub_title = []
             for name in docs:
                 name = name.split(u' == ')
-                sub_title.append({u'title': name[1], u'contentId' : int(name[0])})
-            # sub_title = [{u'title': name} for name in docs]
+                contentId = int(name[0])
+                sub_title.append({u'title': name[1],
+                                  u'contentId' : contentId,
+                                  u'date' : self.contentId2dates[contentId],
+                                  u'publisher' : self.contentId2publishers[contentId]})
             event.update({u'stories': sub_title})
             trending.append(event)
         return trending
@@ -431,7 +447,8 @@ class master:
             json_content.update({u'content': trending_domain})
             hot_events.append(json_content)
         # hot_events = json.dumps(hot_events, ensure_ascii=False, encoding='utf-8')
-        json_trending = {u'hot_events' : hot_events, u'date' : self.date.strftime(u'%Y-%m-%d')}
+        json_trending = {u'hot_events' : hot_events,
+                         u'date' : self.date.strftime(u'%Y-%m-%d')}
         return json_trending
 
 
@@ -446,7 +463,7 @@ class master:
         collection.insert_one(json_trending)
 
 
-    def save_summary_to_mongo(self, db, new_tokenized_titles, new_tokenized_stories):
+    def save_summary_and_normalized_to_mongo(self, db, new_tokenized_titles, new_tokenized_stories):
         print('save summary to mongodb...')
 
         try:
@@ -463,7 +480,7 @@ class master:
         for i in xrange(len(new_tokenized_stories)):
             try:
                 tokenized_title = new_tokenized_titles[i].split(u' == ')
-                contentId = tokenized_title[0]
+                contentId = int(tokenized_title[0])
                 try:
                     title = self.contentId2titles[tokenized_title[0]].split(u' == ')[1]
                 except:
@@ -476,14 +493,14 @@ class master:
                 normalized_body = self.normalization.run(body)
                 normalized_article = u'\n'.join([normalized_title, normalized_des, normalized_body])
 
-                collection_nor.insert_one({u'contentId': int(contentId),
+                collection_nor.insert_one({u'contentId': contentId,
                                            u'title': title,
                                            u'normalized_article': normalized_article})
 
                 summ = self.summary.run(title=normalized_title,
                                         des=normalized_des,
                                         body=normalized_body)
-                summary = {u'contentId' : int(contentId),
+                summary = {u'contentId' : contentId,
                            u'title' : title,
                            u'summaries' : summ}
                 collection.insert_one(summary)
