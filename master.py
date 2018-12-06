@@ -43,10 +43,10 @@ class master:
         self.trending_titles_file = os.path.join(self.trending_result_dir, 'trending_titles.pkl')
         self.docs_trending_file = os.path.join(self.trending_result_dir, 'docs_trending.pkl')
         self.duplicate_docs = {}
-        self.contentId2titles = {}
+        self.contentId2title = {}
         self.contentId2category = {}
-        self.contentId2dates = {}
-        self.contentId2publishers = {}
+        self.contentId2date = {}
+        self.contentId2publisher = {}
         self.event_id = {}
 
 
@@ -118,7 +118,10 @@ class master:
 
                 print('get articles talk about Dong sea...')
                 dong_sea.get_articles(db, new_tokenized_titles_clean,
-                                      new_tokenized_stories_clean, self.contentId2titles)
+                                      new_tokenized_stories_clean,
+                                      self.contentId2title,
+                                      self.contentId2date,
+                                      self.contentId2publisher)
 
                 connection.close()
 
@@ -208,9 +211,9 @@ class master:
 
             contentId = tokenized_title.split(u' == ')[0]
 
-            self.contentId2titles.update({contentId : title})
-            self.contentId2dates.update({contentId : date})
-            self.contentId2publishers.update({contentId : publisher})
+            self.contentId2title.update({contentId : title})
+            self.contentId2date.update({contentId : date})
+            self.contentId2publisher.update({contentId : publisher})
 
             print '\rtokenized %d stories' % (i + 1),
             sys.stdout.flush()
@@ -225,13 +228,13 @@ class master:
                 try:
                     tokenized_title = self.trending_titles[domain][k]
                     contentId = tokenized_title.split(u' == ')[0]
-                    original_title = self.contentId2titles[contentId]
+                    original_title = self.contentId2title[contentId]
                     self.trending_titles[domain][k] = original_title
                     for i in xrange(len(self.docs_trending[domain][k])):
                         try:
                             tokenized_title = self.docs_trending[domain][k][i]
                             contentId = tokenized_title.split(u' == ')[0]
-                            original_title = self.contentId2titles[contentId]
+                            original_title = self.contentId2title[contentId]
                             self.docs_trending[domain][k][i] = original_title
                         except:
                             continue
@@ -325,11 +328,11 @@ class master:
         self.trending_titles.clear()
         self.docs_trending.clear()
         self.event_id.clear()
-        self.contentId2titles.clear()
+        self.contentId2title.clear()
 
-        self.contentId2dates.clear()
+        self.contentId2date.clear()
 
-        self.contentId2publishers.clear()
+        self.contentId2publisher.clear()
 
         self.contentId2category.clear()
 
@@ -430,8 +433,8 @@ class master:
                 contentId = name[0]
                 sub_title.append({u'title': name[1],
                                   u'contentId' : int(contentId),
-                                  u'date' : self.contentId2dates[contentId],
-                                  u'publisher' : self.contentId2publishers[contentId]})
+                                  u'date' : self.contentId2date[contentId],
+                                  u'publisher' : self.contentId2publisher[contentId]})
             event.update({u'stories': sub_title})
             trending.append(event)
         return trending
@@ -457,12 +460,14 @@ class master:
             collection = db.get_collection(config.MONGO_COLLECTION_HOT_EVENTS)
         except:
             collection = db.create_collection(config.MONGO_COLLECTION_HOT_EVENTS)
+            utils.create_mongo_index(collection, u'date')
+
         documents = collection.find({u'date' : {u'$eq' : self.date.strftime(u'%Y-%m-%d')}})
         for doc in documents:
             collection.remove(doc[u'_id'])
         collection.insert_one(json_trending)
-        now = utils.get_time_at_present()
-        self.update_collection_time_info(db, config.MONGO_COLLECTION_HOT_EVENTS, now)
+
+        self.update_collection_time_info(db, config.MONGO_COLLECTION_HOT_EVENTS)
 
 
     def save_summary_and_normalized_to_mongo(self, db, new_tokenized_titles, new_tokenized_stories):
@@ -472,11 +477,13 @@ class master:
             collection = db.get_collection(config.MONGO_COLLECTION_SUMMRIES)
         except:
             collection = db.create_collection(config.MONGO_COLLECTION_SUMMRIES)
+            utils.create_mongo_index(collection, u'contentId')
 
         try:
             collection_nor = db.get_collection(config.MONGO_COLLECTION_NORMALIZED_ARTICLES)
         except:
             collection_nor = db.create_collection(config.MONGO_COLLECTION_NORMALIZED_ARTICLES)
+            utils.create_mongo_index(collection, u'contentId')
 
         begin_time = time.time()
         for i in xrange(len(new_tokenized_stories)):
@@ -484,7 +491,7 @@ class master:
                 tokenized_title = new_tokenized_titles[i].split(u' == ')
                 contentId = int(tokenized_title[0])
                 try:
-                    title = self.contentId2titles[tokenized_title[0]].split(u' == ')[1]
+                    title = self.contentId2title[tokenized_title[0]].split(u' == ')[1]
                 except:
                     title = tokenized_title[1].replace(u'_', u' ')
 
@@ -498,10 +505,10 @@ class master:
                 collection_nor.insert_one({u'contentId': contentId,
                                            u'title': title,
                                            u'normalized_article': normalized_article,
-                                           u'date' : self.contentId2dates[tokenized_title[0]],
-                                           u'publisher' : self.contentId2publishers[tokenized_title[0]]})
-                now = utils.get_time_at_present()
-                self.update_collection_time_info(db, config.MONGO_COLLECTION_NORMALIZED_ARTICLES, now)
+                                           u'date' : self.contentId2date[tokenized_title[0]],
+                                           u'publisher' : self.contentId2publisher[tokenized_title[0]]})
+
+                self.update_collection_time_info(db, config.MONGO_COLLECTION_NORMALIZED_ARTICLES)
 
                 summ = self.summary.run(title=normalized_title,
                                         des=normalized_des,
@@ -509,11 +516,11 @@ class master:
                 summary = {u'contentId' : contentId,
                            u'title' : title,
                            u'summaries' : summ,
-                           u'date': self.contentId2dates[tokenized_title[0]],
-                           u'publisher': self.contentId2publishers[tokenized_title[0]]}
+                           u'date': self.contentId2date[tokenized_title[0]],
+                           u'publisher': self.contentId2publisher[tokenized_title[0]]}
                 collection.insert_one(summary)
-                now = utils.get_time_at_present()
-                self.update_collection_time_info(db, config.MONGO_COLLECTION_SUMMRIES, now)
+
+                self.update_collection_time_info(db, config.MONGO_COLLECTION_SUMMRIES)
                 print '\rsummaried %d stories' % (i+1),
                 sys.stdout.flush()
             except:
@@ -534,8 +541,8 @@ class master:
 
             hot_events_machine = json_trending[u'hot_events']
             self.update_hot_event_editor_ex(hot_events_machine, hot_events_editor, collection)
-            now = utils.get_time_at_present()
-            self.update_collection_time_info(db, config.MONGO_COLLECTION_HOT_EVENTS_BY_EDITOR, now)
+
+            self.update_collection_time_info(db, config.MONGO_COLLECTION_HOT_EVENTS_BY_EDITOR)
         except Exception as e:
             print(e.message)
 
@@ -568,21 +575,21 @@ class master:
             collection = db.get_collection(config.MONGO_COLLECTION_NEW_ARTICLES_FOLLOW_EVENT)
         except:
             collection = db.create_collection(config.MONGO_COLLECTION_NEW_ARTICLES_FOLLOW_EVENT)
+            utils.create_mongo_index(collection, u'contentId')
 
         for category, stories in articles_category.items():
             for story in stories:
                 try:
                     story_info = story.split(u' == ')
                     contentId = story_info[0]
-                    title = self.contentId2titles[contentId].split(u' == ')[1]
+                    title = self.contentId2title[contentId].split(u' == ')[1]
                     json_content = {u'contentId' : int(contentId),
                                     u'title' : title,
                                     u'domain' : category,
-                                    u'date' : self.contentId2dates[contentId],
-                                    u'publisher' : self.contentId2publishers[contentId]}
+                                    u'date' : self.contentId2date[contentId],
+                                    u'publisher' : self.contentId2publisher[contentId]}
                     collection.insert_one(json_content)
-                    now = utils.get_time_at_present()
-                    self.update_collection_time_info(db, config.MONGO_COLLECTION_NEW_ARTICLES_FOLLOW_EVENT, now)
+                    self.update_collection_time_info(db, config.MONGO_COLLECTION_NEW_ARTICLES_FOLLOW_EVENT)
                 except:
                     continue
 
@@ -652,21 +659,24 @@ class master:
             return False
 
 
-    def update_collection_time_info(self, db, collection_name, time_str):
+    def update_collection_time_info(self, db, collection_name):
         try:
             collection = db.get_collection(config.MONGO_COLLECTION_UPDATE_TIME)
         except:
             collection = db.create_collection(config.MONGO_COLLECTION_UPDATE_TIME)
+            utils.create_mongo_index(collection, u'name')
+
+        now = utils.get_time_at_present()
 
         try:
             document = collection.find_one({u'name': {u'$eq': collection_name}}, max_time_ms=1000)
             _id = ObjectId(document[u'_id'])
             collection.update_one({u'_id': _id},
-                                  {u'$set': {u'update_time' : time_str}})
+                                  {u'$set': {u'update_time' : now}})
         except:
             collection.insert_one({u'name' : collection_name,
-                                   u'create_time' : time_str,
-                                   u'update_time' : time_str})
+                                   u'create_time' : now,
+                                   u'update_time' : now})
 
 
 

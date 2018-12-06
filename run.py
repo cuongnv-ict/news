@@ -51,7 +51,7 @@ def build_trending_domain(trending_titles, docs_trending):
         for name in docs:
             try:
                 sub_title.append({u'title': u' - '.join([name.split(u' == ')[1],
-                                                          u'Báo ' + m.contentId2publishers[name.split(u' == ')[0]]]),
+                                                          u'Báo ' + m.contentId2publisher[name.split(u' == ')[0]]]),
                                   u'contentId': name.split(u' == ')[0]})
             except:
                 sub_title.append({u'title': name.split(u' == ')[1],
