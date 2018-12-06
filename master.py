@@ -460,7 +460,6 @@ class master:
             collection = db.get_collection(config.MONGO_COLLECTION_HOT_EVENTS)
         except:
             collection = db.create_collection(config.MONGO_COLLECTION_HOT_EVENTS)
-            utils.create_mongo_index(collection, u'date')
 
         documents = collection.find({u'date' : {u'$eq' : self.date.strftime(u'%Y-%m-%d')}})
         for doc in documents:
@@ -477,13 +476,11 @@ class master:
             collection = db.get_collection(config.MONGO_COLLECTION_SUMMRIES)
         except:
             collection = db.create_collection(config.MONGO_COLLECTION_SUMMRIES)
-            utils.create_mongo_index(collection, u'contentId')
 
         try:
             collection_nor = db.get_collection(config.MONGO_COLLECTION_NORMALIZED_ARTICLES)
         except:
             collection_nor = db.create_collection(config.MONGO_COLLECTION_NORMALIZED_ARTICLES)
-            utils.create_mongo_index(collection, u'contentId')
 
         begin_time = time.time()
         for i in xrange(len(new_tokenized_stories)):
@@ -575,7 +572,6 @@ class master:
             collection = db.get_collection(config.MONGO_COLLECTION_NEW_ARTICLES_FOLLOW_EVENT)
         except:
             collection = db.create_collection(config.MONGO_COLLECTION_NEW_ARTICLES_FOLLOW_EVENT)
-            utils.create_mongo_index(collection, u'contentId')
 
         for category, stories in articles_category.items():
             for story in stories:
