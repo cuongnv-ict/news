@@ -25,6 +25,9 @@ MONGO_COLLECTION_DONG_SEA = 'dong_sea_articles'
 
 MONGO_COLLECTION_UPDATE_TIME = 'update_time'
 
+MONGO_COLLECTION_TTS_ARTICLES = 'tts_articles'
+MONGO_COLLECTION_TTS_EVENTS = 'tts_events'
+
 categories = [u'giáo dục', u'thể thao', u'giải trí',
               u'thế giới', u'xã hội', u'văn hóa',
               u'đời sống', u'pháp luật', u'kinh tế',

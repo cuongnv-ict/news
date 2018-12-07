@@ -4,7 +4,7 @@ from flask import Flask, request
 from flask import jsonify
 from event_detection import demo
 from master import master
-from threading import Thread
+from multiprocessing import Process
 from sklearn.externals import joblib
 
 
@@ -35,7 +35,7 @@ def accent2bare(data):
 
 
 m = master()
-handle = Thread(target=m.run)
+handle = Process(target=m.run)
 handle.start()
 
 

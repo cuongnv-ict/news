@@ -38,5 +38,11 @@ try:
 
     collection = db.get_collection(config.MONGO_COLLECTION_UPDATE_TIME)
     utils.create_mongo_index(collection, u'name')
+
+    collection = db.get_collection(config.MONGO_COLLECTION_TTS_ARTICLES)
+    utils.create_mongo_index(collection, u'contentId')
+
+    collection = db.get_collection(config.MONGO_COLLECTION_TTS_EVENTS)
+    utils.create_mongo_index(collection, u'event_id')
 except Exception as e:
     print(e.message)
