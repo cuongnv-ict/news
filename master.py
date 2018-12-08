@@ -24,8 +24,9 @@ TRENDING_MERGE_THRESHOLD = 0.0
 HOUR_TO_RESET = 0  # reset at 0h AM
 TIME_TO_SLEEP = 60 * 1 # sleep in 1 minutes
 MINIMUM_STORIES = 3
-MIN_SAMPLES_CHILD_EVENT = 2
+MIN_SAMPLES_CHILD_EVENT = 3
 MIN_SAMPLES_CHILD_EVENT_RATE = 0.25
+MIN_SAMPLES_CHILD_EVENT_RATE_EX = 0.75
 
 
 class master:
@@ -595,9 +596,9 @@ class master:
         try:
             collection = db.get_collection(config.MONGO_COLLECTION_LONG_EVENTS)
             long_events = collection.find()
-            for hot_event in json_trending[u'hot_events']:
+            for i, hot_event in enumerate(json_trending[u'hot_events']):
                 hot_domain = hot_event[u'domain']
-                for i, hot in enumerate(hot_event[u'content']):
+                for j, hot in enumerate(hot_event[u'content']):
                     try:
                         if hot[u'long_event'][u'event_id'] != hot[u'event_id']:
                             continue
@@ -605,7 +606,7 @@ class master:
                         pass
                     hot_stories = hot[u'stories']
                     if len(hot_stories) < MINIMUM_STORIES:
-                        new_json_trending[u'hot_events'][u'content'][i].update({u'long_event' : {u'event_id' : hot[u'event_id'],
+                        new_json_trending[u'hot_events'][i][u'content'][j].update({u'long_event' : {u'event_id' : hot[u'event_id'],
                                                                                  u'event_name' : hot[u'event_name'],
                                                                                  u'date' : json_trending[u'date'],
                                                                                  u'domain' : hot_domain,
@@ -619,7 +620,7 @@ class master:
                         long_stories = long[u'stories']
                         if self.is_child(hot_stories, long_stories):
                             has_long = True
-                            new_json_trending[u'hot_events'][u'content'][i].update({u'long_event' : {u'event_id' : long[u'event_id'],
+                            new_json_trending[u'hot_events'][i][u'content'][j].update({u'long_event' : {u'event_id' : long[u'event_id'],
                                                                                      u'event_name' : long[u'event_name'],
                                                                                      u'date' : long[u'date'],
                                                                                      u'domain' : hot_domain,
@@ -629,15 +630,14 @@ class master:
 
                     if has_long:
                         continue
-
-                    new_json_trending[u'hot_events'][u'content'][i].update({u'long_event': {u'event_id': hot[u'event_id'],
+                    new_json_trending[u'hot_events'][i][u'content'][j].update({u'long_event': {u'event_id': hot[u'event_id'],
                                                                             u'event_name': hot[u'event_name'],
                                                                             u'date': json_trending[u'date'],
                                                                             u'domain': hot_domain,
                                                                             u'num_story': len(hot_stories),
                                                                             u'child_events': []}})
-        except:
-            pass
+        except Exception as e:
+            print(e.message)
         finally:
             return new_json_trending
 
@@ -648,11 +648,13 @@ class master:
         contentId2 = set([story[u'contentId'] for story in stories2])
         intersection = contenId1.intersection(contentId2)
         similar_score = float(len(intersection)) / float(min(len(contenId1), len(contentId2)))
-        if len(intersection) > MIN_SAMPLES_CHILD_EVENT and \
+        if min(len(contenId1), len(contentId2)) < MIN_SAMPLES_CHILD_EVENT:
+            if similar_score >= MIN_SAMPLES_CHILD_EVENT_RATE_EX:
+                return True
+        if len(intersection) >= MIN_SAMPLES_CHILD_EVENT or \
                 similar_score >= MIN_SAMPLES_CHILD_EVENT_RATE:
             return True
-        else:
-            return False
+        return False
 
 
     def update_collection_time_info(self, db, collection_name):
