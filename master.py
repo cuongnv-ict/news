@@ -11,7 +11,6 @@ import config, utils
 from sklearn.externals import joblib
 from duplicate_documents.minhash_lsh import duplicate_docs as lsh
 from text_summarization.summary import summary
-from news_normalization.normalization import normalization
 import copy
 from bson.objectid import ObjectId
 
@@ -31,7 +30,6 @@ class master:
     def __init__(self):
         self.crawler = get_stories()
         self.lsh = lsh()
-        self.normalization = normalization(root_dir='news_normalization')
         self.summary = summary(root_dir='text_summarization')
         self.docs_trending = {}
         self.trending_titles = {}
@@ -47,6 +45,7 @@ class master:
         self.contentId2date = {}
         self.contentId2publisher = {}
         self.event_id = {}
+        self.contentId2publisher_file = os.path.join(self.trending_result_dir, 'contentId2publisher.pkl')
 
 
     def run(self):
@@ -112,8 +111,8 @@ class master:
                 self.update_hot_event_editor(db, json_trending)
 
                 print('summarize stories...')
-                self.save_summary_and_normalized_to_mongo(db, new_tokenized_titles_clean,
-                                                          new_tokenized_stories_clean)
+                self.save_summary_to_mongo(db, new_tokenized_titles_clean,
+                                           new_tokenized_stories_clean)
 
                 connection.close()
 
@@ -398,6 +397,7 @@ class master:
         utils.mkdir(self.trending_result_dir)
         joblib.dump(trending_titles, self.trending_titles_file, compress=True)
         joblib.dump(docs_trending, self.docs_trending_file, compress=True)
+        joblib.dump(self.contentId2publisher, self.contentId2publisher_file, compress=True)
 
 
     def get_event_id(self, event_name):
@@ -460,18 +460,13 @@ class master:
         collection.insert_one(json_trending)
 
 
-    def save_summary_and_normalized_to_mongo(self, db, new_tokenized_titles, new_tokenized_stories):
+    def save_summary_to_mongo(self, db, new_tokenized_titles, new_tokenized_stories):
         print('save summary to mongodb...')
 
         try:
             collection = db.get_collection(config.MONGO_COLLECTION_SUMMRIES)
         except:
             collection = db.create_collection(config.MONGO_COLLECTION_SUMMRIES)
-
-        try:
-            collection_nor = db.get_collection(config.MONGO_COLLECTION_NORMALIZED_ARTICLES)
-        except:
-            collection_nor = db.create_collection(config.MONGO_COLLECTION_NORMALIZED_ARTICLES)
 
         begin_time = time.time()
         for i in xrange(len(new_tokenized_stories)):
@@ -485,21 +480,10 @@ class master:
 
                 # normalize article before summary
                 des, body = utils.get_des_and_remove_tags(new_tokenized_stories[i])
-                normalized_title = self.normalization.run(tokenized_title[1])
-                normalized_des = self.normalization.run(des)
-                normalized_body = self.normalization.run(body)
-                normalized_article = u'\n'.join([normalized_title, normalized_des, normalized_body])
 
-                collection_nor.insert_one({u'contentId': contentId,
-                                           u'title': title,
-                                           u'normalized_article': normalized_article,
-                                           u'date' : self.contentId2date[tokenized_title[0]],
-                                           u'publisher' : self.contentId2publisher[tokenized_title[0]],
-                                           u'updated_at' : datetime.datetime.now()})
-
-                summ = self.summary.run(title=normalized_title,
-                                        des=normalized_des,
-                                        body=normalized_body)
+                summ = self.summary.run(title=tokenized_title[1],
+                                        des=des,
+                                        body=body)
 
                 summary = {u'contentId' : contentId,
                            u'title' : title,

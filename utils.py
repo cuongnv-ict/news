@@ -119,7 +119,9 @@ def get_des_and_remove_tags(content):
     des = sentences[1]
     if u'[ tags ]' in sentences[len(sentences) - 1]:
         body = u'\n'.join(sentences[2:len(sentences) - 1])
-    else: body = u'\n'.join(sentences[2:])
+    else:
+        # body = u'\n'.join(sentences[2:])
+        body = u'\n'.join(sentences)
     return des, body
 
 

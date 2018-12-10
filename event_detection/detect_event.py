@@ -52,7 +52,7 @@ class event_detection:
         preprocessing.remove_stop_postag(self.dataset, self.clean_dataset_dir, names)
         vectorizer, contents, titles = build_data.build_vocab(self.clean_dataset_dir,
                                                               self.vocab_file,
-                                                              self.root_dir, title_map)
+                                                              title_map)
         print('There are %s docs in domain %s' % (len(contents), self.domain))
         # build_data.save_titles_to_file(titles, self.title_dir, self.title_file)
         self.save_title_map(title_map)

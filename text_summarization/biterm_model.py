@@ -11,13 +11,13 @@ import operator
 from io import open
 import utils
 from regex import regex
-from nlp_tools import spliter
+from nltk import tokenize
 
 
 
 
 class biterm:
-    def __init__(self, num_iters=100, root_dir='.'):
+    def __init__(self, num_iters=100):
         self.K = 5 # number topic
         self.W = None # vocab size
         self.alpha = 0.1 # hyperparameters of p(z)
@@ -30,7 +30,7 @@ class biterm:
         self.btm_info = []
         self.vectorizer = TfidfVectorizer(ngram_range=(1, 1), max_df=0.6,
                                           min_df=1, max_features=200,
-                                          stop_words=utils.load_data_to_list(os.path.join(root_dir, 'stopwords.txt')))
+                                          stop_words='english')
         self.re = regex()
         self.MINIMUM_LENGTH_SENTENCE = 5
         self.NUM_SEN_SHORT_TEXT = 15
@@ -103,7 +103,7 @@ class biterm:
 
     def get_sentences(self, data):
         raw_sentences = []; clean_sentences = []
-        sen = spliter.split(data)
+        sen = tokenize.sent_tokenize(data)
 
         sen = filter(lambda x: u'video' not in x.lower() and u':' not in x, sen)
 

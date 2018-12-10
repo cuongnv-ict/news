@@ -2,11 +2,6 @@
 __author__ = 'nobita'
 
 from biterm_info import biterm_info
-from nlp_tools import spliter
-try:
-    from pyvi.pyvi import ViPosTagger
-except:
-    from pyvi import ViPosTagger
 
 
 
@@ -20,7 +15,6 @@ class document:
         self.content = u''
         self.topic_proportion = None
         self.BTM_WINDOW_LENGTH = 2
-        self.importance_pos = {'N':True, 'Np':True, 'Ny':True, 'V':True}
 
 
     def get_doc_info(self, doc, vocab):
@@ -38,19 +32,6 @@ class document:
             except: continue
         self.length = len(self.data)
         self.gen_biterm()
-
-
-    def remove_stop_postag(self, content):
-        content = map(lambda x: ViPosTagger.postagging(x),
-                      spliter.split(content))
-        clean_content = []
-        for info in content:
-            sen = []
-            for i in xrange(len(info[0])):
-                if self.is_exist(info[1][i]):
-                    sen.append(info[0][i])
-            clean_content.append(u' '.join(sen))
-        return u'\n'.join(clean_content)
 
 
     def is_exist(self, postag):

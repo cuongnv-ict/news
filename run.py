@@ -40,7 +40,7 @@ handle.start()
 
 
 
-def build_trending_domain(trending_titles, docs_trending):
+def build_trending_domain(trending_titles, docs_trending, contentId2publisher):
     # build json content
     trending = []
     for k, title in trending_titles.items():
@@ -51,7 +51,7 @@ def build_trending_domain(trending_titles, docs_trending):
         for name in docs:
             try:
                 sub_title.append({u'title': u' - '.join([name.split(u' == ')[1],
-                                                          u'Báo ' + m.contentId2publisher[name.split(u' == ')[0]]]),
+                                                          u'Báo ' + contentId2publisher[name.split(u' == ')[0]]]),
                                   u'contentId': name.split(u' == ')[0]})
             except:
                 sub_title.append({u'title': name.split(u' == ')[1],
@@ -90,11 +90,14 @@ def update():
     try:
         trending_titles = joblib.load(m.trending_titles_file)
         docs_trending = joblib.load(m.docs_trending_file)
+        contentId2publisher = joblib.load(m.contentId2publisher_file)
         result = []
         for domain in trending_titles.keys():
             json_content = {}
             json_content.update({u'domain' : domain, u'id' : accent2bare(domain.replace(u' ', u'-').lower())})
-            trending_domain = build_trending_domain(trending_titles[domain], docs_trending[domain])
+            trending_domain = build_trending_domain(trending_titles[domain],
+                                                    docs_trending[domain],
+                                                    contentId2publisher)
             json_content.update({u'content' : trending_domain})
             result.append(json_content)
         #result = json.dumps(result, ensure_ascii=False, encoding='utf-8')

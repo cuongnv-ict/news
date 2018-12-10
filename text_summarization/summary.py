@@ -7,7 +7,7 @@ from os import path
 from biterm_model import biterm
 from sklearn.metrics.pairwise import cosine_distances
 import numpy as np
-from nlp_tools import spliter
+from nltk import tokenize
 import utils
 
 
@@ -81,7 +81,7 @@ class summary:
     def run(self, title=u'', des=u'', body=u''):
         if self.is_skip(title, u'\n'.join([des, body])):
             print(u'Not summary doc: %s' % (title))
-            num_sens = len(spliter.split(u'\n'.join([des, body])))
+            num_sens = len(tokenize.sent_tokenize(u'\n'.join([des, body])))
             if des != u'':
                 if num_sens > self.NUM_SENTENCES_SHORT:
                     return {u'short': des,
@@ -108,7 +108,7 @@ class summary:
                     u'medium' : u'story is too short',
                     u'long' : u'story is too short'}
 
-        btm = biterm(num_iters=100, root_dir=self.root_dir)
+        btm = biterm(num_iters=100)
         docs = btm.run_gibbs_sampling(data, save_result=False)
 
         if len(docs) == 0:
@@ -159,7 +159,7 @@ class summary:
 
     def insert_description(self, des, l, minimum):
         d = {i:True for i in l}
-        des = spliter.split(des)
+        des = tokenize.sent_tokenize(des)
         des = filter(lambda x: len(x.split()) >= minimum, des)
         des_len = len(des)
         for i in xrange(des_len):
