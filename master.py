@@ -49,6 +49,7 @@ class master:
         self.contentId2date = {}
         self.contentId2publisher = {}
         self.event_id = {}
+        self.contentId2publisher_file = os.path.join(self.trending_result_dir, 'contentId2publisher.pkl')
 
 
     def run(self):
@@ -407,6 +408,7 @@ class master:
         utils.mkdir(self.trending_result_dir)
         joblib.dump(trending_titles, self.trending_titles_file, compress=True)
         joblib.dump(docs_trending, self.docs_trending_file, compress=True)
+        joblib.dump(self.contentId2publisher, self.contentId2publisher_file, compress=True)
 
 
     def get_event_id(self, event_name):
