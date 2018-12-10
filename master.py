@@ -9,10 +9,8 @@ import time, datetime
 import warnings
 import config, utils
 from sklearn.externals import joblib
-from nlp_tools import tokenizer
 from duplicate_documents.minhash_lsh import duplicate_docs as lsh
 from text_summarization.summary import summary
-import get_Dong_sea_articles as dong_sea
 from news_normalization.normalization import normalization
 import copy
 from bson.objectid import ObjectId
@@ -117,13 +115,6 @@ class master:
                 self.save_summary_and_normalized_to_mongo(db, new_tokenized_titles_clean,
                                                           new_tokenized_stories_clean)
 
-                print('get articles talk about Dong sea...')
-                dong_sea.get_articles(db, new_tokenized_titles_clean,
-                                      new_tokenized_stories_clean,
-                                      self.contentId2title,
-                                      self.contentId2date,
-                                      self.contentId2publisher)
-
                 connection.close()
 
                 print('sleep in %d seconds...' % (TIME_TO_SLEEP))
@@ -204,7 +195,7 @@ class master:
             date = dates[i]
             publisher = publishers[i]
 
-            tokenized_story = tokenizer.predict(story)
+            tokenized_story = story
             tokenized_title = tokenized_story.split(u'\n')[0]
 
             tokenized_stories.append(tokenized_story)

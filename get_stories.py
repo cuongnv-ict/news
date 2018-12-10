@@ -29,8 +29,8 @@ class get_stories:
         del self.new_publisher[:]
 
         for doc in documents:
-            date_obj = parse(doc[u'date'])
-            publisher = doc[u'publisherName'].strip()
+            date_obj = parse(doc[u'publishedAt'])
+            publisher = doc[u'source'].strip()
             if self.check_date(date_obj):
                 continue
             title, story, category = self.get_content(doc)
@@ -60,39 +60,23 @@ class get_stories:
         doc_id = doc[u'_id']
         if self.is_exist(doc_id):
             return u'', u'', u''
-        contentId = doc[u'contentId']
+        contentId = doc_id
         title = doc[u'title'].strip()
         if title != u'':
             title = u' == '.join([unicode(contentId), title])
             print(title)
         else:
             return u'', u'', u''
-        tags = map(lambda x: x.strip(), json.loads(doc[u'tags'], encoding='utf-8'))
-        tags = u'[tags] : ' + u' , '.join(tags)
         description = doc[u'description'].strip()
-        raw_body = json.loads(doc[u'body'], encoding='utf-8')
-        body = self.get_body(raw_body)
-        story = u'\n'.join([title, description, body, tags])
+        body = json.loads(doc[u'content'], encoding='utf-8')
+        story = u'\n'.join([title, description, body])
 
         if contentId > self.contentId:
             self.contentId = contentId
 
-        category = doc[u'parentCategoryName'].strip().lower()
+        category = doc[u'category'].strip().lower()
 
         return title, story, category
-
-
-    def get_body(self, raw_body):
-        clean_body = []
-        for content in raw_body:
-            try:
-                if content[u'type'] != u'text':
-                    continue
-                clean_content = BeautifulSoup(content[u'content']).text.strip()
-                clean_body.append(clean_content)
-            except:
-                continue
-        return u'\n'.join(clean_body)
 
 
     def is_exist(self, doc_id):
