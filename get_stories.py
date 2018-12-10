@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup
 from datetime import datetime
 import config
 from sklearn.externals import joblib
+from dateutil.parser import parse
 
 
 
@@ -28,14 +29,14 @@ class get_stories:
         del self.new_publisher[:]
 
         for doc in documents:
-            date = doc[u'date']
+            date_obj = parse(doc[u'date'])
             publisher = doc[u'publisherName'].strip()
-            if self.check_date(date):
+            if self.check_date(date_obj):
                 continue
             title, story, category = self.get_content(doc)
             if story == u'' or title == u'':
                 continue
-            self.new_dates.append(date)
+            self.new_dates.append(date_obj)
             self.new_publisher.append(publisher)
             self.new_stories.append(story.strip())
             self.new_titles.append(title)
@@ -46,9 +47,8 @@ class get_stories:
         self.save_contentId()
 
 
-    def check_date(self, raw_date):
-        date_str = raw_date.split(u'T')[0]
-        datetime_obj = datetime.strptime(date_str, '%Y-%m-%d').date()
+    def check_date(self, date_obj):
+        datetime_obj = date_obj.date()
         now = datetime.now()
         diff = now.date() - datetime_obj
         if diff.days != 0:

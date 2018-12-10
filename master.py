@@ -445,14 +445,15 @@ class master:
         hot_events = []
         for domain in trending_titles.keys():
             json_content = {}
-            json_content.update({u'domain': domain, u'id': domain.replace(u' ', u'-').lower()})
+            json_content.update({u'domain': domain})
             trending_domain = self.build_trending_domain(trending_titles[domain],
                                                          docs_trending[domain])
             json_content.update({u'content': trending_domain})
             hot_events.append(json_content)
         # hot_events = json.dumps(hot_events, ensure_ascii=False, encoding='utf-8')
         json_trending = {u'hot_events' : hot_events,
-                         u'date' : self.date.strftime(u'%Y-%m-%d')}
+                         u'date' : self.date.strftime(u'%Y-%m-%d'),
+                         u'updated_at' : datetime.datetime.now()}
         return json_trending
 
 
@@ -466,8 +467,6 @@ class master:
         for doc in documents:
             collection.remove(doc[u'_id'])
         collection.insert_one(json_trending)
-
-        self.update_collection_time_info(db, config.MONGO_COLLECTION_HOT_EVENTS)
 
 
     def save_summary_and_normalized_to_mongo(self, db, new_tokenized_titles, new_tokenized_stories):
@@ -504,21 +503,22 @@ class master:
                                            u'title': title,
                                            u'normalized_article': normalized_article,
                                            u'date' : self.contentId2date[tokenized_title[0]],
-                                           u'publisher' : self.contentId2publisher[tokenized_title[0]]})
-
-                self.update_collection_time_info(db, config.MONGO_COLLECTION_NORMALIZED_ARTICLES)
+                                           u'publisher' : self.contentId2publisher[tokenized_title[0]],
+                                           u'updated_at' : datetime.datetime.now()})
 
                 summ = self.summary.run(title=normalized_title,
                                         des=normalized_des,
                                         body=normalized_body)
+
                 summary = {u'contentId' : contentId,
                            u'title' : title,
                            u'summaries' : summ,
-                           u'date': self.contentId2date[tokenized_title[0]],
-                           u'publisher': self.contentId2publisher[tokenized_title[0]]}
+                           u'date' : self.contentId2date[tokenized_title[0]],
+                           u'publisher' : self.contentId2publisher[tokenized_title[0]],
+                           u'updated_at' : datetime.datetime.now()}
+
                 collection.insert_one(summary)
 
-                self.update_collection_time_info(db, config.MONGO_COLLECTION_SUMMRIES)
                 print '\rsummaried %d stories' % (i+1),
                 sys.stdout.flush()
             except:
@@ -539,8 +539,6 @@ class master:
 
             hot_events_machine = json_trending[u'hot_events']
             self.update_hot_event_editor_ex(hot_events_machine, hot_events_editor, collection)
-
-            self.update_collection_time_info(db, config.MONGO_COLLECTION_HOT_EVENTS_BY_EDITOR)
         except Exception as e:
             print(e.message)
 
@@ -564,7 +562,8 @@ class master:
 
                 collection.update_one({u'_id':ObjectId(_id)},
                                       {u'$set' : {u'num_story':len(event[u'stories']),
-                                                  u'stories':event[u'stories']}},
+                                                  u'stories':event[u'stories'],
+                                                  u'updated_at':datetime.datetime.now()}},
                                       upsert=False)
 
 
@@ -584,9 +583,9 @@ class master:
                                     u'title' : title,
                                     u'domain' : category,
                                     u'date' : self.contentId2date[contentId],
-                                    u'publisher' : self.contentId2publisher[contentId]}
+                                    u'publisher' : self.contentId2publisher[contentId],
+                                    u'updated_at' : datetime.datetime.now()}
                     collection.insert_one(json_content)
-                    self.update_collection_time_info(db, config.MONGO_COLLECTION_NEW_ARTICLES_FOLLOW_EVENT)
                 except:
                     continue
 
@@ -656,25 +655,6 @@ class master:
             return True
         return False
 
-
-    def update_collection_time_info(self, db, collection_name):
-        try:
-            collection = db.get_collection(config.MONGO_COLLECTION_UPDATE_TIME)
-        except:
-            collection = db.create_collection(config.MONGO_COLLECTION_UPDATE_TIME)
-            utils.create_mongo_index(collection, u'name')
-
-        now = utils.get_time_at_present()
-
-        try:
-            document = collection.find_one({u'name': {u'$eq': collection_name}}, max_time_ms=1000)
-            _id = ObjectId(document[u'_id'])
-            collection.update_one({u'_id': _id},
-                                  {u'$set': {u'update_time' : now}})
-        except:
-            collection.insert_one({u'name' : collection_name,
-                                   u'create_time' : now,
-                                   u'update_time' : now})
 
 
 

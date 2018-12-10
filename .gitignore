@@ -110,3 +110,5 @@ new_stories.pkl
 trending_result/
 *.pkl
 *.tar.gz
+*.zip
+temp.py
