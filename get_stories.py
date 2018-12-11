@@ -27,18 +27,21 @@ class get_stories:
         del self.new_publisher[:]
 
         for doc in documents:
-            date_obj = parse(doc[u'publishedAt'])
-            publisher = doc[u'source'].strip()
-            if self.check_date(date_obj):
+            try:
+                date_obj = parse(doc[u'publishedAt'])
+                publisher = doc[u'source'].strip()
+                if self.check_date(date_obj):
+                    continue
+                title, story, category = self.get_content(doc)
+                if story == u'' or title == u'':
+                    continue
+                self.new_dates.append(date_obj)
+                self.new_publisher.append(publisher)
+                self.new_stories.append(story.strip())
+                self.new_titles.append(title)
+                self.new_categories.append(category.lower())
+            except:
                 continue
-            title, story, category = self.get_content(doc)
-            if story == u'' or title == u'':
-                continue
-            self.new_dates.append(date_obj)
-            self.new_publisher.append(publisher)
-            self.new_stories.append(story.strip())
-            self.new_titles.append(title)
-            self.new_categories.append(category.lower())
 
         print('There are %d new stories' % len(self.new_stories))
 
@@ -49,7 +52,7 @@ class get_stories:
         datetime_obj = date_obj.date()
         now = datetime.now()
         diff = now.date() - datetime_obj
-        if diff.days != 0:
+        if diff.days > 1:
             return True
         return False
 
