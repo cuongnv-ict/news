@@ -90,9 +90,9 @@ class master:
                                                         new_tokenized_stories,
                                                         self.crawler.new_categories)
 
-                print('update new stories for follow events...')
-                articles_category_clean = self.get_article_by_category_ex(new_tokenized_titles_clean)
-                self.update_new_stories_follow_events(db, articles_category_clean)
+                # print('update new stories for follow events...')
+                # articles_category_clean = self.get_article_by_category_ex(new_tokenized_titles_clean)
+                # self.update_new_stories_follow_events(db, articles_category_clean)
 
                 if len(new_duplicate_categories) > 0:
                     self.update_duplicate_docs(new_duplicate_categories)
