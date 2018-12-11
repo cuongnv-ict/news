@@ -14,7 +14,7 @@ MONGO_PASS = ''
 
 MONGO_DB = 'dora_english'
 
-MONGO_COLLECTION_ARTICLES = 'articles'
+MONGO_COLLECTION_ARTICLES = 'articles_english'
 MONGO_COLLECTION_HOT_EVENTS = 'hot_events'
 MONGO_COLLECTION_HOT_EVENTS_BY_EDITOR = 'hot_events_editor'
 MONGO_COLLECTION_NEW_ARTICLES_FOLLOW_EVENT = 'new_articles_follow_event'

@@ -1,5 +1,3 @@
-import json
-from bs4 import BeautifulSoup
 from datetime import datetime
 import config
 from sklearn.externals import joblib
@@ -20,7 +18,7 @@ class get_stories:
 
     def run(self, db):
         collection = db.get_collection(config.MONGO_COLLECTION_ARTICLES)
-        documents = collection.find({u'contentId' : {u'$gt' : self.contentId}})
+        documents = collection.find({u'_id' : {u'$gt' : self.contentId}})
 
         del self.new_stories[:]
         del self.new_titles[:]
@@ -68,7 +66,7 @@ class get_stories:
         else:
             return u'', u'', u''
         description = doc[u'description'].strip()
-        body = json.loads(doc[u'content'], encoding='utf-8')
+        body = doc[u'content']
         story = u'\n'.join([title, description, body])
 
         if contentId > self.contentId:
