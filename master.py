@@ -19,7 +19,7 @@ warnings.filterwarnings('ignore', category=UserWarning)
 
 TRENDING_MERGE_THRESHOLD = 0.0
 HOUR_TO_RESET = 0  # reset at 0h AM
-TIME_TO_SLEEP = 60 * 1 # sleep in 1 minutes
+TIME_TO_SLEEP = 60 * 10 # sleep in 1 minutes
 MINIMUM_STORIES = 3
 MIN_SAMPLES_CHILD_EVENT = 3
 MIN_SAMPLES_CHILD_EVENT_RATE = 0.25
@@ -110,9 +110,9 @@ class master:
                 print('update hot events which are chosen by editor...')
                 self.update_hot_event_editor(db, json_trending)
 
-                print('summarize stories...')
-                self.save_summary_to_mongo(db, new_tokenized_titles_clean,
-                                           new_tokenized_stories_clean)
+                # print('summarize stories...')
+                # self.save_summary_to_mongo(db, new_tokenized_titles_clean,
+                #                            new_tokenized_stories_clean)
 
                 connection.close()
 

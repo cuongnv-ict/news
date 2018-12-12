@@ -9,10 +9,10 @@ from sklearn.cluster import DBSCAN
 
 
 
-MIN_DOCS = 5
-MIN_TRENDING_DOCS = 8
-MIN_SAMPLES = 5
-EPS = 0.3  # cosine distance
+MIN_DOCS = 3
+MIN_TRENDING_DOCS = 5
+MIN_SAMPLES = 3
+EPS = 0.001  # cosine distance
 
 class event_detection:
     def __init__(self, domain, dataset, root_dir='.'):
