@@ -9,13 +9,14 @@ from sklearn.metrics.pairwise import cosine_distances
 import numpy as np
 from nlp_tools import spliter
 import utils
+from duplicate_documents.minhash_lsh import duplicate_docs
 
 
 
 class summary:
     def __init__(self, root_dir='.'):
         self.root_dir = root_dir
-        self.DISTANCE_THRESHOLD = 0.5
+        self.DISTANCE_THRESHOLD = 0.45
         self.TOO_LONG = 100
         self.NUM_SENTENCES_SHORT = 10
         self.skip_title = utils.load_data_to_list(path.join(root_dir, 'skip_title.txt'))
@@ -134,6 +135,10 @@ class summary:
             result = self.get_summary(cosine_dis, ratio)
 
             # self.insert_description(des, result, btm.MINIMUM_LENGTH_SENTENCE)
+
+            lsh = duplicate_docs()
+            result = lsh.run(result)
+            lsh.clear()
 
             summ = [docs[i].content for i in result]
             summ = u'\r\n'.join(summ).replace(u'_', u' ').\
