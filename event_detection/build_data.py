@@ -8,7 +8,7 @@ import os
 
 
 def build_vocab(dataset, output_vocab, title_map):
-    vectorizer = TfidfVectorizer(ngram_range=(1, 1), max_df=0.7,
+    vectorizer = TfidfVectorizer(ngram_range=(1, 1), max_df=0.6,
                                  min_df=3, max_features=2000,
                                  stop_words='english')
     stack = os.listdir(dataset)

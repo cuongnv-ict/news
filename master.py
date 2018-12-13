@@ -110,9 +110,9 @@ class master:
                 print('update hot events which are chosen by editor...')
                 self.update_hot_event_editor(db, json_trending)
 
-                # print('summarize stories...')
-                # self.save_summary_to_mongo(db, new_tokenized_titles_clean,
-                #                            new_tokenized_stories_clean)
+                print('summarize stories...')
+                self.save_summary_to_mongo(db, new_tokenized_titles_clean,
+                                           new_tokenized_stories_clean)
 
                 connection.close()
 
