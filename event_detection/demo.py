@@ -27,11 +27,13 @@ def get_summary_and_content(contentId):
                                          config.MONGO_USER, config.MONGO_PASS,
                                          config.MONGO_DB)
     try:
-        collection = db.get_collection(config.MONGO_COLLECTION_NORMALIZED_ARTICLES)
-        document_content = collection.find_one({u'contentId': {u'$eq': int(contentId)}}, max_time_ms=1000)
-        normalized_content = document_content[u'normalized_article']
+        collection = db.get_collection(config.MONGO_COLLECTION_ARTICLES)
+        document_content = collection.find_one({u'_id': {u'$eq': int(contentId)}}, max_time_ms=1000)
+        content = u'\n'.join([document_content[u'title'],
+                             document_content[u'description'],
+                             document_content[u'content']])
     except:
-        normalized_content = u'Can\'t get document content'
+        content = u'Can\'t get document content'
     try:
         collection = db.get_collection(config.MONGO_COLLECTION_SUMMRIES)
         document_summary = collection.find_one({u'contentId': {u'$eq': int(contentId)}}, max_time_ms=1000)
@@ -41,6 +43,6 @@ def get_summary_and_content(contentId):
         # short_summary = u'Can\'t get document summary'
         medium_summary = u'Can\'t get document summary'
     # html_content = normalize_html_format(short_summary, normalized_content)
-    html_content = normalize_html_format(medium_summary, normalized_content)
+    html_content = normalize_html_format(medium_summary, content)
     connection.close()
     return html_content
