@@ -9,7 +9,7 @@ import os
 
 def build_vocab(dataset, output_vocab, root_dir, title_map):
     vectorizer = TfidfVectorizer(ngram_range=(1, 1), max_df=0.7,
-                                 min_df=1, max_features=2000,
+                                 min_df=2, max_features=2000,
                                  stop_words=utils.load_data_from_list(os.path.join(root_dir, 'stopwords.txt')))
     stack = os.listdir(dataset)
     contents = []; titles = []
@@ -25,8 +25,9 @@ def build_vocab(dataset, output_vocab, root_dir, title_map):
                 titles.append(title_map[base])
                 contents.append(content.lower())
     # change vectorizer to ensure length of document greater than 0
-    if len(contents) < 50:
+    if len(contents) < 25:
         vectorizer.max_df = 1.0
+        vectorizer.min_df = 1
     vectorizer.fit(contents)
     vectorizer.stop_words_ = None
     with open(output_vocab, 'w', encoding='utf-8') as f:
