@@ -79,19 +79,23 @@ class summary:
             return True
 
 
+    def get_default_summary(self, num_sens, des, body):
+        if num_sens > self.NUM_SENTENCES_SHORT:
+            return {u'short': des,
+                    u'medium': des,
+                    u'long': des}
+        else:
+            return {u'short': u'\n'.join([des, body]),
+                    u'medium': u'\n'.join([des, body]),
+                    u'long': u'\n'.join([des, body])}
+
+
     def run(self, title=u'', des=u'', body=u''):
         if self.is_skip(title, u'\n'.join([des, body])):
             print(u'Not summary doc: %s' % (title))
             num_sens = len(spliter.split(u'\n'.join([des, body])))
             if des != u'':
-                if num_sens > self.NUM_SENTENCES_SHORT:
-                    return {u'short': des,
-                            u'medium': des,
-                            u'long': des}
-                else:
-                    return {u'short' : u'\n'.join([des, body]),
-                            u'medium' : u'\n'.join([des, body]),
-                            u'long' : u'\n'.join([des, body])}
+                return self.get_default_summary(num_sens, des, body)
             return {u'short' : u'Not support kind of this document',
                     u'medium' : u'Not support kind of this document',
                     u'long' : u'Not support kind of this document'}
@@ -134,13 +138,18 @@ class summary:
 
             result = self.get_summary(cosine_dis, ratio)
 
+            if len(result) == 0:
+                num_sens = len(spliter.split(u'\n'.join([des, body])))
+                return self.get_default_summary(num_sens, des, body)
+
             # self.insert_description(des, result, btm.MINIMUM_LENGTH_SENTENCE)
 
+            summ = [docs[i].content for i in result]
+
             lsh = duplicate_docs()
-            result = lsh.run(result)
+            summ = lsh.run_ex(summ)
             lsh.clear()
 
-            summ = [docs[i].content for i in result]
             summ = u'\r\n'.join(summ).replace(u'_', u' ').\
                 replace(u'\"', u'').replace(u'”', u'').replace(u'“', u'')
 
