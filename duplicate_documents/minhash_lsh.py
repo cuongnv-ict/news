@@ -58,7 +58,7 @@ class duplicate_docs:
 
 
     def run_ex(self, list_docs):
-        total_files = len(list_docs)
+        # total_files = len(list_docs)
         clean_docs = []
         nduplicate = 0
         for i in xrange(len(list_docs)):
@@ -70,11 +70,11 @@ class duplicate_docs:
                 nduplicate += 1
             else:
                 clean_docs.append(raw_doc)
-            print ('\r%d -- %s' % (total_files, did)),
-            sys.stdout.flush()
-        print('')
-        print ('total files = %d' % (total_files))
-        print ('number of duplicate document = %d' % (nduplicate))
+            # print ('\r%d -- %s' % (total_files, did)),
+            # sys.stdout.flush()
+        # print('')
+        # print ('total files = %d' % (total_files))
+        # print ('number of duplicate document = %d' % (nduplicate))
         return clean_docs
 
 
