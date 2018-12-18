@@ -2,38 +2,26 @@
 
 import os, utils
 from io import open
-from nltk import tokenize, pos_tag
+from nltk import tokenize
 
 
-importance_pos = {'N':True, 'Np':True, 'Ny':True, 'V':True}
-
-def is_exist(postag):
-    try:
-        _ = importance_pos[postag]
-        return True
-    except:
-        return False
 
 
-def remove_stop_postag(dataset, output_dir, names):
+
+
+def sentence_tokenize(dataset, output_dir, names):
     utils.mkdir(output_dir)
     total_doc = 0
     for id, data in enumerate(dataset):
         # original_content = tokenizer.predict(data)
-        content = map(lambda x: pos_tag(x),
-                      tokenize.sent_tokenize(data))
-        clean_content = []
-        for info in content:
-            sen = []
-            for i in xrange(len(info[0])):
-                # if is_exist(info[1][i]):
-                #     sen.append(info[0][i])
-                sen.append(info[0][i])
-            clean_content.append(u' '.join(sen))
+        sens = []
+        for s in data.split(u'\n'):
+            ss = tokenize.sent_tokenize(s)
+            sens += ss
         with open(os.path.join(output_dir, names[id]),
                   'w', encoding='utf-8') as fw:
-            if len(clean_content) > 0:
-                fw.write(u'\n'.join(clean_content))
+            if len(sens) > 0:
+                fw.write(u'\n'.join(sens))
             else: fw.write(data)
         total_doc += 1
 
@@ -43,4 +31,4 @@ def remove_stop_postag(dataset, output_dir, names):
 
 
 if __name__ == '__main__':
-    remove_stop_postag('dataset')
+    sentence_tokenize('dataset')

@@ -2,7 +2,7 @@
 
 __author__ = 'nobita'
 
-import os
+import chunking
 from random import randint, uniform
 from sklearn.feature_extraction.text import TfidfVectorizer
 import numpy as np
@@ -50,6 +50,7 @@ class biterm:
 
 
     def preprocessing(self, data):
+        data = chunking.process_content(data)
         data = self.re.detect_url.sub(u'url', data)
         data = self.re.detect_url2.sub(u'shorturl', data)
         data = self.re.detect_email.sub(u'email', data)
@@ -103,12 +104,16 @@ class biterm:
 
     def get_sentences(self, data):
         raw_sentences = []; clean_sentences = []
-        sen = tokenize.sent_tokenize(data)
 
-        sen = filter(lambda x: u'video' not in x.lower() and u':' not in x, sen)
+        sens = []
+        for s in data.split(u'\n'):
+            ss = tokenize.sent_tokenize(s)
+            sens += ss
 
-        raw_sentences.extend(sen)
-        clean_sentences.extend(map(self.preprocessing, sen))
+        sens = filter(lambda x: u'video' not in x.lower() and u':' not in x, sens)
+
+        raw_sentences.extend(sens)
+        clean_sentences.extend(map(self.preprocessing, sens))
         raw_sentences_final = []
         clean_sentences_final = []
         for i in xrange(len(raw_sentences)):

@@ -12,7 +12,7 @@ from sklearn.cluster import DBSCAN
 MIN_DOCS = 5
 MIN_TRENDING_DOCS = 8
 MIN_SAMPLES = 5
-EPS = 0.01  # cosine distance
+EPS = 0.45  # cosine distance
 
 class event_detection:
     def __init__(self, domain, dataset, root_dir='.'):
@@ -49,7 +49,7 @@ class event_detection:
         if title_map == None:
             title_map = {}
         names = build_data.update_title_map(self.dataset, title_map)
-        preprocessing.remove_stop_postag(self.dataset, self.clean_dataset_dir, names)
+        preprocessing.sentence_tokenize(self.dataset, self.clean_dataset_dir, names)
         vectorizer, contents, titles = build_data.build_vocab(self.clean_dataset_dir,
                                                               self.vocab_file,
                                                               title_map)

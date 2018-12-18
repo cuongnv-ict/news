@@ -100,16 +100,16 @@ class master:
 
                 json_trending = self.build_json_trending(trending_titles, docs_trending)
 
-                print('get long event for hot events...')
-                json_trending = self.get_long_event(db, json_trending)
+                # print('get long event for hot events...')
+                # json_trending = self.get_long_event(db, json_trending)
 
                 print('save trending to mongodb...')
                 self.save_trending_to_mongo(db, json_trending)
                 self.save_trending_to_file(trending_titles, docs_trending)
 
-                print('update hot events which are chosen by editor...')
-                self.update_hot_event_editor(db, json_trending)
-
+                # print('update hot events which are chosen by editor...')
+                # self.update_hot_event_editor(db, json_trending)
+                #
                 print('summarize stories...')
                 self.save_summary_to_mongo(db, new_tokenized_titles_clean,
                                            new_tokenized_stories_clean)

@@ -4,12 +4,13 @@ from io import open
 from sklearn.feature_extraction.text import TfidfVectorizer
 import utils
 import os
+import chunking
 
 
 
 def build_vocab(dataset, output_vocab, title_map):
-    vectorizer = TfidfVectorizer(ngram_range=(1, 1), max_df=0.6,
-                                 min_df=3, max_features=2000,
+    vectorizer = TfidfVectorizer(ngram_range=(1, 1), max_df=0.7,
+                                 min_df=2, max_features=2000,
                                  stop_words='english')
     stack = os.listdir(dataset)
     contents = []; titles = []
@@ -20,7 +21,7 @@ def build_vocab(dataset, output_vocab, title_map):
             utils.push_data_to_stack(stack, file_path, file_name)
         else:
             with open(file_path, 'r', encoding='utf-8') as f:
-                content = f.read()
+                content = chunking.process_content(f.read())
                 base = os.path.basename(file_name)
                 titles.append(title_map[base])
                 contents.append(content.lower())
