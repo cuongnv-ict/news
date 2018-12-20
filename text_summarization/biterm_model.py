@@ -32,7 +32,7 @@ class biterm:
                                           min_df=1, max_features=200,
                                           stop_words=utils.load_data_to_list(os.path.join(root_dir, 'stopwords.txt')))
         self.re = regex()
-        self.MINIMUM_LENGTH_SENTENCE = 5
+        self.MINIMUM_LENGTH_SENTENCE = 8
         self.NUM_SEN_SHORT_TEXT = 15
         self.NUM_SEN_LONG_TEXT = 30
 
