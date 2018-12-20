@@ -91,14 +91,15 @@ class summary:
 
 
     def run(self, title=u'', des=u'', body=u''):
+        num_sens = len(spliter.split(u'\n'.join([des, body])))
         if self.is_skip(title, u'\n'.join([des, body])):
             print(u'Not summary doc: %s' % (title))
-            num_sens = len(spliter.split(u'\n'.join([des, body])))
             if des != u'':
                 return self.get_default_summary(num_sens, des, body)
-            return {u'short' : u'Not support kind of this document',
-                    u'medium' : u'Not support kind of this document',
-                    u'long' : u'Not support kind of this document'}
+            else:
+                return {u'short' : u'Not support kind of this document',
+                        u'medium' : u'Not support kind of this document',
+                        u'long' : u'Not support kind of this document'}
 
         if des == None or body == None:
             return {u'short' : u'story is too short',
@@ -116,14 +117,13 @@ class summary:
         btm = biterm(num_iters=100, root_dir=self.root_dir)
         docs = btm.run_gibbs_sampling(data, save_result=False)
 
-        if len(docs) == 0:
-            return {u'short': u'story is too short',
-                    u'medium' : u'story is too short',
-                    u'long' : u'story is too short'}
-        elif len(docs) > self.TOO_LONG:
-            return {u'short' : u'story is too long',
-                    u'medium' : u'story is too long',
-                    u'long' : u'story is too long'}
+        if len(docs) == 0 or len(docs) > self.TOO_LONG:
+            if des != u'':
+                return self.get_default_summary(num_sens, des, body)
+            else:
+                return {u'short': u'Not support kind of this document',
+                        u'medium': u'Not support kind of this document',
+                        u'long': u'Not support kind of this document'}
 
         topic_docs = np.array([d.topic_proportion for d in docs])
         btm.theta = np.array([btm.theta])
