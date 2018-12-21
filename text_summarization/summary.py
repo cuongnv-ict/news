@@ -18,7 +18,7 @@ class summary:
         self.root_dir = root_dir
         self.DISTANCE_THRESHOLD = 0.5
         self.TOO_LONG = 100
-        self.NUM_SENTENCES_SHORT = 10
+        self.NUM_SENTENCES_SHORT = 8
         self.skip_title = utils.load_data_to_list(path.join(root_dir, 'skip_title.txt'))
         self.skip_content = utils.load_data_to_list(path.join(root_dir, 'skip_content.txt'))
 
@@ -26,11 +26,14 @@ class summary:
     def get_ratio(self, btm, length, level=u'medium'):
         if level == u'medium':
             if length < btm.NUM_SEN_SHORT_TEXT:
-                # ratio = 0.6
-                ratio = 0.525
+                ratio = 0.6
+                # ratio = 0.525
             elif length > btm.NUM_SEN_LONG_TEXT:
-                ratio = 0.35
-            else: ratio = 0.45
+                # ratio = 0.35
+                ratio = 0.6
+            else:
+                # ratio = 0.45
+                ratio = 0.6
         elif level == u'short':
             if length < btm.NUM_SEN_SHORT_TEXT:
                 ratio = 0.45
