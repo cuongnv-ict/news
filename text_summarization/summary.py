@@ -16,7 +16,7 @@ from duplicate_documents.minhash_lsh import duplicate_docs
 class summary:
     def __init__(self, root_dir='.'):
         self.root_dir = root_dir
-        self.DISTANCE_THRESHOLD = 0.6
+        self.DISTANCE_THRESHOLD = 0.5
         self.TOO_LONG = 100
         self.NUM_SENTENCES_SHORT = 8
         self.skip_title = utils.load_data_to_list(path.join(root_dir, 'skip_title.txt'))
