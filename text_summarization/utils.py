@@ -66,6 +66,15 @@ def vector_normarize(v):
     return map(lambda x: float(x) / float(total), v)
 
 
+def is_exist(d, k):
+    try:
+        _ = d[k]
+        return True
+    except:
+        return False
+
+
+
 if __name__ == '__main__':
     ind, m = get_max([1,4,2,3,5,0])
     pass
