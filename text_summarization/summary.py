@@ -104,10 +104,12 @@ class summary:
                         u'medium' : u'Not support kind of this document',
                         u'long' : u'Not support kind of this document'}
 
-        if des == u'' or body == u'':
+        if des == u'':
             return {u'short': u'Not support kind of this document',
                     u'medium': u'Not support kind of this document',
                     u'long': u'Not support kind of this document'}
+        elif body == u'':
+            return self.get_default_summary(num_sens, des, body)
 
         data = des + u'\n' + body
         data = unicodedata.normalize('NFKC', data.strip())

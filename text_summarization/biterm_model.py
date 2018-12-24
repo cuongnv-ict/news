@@ -28,13 +28,13 @@ class biterm:
         self.nb_z = None # the number of biterms assigned to the topic z
         self.nw_z = None # the number of times of the word w assigned to the topic z
         self.btm_info = []
-        self.stopwords = utils.load_data_to_list('stopwords.txt')
+        self.stopwords = utils.load_data_to_list(os.path.join(root_dir, 'stopwords.txt'))
         self.vectorizer = TfidfVectorizer(ngram_range=(1, 1), max_df=0.6,
                                           min_df=1, max_features=200,
                                           stop_words=self.stopwords)
         self.stopwords = {w: True for w in self.stopwords}
         self.re = regex()
-        self.MINIMUM_LENGTH_SENTENCE = 8
+        self.MINIMUM_LENGTH_SENTENCE = 10
         self.NUM_SEN_SHORT_TEXT = 15
         self.NUM_SEN_LONG_TEXT = 30
 
@@ -124,8 +124,7 @@ class biterm:
         raw_sentences_final = []
         clean_sentences_final = []
         for i in xrange(len(raw_sentences)):
-            if len(raw_sentences[i].split()) < self.MINIMUM_LENGTH_SENTENCE or \
-                len(clean_sentences[i].split()) < self.MINIMUM_LENGTH_SENTENCE:
+            if len(clean_sentences[i].split()) < self.MINIMUM_LENGTH_SENTENCE:
                 continue
             raw_sentences_final.append(raw_sentences[i])
             clean_sentences_final.append(clean_sentences[i])
