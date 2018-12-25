@@ -31,10 +31,10 @@ class summary:
                 # ratio = 0.525
             elif length > btm.NUM_SEN_LONG_TEXT:
                 # ratio = 0.35
-                ratio = 0.6
+                ratio = 0.5
             else:
                 # ratio = 0.45
-                ratio = 0.5
+                ratio = 0.6
         elif level == u'short':
             if length < btm.NUM_SEN_SHORT_TEXT:
                 ratio = 0.45
