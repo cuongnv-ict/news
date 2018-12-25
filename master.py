@@ -508,9 +508,9 @@ class master:
                                            u'publisher' : self.contentId2publisher[tokenized_title[0]],
                                            u'updated_at' : datetime.datetime.now()})
 
-                summ = self.summary.run(title=normalized_title,
-                                        des=normalized_des,
-                                        body=normalized_body)
+                summ = self.summary.run(title=tokenized_title[1],
+                                        des=des,
+                                        body=body)
 
                 summary = {u'contentId' : contentId,
                            u'title' : title,
