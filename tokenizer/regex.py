@@ -13,7 +13,7 @@ class regex:
         self.detect_url2 = re.compile(u'[^\s\[\]\(\)\{\}]+(com|net|vn|org|info|biz|mobi|tv|ws|name|us|ca|uk)', re.I)
         self.detect_num = re.compile(ur'(\d+\,\d+\w*)|(\d+\.\d+\w*)|(\w*\d+\w*)')
         self.detect_email = re.compile(u'[^@|\s]+@[^@|\s]+')
-        self.detect_datetime = re.compile(u'\d+[\-/]\d+[\-/]*\d*')
+        self.detect_datetime = re.compile(u'\d+[\-/\.]\d+[\-/\.]*\d*')
         self.change_to_space = re.compile(u'\t')
         self.normalize_special_mark = re.compile(u'(?P<special_mark>[\.,\(\)\[\]\{\};!?:“”\"\'/\<\>])')
         self.detect_special_mark = re.compile(u'[\(\)\[\]\{\}\<\>“”\"\']')
