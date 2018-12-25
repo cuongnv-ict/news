@@ -134,7 +134,7 @@ class Tokenizer:
         else:
             mlbka += self.restore_info(q, number, url, url2, email, datetime, non_vnese, all_caps, mark, mark2, mark3)
             mlbka += u'.'
-        return mlbka
+        return mlbka.strip(u'_')
 
 
     def get_result(self, data, label_predict, true_label, map_index):

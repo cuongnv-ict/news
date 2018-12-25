@@ -148,7 +148,7 @@ class summary:
                 num_sens = len(spliter.split(u'\n'.join([des, body])))
                 return self.get_default_summary(num_sens, des, body)
 
-            # self.insert_description(des, result, btm.MINIMUM_LENGTH_SENTENCE)
+            self.insert_description(des, result, btm.MINIMUM_LENGTH_SENTENCE)
 
             summ = [docs[i].content for i in result if docs[i].length >= self.MINIMUM_LENGTH_SENTENCE]
 
