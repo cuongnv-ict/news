@@ -16,9 +16,10 @@ from duplicate_documents.minhash_lsh import duplicate_docs
 class summary:
     def __init__(self, root_dir='.'):
         self.root_dir = root_dir
-        self.DISTANCE_THRESHOLD = 0.6
-        self.TOO_LONG = 100
+        self.DISTANCE_THRESHOLD = 0.75
+        self.DOCUMENT_TOO_LONG = 50
         self.NUM_SENTENCES_SHORT = 8
+        self.MINIMUM_LENGTH_SENTENCE = 8 # sentences in summary have to length greate than equal MINIMUM_LENGTH_SENTENCE
         self.skip_title = utils.load_data_to_list(path.join(root_dir, 'skip_title.txt'))
         self.skip_content = utils.load_data_to_list(path.join(root_dir, 'skip_content.txt'))
 
@@ -122,7 +123,7 @@ class summary:
         btm = biterm(num_iters=100, root_dir=self.root_dir)
         docs = btm.run_gibbs_sampling(data, save_result=False)
 
-        if len(docs) == 0 or len(docs) > self.TOO_LONG:
+        if len(docs) == 0 or len(docs) > self.DOCUMENT_TOO_LONG:
             if des != u'':
                 return self.get_default_summary(num_sens, des, body)
             else:
@@ -149,7 +150,7 @@ class summary:
 
             # self.insert_description(des, result, btm.MINIMUM_LENGTH_SENTENCE)
 
-            summ = [docs[i].content for i in result]
+            summ = [docs[i].content for i in result if docs[i].length >= self.MINIMUM_LENGTH_SENTENCE]
 
             lsh = duplicate_docs()
             summ = lsh.run_ex(summ)

@@ -34,7 +34,7 @@ class biterm:
                                           stop_words=self.stopwords)
         self.stopwords = {w: True for w in self.stopwords}
         self.re = regex()
-        self.MINIMUM_LENGTH_SENTENCE = 10
+        self.MINIMUM_LENGTH_SENTENCE = 5
         self.NUM_SEN_SHORT_TEXT = 15
         self.NUM_SEN_LONG_TEXT = 30
 
