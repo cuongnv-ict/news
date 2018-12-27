@@ -84,14 +84,16 @@ class summary:
 
 
     def get_default_summary(self, num_sens, des, body):
+        new_des = des.replace(u'_', u' ')
+        new_body = body.replace(u'_', u' ')
         if num_sens > self.NUM_SENTENCES_SHORT:
-            return {u'short': des,
-                    u'medium': des,
-                    u'long': des}
+            return {u'short': new_des,
+                    u'medium': new_des,
+                    u'long': new_des}
         else:
-            return {u'short': u'\n'.join([des, body]),
-                    u'medium': u'\n'.join([des, body]),
-                    u'long': u'\n'.join([des, body])}
+            return {u'short': u'\n'.join([new_des, new_body]),
+                    u'medium': u'\n'.join([new_des, new_body]),
+                    u'long': u'\n'.join([new_des, new_body])}
 
 
     def run(self, title=u'', des=u'', body=u''):
