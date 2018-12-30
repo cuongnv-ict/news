@@ -16,7 +16,7 @@ from duplicate_documents.minhash_lsh import duplicate_docs
 class summary:
     def __init__(self, root_dir='.'):
         self.root_dir = root_dir
-        self.DISTANCE_THRESHOLD = 0.8
+        self.DISTANCE_THRESHOLD = 0.9
         self.DOCUMENT_TOO_LONG = 50
         self.NUM_SENTENCES_SHORT = 8
         self.MINIMUM_LENGTH_SENTENCE = 8 # sentences in summary have to length greate than equal MINIMUM_LENGTH_SENTENCE
