@@ -6,11 +6,11 @@ import os
 from random import randint
 from sklearn.externals import joblib
 from sklearn.cluster import DBSCAN
+import config
 
 
 
 MIN_DOCS = 5
-MIN_TRENDING_DOCS = 6
 MIN_SAMPLES = 4
 EPS = 0.45  # cosine distance
 
@@ -71,7 +71,8 @@ class event_detection:
             if len(cluster) < MIN_DOCS:
                 continue
             percent = float(len(cluster)) / float(total)
-            if percent < trending_threshold and len(cluster) < MIN_TRENDING_DOCS:
+            if percent < trending_threshold and \
+                    len(cluster) < config.EVENT_MIN_TRENDING_DOCS[self.domain]:
                 continue
             docs_trending.update({k : [titles[i] for i in cluster]})
             index = randint(0, len(cluster) - 1)

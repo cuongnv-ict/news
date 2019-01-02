@@ -17,6 +17,8 @@ class summary:
     def __init__(self, root_dir='.'):
         self.root_dir = root_dir
         self.DISTANCE_THRESHOLD = 0.35
+        self.DISTANCE_THRESHOLD_2 = 0.5
+        self.DISTANCE_THRESHOLD_3 = 0.75
         self.DOCUMENT_TOO_LONG = 50
         self.NUM_SENTENCES_SHORT = 8
         self.MINIMUM_LENGTH_SENTENCE = 8 # sentences in summary have to length greate than equal MINIMUM_LENGTH_SENTENCE
@@ -144,7 +146,10 @@ class summary:
         for level in [u'short', u'medium', u'long']:
             ratio = self.get_ratio(btm, len(docs), level=level)
 
-            result = self.get_summary(cosine_dis, ratio)
+            for l in xrange(3):
+                result = self.get_summary(cosine_dis, ratio, level=l+1)
+                if len(result) > 0:
+                    break
 
             if len(result) == 0:
                 num_sens = len(spliter.split(u'\n'.join([des, body])))
@@ -166,10 +171,16 @@ class summary:
         return summary_result
 
 
-    def get_summary(self, cosine_dis, ratio):
+    def get_summary(self, cosine_dis, ratio, level=1):
+        if level == 1:
+            distance = self.DISTANCE_THRESHOLD
+        elif level == 2:
+            distance = self.DISTANCE_THRESHOLD_2
+        else:
+            distance = self.DISTANCE_THRESHOLD_3
         bounary = int(round(len(cosine_dis) * ratio))
         docs_sorted = list(np.argsort(cosine_dis)[:bounary])
-        result = filter(lambda i: cosine_dis[i] <= self.DISTANCE_THRESHOLD,
+        result = filter(lambda i: cosine_dis[i] <= distance,
                         docs_sorted)
         if len(result) == 0:
             result = docs_sorted
