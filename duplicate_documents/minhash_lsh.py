@@ -56,6 +56,26 @@ class duplicate_docs:
         print ('number of duplicate document = %d' % (len(duplicate_categories)))
         return clean_titles, clean_docs, duplicate_categories
 
+    def run_ex(self, list_docs):
+        # total_files = len(list_docs)
+        clean_docs = []
+        nduplicate = 0
+        for i in xrange(len(list_docs)):
+            raw_doc = list_docs[i]
+            data = unicodedata.normalize('NFKC', raw_doc.strip())
+            doc = document(data)
+            did = self.insert(doc, check_duplication=True)
+            if did == None:
+                nduplicate += 1
+            else:
+                clean_docs.append(raw_doc)
+            # print ('\r%d -- %s' % (total_files, did)),
+            # sys.stdout.flush()
+        # print('')
+        # print ('total files = %d' % (total_files))
+        # print ('number of duplicate document = %d' % (nduplicate))
+        return clean_docs
+
 
     # insert a document object
     # output: key if document does not exist duplicate item

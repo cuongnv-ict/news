@@ -7,7 +7,7 @@ from os import path
 from biterm_model import biterm
 from sklearn.metrics.pairwise import cosine_distances
 import numpy as np
-from nlp_tools import spliter
+from nltk import tokenize
 import utils
 from duplicate_documents.minhash_lsh import duplicate_docs
 
@@ -100,7 +100,7 @@ class summary:
 
 
     def run(self, title=u'', des=u'', body=u''):
-        num_sens = len(spliter.split(u'\n'.join([des, body])))
+        num_sens = len(tokenize.sent_tokenize(u'\n'.join([des, body])))
         if self.is_skip(title, u'\n'.join([des, body])):
             print(u'Not summary doc: %s' % (title))
             if des != u'':
@@ -125,7 +125,7 @@ class summary:
                     u'medium': u'Not support kind of this document',
                     u'long': u'Not support kind of this document'}
 
-        btm = biterm(num_iters=100, root_dir=self.root_dir)
+        btm = biterm(num_iters=100)
         docs = btm.run_gibbs_sampling(data, save_result=False)
 
         if len(docs) == 0 or len(docs) > self.DOCUMENT_TOO_LONG:
@@ -153,7 +153,6 @@ class summary:
                     break
 
             if len(result) == 0:
-                num_sens = len(spliter.split(u'\n'.join([des, body])))
                 return self.get_default_summary(num_sens, des, body)
 
             self.insert_description(des, result, btm.MINIMUM_LENGTH_SENTENCE)
@@ -195,7 +194,7 @@ class summary:
 
     def insert_description(self, des, l, minimum):
         d = {i:True for i in l}
-        des = spliter.split(des)
+        des = tokenize.sent_tokenize(des)
         des = filter(lambda x: len(x.split()) >= minimum, des)
         des_len = len(des)
         for i in xrange(des_len):

@@ -32,7 +32,7 @@ class biterm:
                                           min_df=1, max_features=200,
                                           stop_words='english')
         self.re = regex()
-        self.MINIMUM_LENGTH_SENTENCE = 10
+        self.MINIMUM_LENGTH_SENTENCE = 5
         self.NUM_SEN_SHORT_TEXT = 15
         self.NUM_SEN_LONG_TEXT = 30
 
@@ -117,8 +117,7 @@ class biterm:
         raw_sentences_final = []
         clean_sentences_final = []
         for i in xrange(len(raw_sentences)):
-            if len(raw_sentences[i].split()) < self.MINIMUM_LENGTH_SENTENCE or \
-                len(clean_sentences[i].split()) < self.MINIMUM_LENGTH_SENTENCE:
+            if len(clean_sentences[i].split()) < self.MINIMUM_LENGTH_SENTENCE:
                 continue
             raw_sentences_final.append(raw_sentences[i])
             clean_sentences_final.append(clean_sentences[i])
