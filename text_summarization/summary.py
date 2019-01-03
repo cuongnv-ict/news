@@ -7,17 +7,22 @@ from os import path
 from biterm_model import biterm
 from sklearn.metrics.pairwise import cosine_distances
 import numpy as np
-from nltk import tokenize
+from nlp_tools import spliter
 import utils
+from duplicate_documents.minhash_lsh import duplicate_docs
 
 
 
 class summary:
     def __init__(self, root_dir='.'):
         self.root_dir = root_dir
-        self.DISTANCE_THRESHOLD = 0.5
-        self.TOO_LONG = 100
-        self.NUM_SENTENCES_SHORT = 10
+        self.DISTANCE_THRESHOLD = 0.35
+        self.DISTANCE_THRESHOLD_2 = 0.5
+        self.DISTANCE_THRESHOLD_3 = 0.75
+        self.DISTANCE_THRESHOLD_4 = 0.9
+        self.DOCUMENT_TOO_LONG = 50
+        self.NUM_SENTENCES_SHORT = 8
+        self.MINIMUM_LENGTH_SENTENCE = 8 # sentences in summary have to length greate than equal MINIMUM_LENGTH_SENTENCE
         self.skip_title = utils.load_data_to_list(path.join(root_dir, 'skip_title.txt'))
         self.skip_content = utils.load_data_to_list(path.join(root_dir, 'skip_content.txt'))
 
@@ -25,11 +30,14 @@ class summary:
     def get_ratio(self, btm, length, level=u'medium'):
         if level == u'medium':
             if length < btm.NUM_SEN_SHORT_TEXT:
-                # ratio = 0.6
-                ratio = 0.525
+                ratio = 0.75
+                # ratio = 0.525
             elif length > btm.NUM_SEN_LONG_TEXT:
-                ratio = 0.35
-            else: ratio = 0.45
+                # ratio = 0.35
+                ratio = 0.5
+            else:
+                # ratio = 0.45
+                ratio = 0.6
         elif level == u'short':
             if length < btm.NUM_SEN_SHORT_TEXT:
                 ratio = 0.45
@@ -78,47 +86,55 @@ class summary:
             return True
 
 
+    def get_default_summary(self, num_sens, des, body):
+        new_des = des.replace(u'_', u' ')
+        new_body = body.replace(u'_', u' ')
+        if num_sens > self.NUM_SENTENCES_SHORT:
+            return {u'short': new_des,
+                    u'medium': new_des,
+                    u'long': new_des}
+        else:
+            return {u'short': u'\n'.join([new_des, new_body]),
+                    u'medium': u'\n'.join([new_des, new_body]),
+                    u'long': u'\n'.join([new_des, new_body])}
+
+
     def run(self, title=u'', des=u'', body=u''):
+        num_sens = len(spliter.split(u'\n'.join([des, body])))
         if self.is_skip(title, u'\n'.join([des, body])):
             print(u'Not summary doc: %s' % (title))
-            num_sens = len(tokenize.sent_tokenize(u'\n'.join([des, body])))
             if des != u'':
-                if num_sens > self.NUM_SENTENCES_SHORT:
-                    return {u'short': des,
-                            u'medium': des,
-                            u'long': des}
-                else:
-                    return {u'short' : u'\n'.join([des, body]),
-                            u'medium' : u'\n'.join([des, body]),
-                            u'long' : u'\n'.join([des, body])}
-            return {u'short' : u'Not support kind of this document',
-                    u'medium' : u'Not support kind of this document',
-                    u'long' : u'Not support kind of this document'}
+                return self.get_default_summary(num_sens, des, body)
+            else:
+                return {u'short' : u'Not support kind of this document',
+                        u'medium' : u'Not support kind of this document',
+                        u'long' : u'Not support kind of this document'}
 
-        if des == None or body == None:
-            return {u'short' : u'story is too short',
-                    u'medium' : u'story is too short',
-                    u'long' : u'story is too short'}
+        if des == u'':
+            return {u'short': u'Not support kind of this document',
+                    u'medium': u'Not support kind of this document',
+                    u'long': u'Not support kind of this document'}
+        elif body == u'':
+            return self.get_default_summary(num_sens, des, body)
 
         data = des + u'\n' + body
         data = unicodedata.normalize('NFKC', data.strip())
 
         if len(data) == 0:
-            return {u'short': u'story is too short',
-                    u'medium' : u'story is too short',
-                    u'long' : u'story is too short'}
+            return {u'short': u'Not support kind of this document',
+                    u'medium': u'Not support kind of this document',
+                    u'long': u'Not support kind of this document'}
 
-        btm = biterm(num_iters=100)
+        btm = biterm(num_iters=100, root_dir=self.root_dir)
         docs = btm.run_gibbs_sampling(data, save_result=False)
 
-        if len(docs) == 0:
-            return {u'short': u'story is too short',
-                    u'medium' : u'story is too short',
-                    u'long' : u'story is too short'}
-        elif len(docs) > self.TOO_LONG:
-            return {u'short' : u'story is too long',
-                    u'medium' : u'story is too long',
-                    u'long' : u'story is too long'}
+        if len(docs) == 0 or len(docs) > self.DOCUMENT_TOO_LONG:
+            if des != u'':
+                return self.get_default_summary(num_sens, des, body)
+            else:
+                return {u'short': u'Not support kind of this document',
+                        u'medium': u'Not support kind of this document',
+                        u'long': u'Not support kind of this document'}
 
         topic_docs = np.array([d.topic_proportion for d in docs])
         btm.theta = np.array([btm.theta])
@@ -131,11 +147,23 @@ class summary:
         for level in [u'short', u'medium', u'long']:
             ratio = self.get_ratio(btm, len(docs), level=level)
 
-            result = self.get_summary(cosine_dis, ratio)
+            for l in xrange(4):
+                result = self.get_summary(cosine_dis, ratio, level=l+1)
+                if len(result) > 0:
+                    break
 
-            # self.insert_description(des, result, btm.MINIMUM_LENGTH_SENTENCE)
+            if len(result) == 0:
+                num_sens = len(spliter.split(u'\n'.join([des, body])))
+                return self.get_default_summary(num_sens, des, body)
 
-            summ = [docs[i].content for i in result]
+            self.insert_description(des, result, btm.MINIMUM_LENGTH_SENTENCE)
+
+            summ = [docs[i].content for i in result if docs[i].length >= self.MINIMUM_LENGTH_SENTENCE]
+
+            lsh = duplicate_docs()
+            summ = lsh.run_ex(summ)
+            lsh.clear()
+
             summ = u'\r\n'.join(summ).replace(u'_', u' ').\
                 replace(u'\"', u'').replace(u'”', u'').replace(u'“', u'')
 
@@ -144,10 +172,18 @@ class summary:
         return summary_result
 
 
-    def get_summary(self, cosine_dis, ratio):
+    def get_summary(self, cosine_dis, ratio, level=1):
+        if level == 1:
+            distance = self.DISTANCE_THRESHOLD
+        elif level == 2:
+            distance = self.DISTANCE_THRESHOLD_2
+        elif level == 3:
+            distance = self.DISTANCE_THRESHOLD_3
+        else:
+            distance = self.DISTANCE_THRESHOLD_4
         bounary = int(round(len(cosine_dis) * ratio))
         docs_sorted = list(np.argsort(cosine_dis)[:bounary])
-        result = filter(lambda i: cosine_dis[i] <= self.DISTANCE_THRESHOLD,
+        result = filter(lambda i: cosine_dis[i] <= distance,
                         docs_sorted)
         if len(result) == 0:
             result = docs_sorted
@@ -159,7 +195,7 @@ class summary:
 
     def insert_description(self, des, l, minimum):
         d = {i:True for i in l}
-        des = tokenize.sent_tokenize(des)
+        des = spliter.split(des)
         des = filter(lambda x: len(x.split()) >= minimum, des)
         des_len = len(des)
         for i in xrange(des_len):
@@ -183,5 +219,3 @@ if __name__ == '__main__':
         data += x
     s = summary()
     s.run(data)
-
-
