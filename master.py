@@ -601,6 +601,7 @@ class master:
         try:
             collection = db.get_collection(config.MONGO_COLLECTION_LONG_EVENTS)
             long_events = collection.find()
+            long_events = [long for long in long_events]
             for i, hot_event in enumerate(json_trending[u'hot_events']):
                 hot_domain = hot_event[u'domain']
                 for j, hot in enumerate(hot_event[u'content']):
