@@ -147,7 +147,7 @@ class summary:
         for level in [u'short', u'medium', u'long']:
             ratio = self.get_ratio(btm, len(docs), level=level)
 
-            for l in xrange(3):
+            for l in xrange(4):
                 result = self.get_summary(cosine_dis, ratio, level=l+1)
                 if len(result) > 0:
                     break
