@@ -221,7 +221,10 @@ class summary:
 
             all_summ = []
             for l in xrange(4):
-                result = self.get_summary(cosine_dis, ratio, level=l + 1)
+                for n in xrange(l, 4):
+                    result = self.get_summary(cosine_dis, ratio, level=n+1)
+                    if len(result) > 0:
+                        break
 
                 if len(result) == 0:
                     return self.get_default_summary(num_sens, des, body)
