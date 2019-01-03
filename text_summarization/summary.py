@@ -153,7 +153,6 @@ class summary:
                     break
 
             if len(result) == 0:
-                num_sens = len(spliter.split(u'\n'.join([des, body])))
                 return self.get_default_summary(num_sens, des, body)
 
             self.insert_description(des, result, btm.MINIMUM_LENGTH_SENTENCE)
