@@ -157,7 +157,8 @@ class summary:
 
             self.insert_description(des, result, btm.MINIMUM_LENGTH_SENTENCE)
 
-            summ = [docs[i].content for i in result if docs[i].length >= self.MINIMUM_LENGTH_SENTENCE]
+            summ = [docs[i].content for i in result
+                    if docs[i].length >= self.MINIMUM_LENGTH_SENTENCE]
 
             lsh = duplicate_docs()
             summ = lsh.run_ex(summ)
@@ -231,7 +232,8 @@ class summary:
 
                 self.insert_description(des, result, btm.MINIMUM_LENGTH_SENTENCE)
 
-                summ = [docs[i].content for i in result if docs[i].length >= self.MINIMUM_LENGTH_SENTENCE]
+                summ = [docs[i].content for i in result
+                        if docs[i].length >= self.MINIMUM_LENGTH_SENTENCE]
 
                 lsh = duplicate_docs()
                 summ = lsh.run_ex(summ)
