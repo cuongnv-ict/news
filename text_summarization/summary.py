@@ -19,6 +19,7 @@ class summary:
         self.DISTANCE_THRESHOLD = 0.35
         self.DISTANCE_THRESHOLD_2 = 0.5
         self.DISTANCE_THRESHOLD_3 = 0.75
+        self.DISTANCE_THRESHOLD_4 = 0.9
         self.DOCUMENT_TOO_LONG = 50
         self.NUM_SENTENCES_SHORT = 8
         self.MINIMUM_LENGTH_SENTENCE = 8 # sentences in summary have to length greate than equal MINIMUM_LENGTH_SENTENCE
@@ -176,8 +177,10 @@ class summary:
             distance = self.DISTANCE_THRESHOLD
         elif level == 2:
             distance = self.DISTANCE_THRESHOLD_2
-        else:
+        elif level == 3:
             distance = self.DISTANCE_THRESHOLD_3
+        else:
+            distance = self.DISTANCE_THRESHOLD_4
         bounary = int(round(len(cosine_dis) * ratio))
         docs_sorted = list(np.argsort(cosine_dis)[:bounary])
         result = filter(lambda i: cosine_dis[i] <= distance,
