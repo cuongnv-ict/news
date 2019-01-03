@@ -41,14 +41,13 @@ class get_stories:
             self.new_stories.append(story.strip())
             self.new_titles.append(title)
             self.new_categories.append(category.lower())
-            if len(self.new_titles) == 10: break
+
         print('There are %d new stories' % len(self.new_stories))
 
         self.save_contentId()
 
 
     def check_date(self, date_obj):
-        return False
         datetime_obj = date_obj.date()
         now = datetime.now()
         diff = now.date() - datetime_obj
