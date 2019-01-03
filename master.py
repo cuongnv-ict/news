@@ -94,9 +94,9 @@ class master:
                                                         new_tokenized_stories,
                                                         self.crawler.new_categories)
 
-                print('update new stories for follow events...')
-                articles_category_clean = self.get_article_by_category_ex(new_tokenized_titles_clean)
-                self.update_new_stories_follow_events(db, articles_category_clean)
+                # print('update new stories for follow events...')
+                # articles_category_clean = self.get_article_by_category_ex(new_tokenized_titles_clean)
+                # self.update_new_stories_follow_events(db, articles_category_clean)
 
                 if len(new_duplicate_categories) > 0:
                     self.update_duplicate_docs(new_duplicate_categories)
@@ -107,23 +107,23 @@ class master:
                 print('get long event for hot events...')
                 json_trending = self.get_long_event(db, json_trending)
 
-                print('save trending to mongodb...')
-                self.save_trending_to_mongo(db, json_trending)
-                self.save_trending_to_file(trending_titles, docs_trending)
-
-                print('update hot events which are chosen by editor...')
-                self.update_hot_event_editor(db, json_trending)
+                # print('save trending to mongodb...')
+                # self.save_trending_to_mongo(db, json_trending)
+                # self.save_trending_to_file(trending_titles, docs_trending)
+                #
+                # print('update hot events which are chosen by editor...')
+                # self.update_hot_event_editor(db, json_trending)
 
                 print('summarize stories...')
                 self.save_summary_and_normalized_to_mongo(db, new_tokenized_titles_clean,
                                                           new_tokenized_stories_clean)
 
-                print('get articles talk about Dong sea...')
-                dong_sea.get_articles(db, new_tokenized_titles_clean,
-                                      new_tokenized_stories_clean,
-                                      self.contentId2title,
-                                      self.contentId2date,
-                                      self.contentId2publisher)
+                # print('get articles talk about Dong sea...')
+                # dong_sea.get_articles(db, new_tokenized_titles_clean,
+                #                       new_tokenized_stories_clean,
+                #                       self.contentId2title,
+                #                       self.contentId2date,
+                #                       self.contentId2publisher)
 
                 connection.close()
 
@@ -508,9 +508,13 @@ class master:
                                            u'publisher' : self.contentId2publisher[tokenized_title[0]],
                                            u'updated_at' : datetime.datetime.now()})
 
-                summ = self.summary.run(title=tokenized_title[1],
-                                        des=des,
-                                        body=body)
+                # summ = self.summary.run(title=tokenized_title[1],
+                #                         des=des,
+                #                         body=body)
+
+                summ = self.summary.run_test_setting(title=tokenized_title[1],
+                                                     des=des,
+                                                     body=body)
 
                 summary = {u'contentId' : contentId,
                            u'title' : title,

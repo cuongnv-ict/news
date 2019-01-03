@@ -171,6 +171,80 @@ class summary:
         return summary_result
 
 
+    def run_test_setting(self, title=u'', des=u'', body=u''):
+        num_sens = len(spliter.split(u'\n'.join([des, body])))
+        if self.is_skip(title, u'\n'.join([des, body])):
+            print(u'Not summary doc: %s' % (title))
+            if des != u'':
+                return self.get_default_summary(num_sens, des, body)
+            else:
+                return {u'short': u'Not support kind of this document',
+                        u'medium': u'Not support kind of this document',
+                        u'long': u'Not support kind of this document'}
+
+        if des == u'':
+            return {u'short': u'Not support kind of this document',
+                    u'medium': u'Not support kind of this document',
+                    u'long': u'Not support kind of this document'}
+        elif body == u'':
+            return self.get_default_summary(num_sens, des, body)
+
+        data = des + u'\n' + body
+        data = unicodedata.normalize('NFKC', data.strip())
+
+        if len(data) == 0:
+            return {u'short': u'Not support kind of this document',
+                    u'medium': u'Not support kind of this document',
+                    u'long': u'Not support kind of this document'}
+
+        btm = biterm(num_iters=100, root_dir=self.root_dir)
+        docs = btm.run_gibbs_sampling(data, save_result=False)
+
+        if len(docs) == 0 or len(docs) > self.DOCUMENT_TOO_LONG:
+            if des != u'':
+                return self.get_default_summary(num_sens, des, body)
+            else:
+                return {u'short': u'Not support kind of this document',
+                        u'medium': u'Not support kind of this document',
+                        u'long': u'Not support kind of this document'}
+
+        topic_docs = np.array([d.topic_proportion for d in docs])
+        btm.theta = np.array([btm.theta])
+
+        # cosine_distance = 1 - cosine_similarity
+        cosine_dis = cosine_distances(topic_docs, btm.theta)
+        cosine_dis = map(lambda x: x[0], cosine_dis)
+
+        summary_result = {}
+        for level in [u'short', u'medium', u'long']:
+            ratio = self.get_ratio(btm, len(docs), level=level)
+
+            all_summ = []
+            for l in xrange(4):
+                result = self.get_summary(cosine_dis, ratio, level=l + 1)
+
+                if len(result) == 0:
+                    return self.get_default_summary(num_sens, des, body)
+
+                self.insert_description(des, result, btm.MINIMUM_LENGTH_SENTENCE)
+
+                summ = [docs[i].content for i in result if docs[i].length >= self.MINIMUM_LENGTH_SENTENCE]
+
+                lsh = duplicate_docs()
+                summ = lsh.run_ex(summ)
+                lsh.clear()
+
+                summ.insert(0, u'summary %d:' % (l + 1))
+                summ = u'\r\n'.join(summ).replace(u'_', u' '). \
+                    replace(u'\"', u'').replace(u'”', u'').replace(u'“', u'')
+
+                all_summ.append(summ)
+
+            summary_result.update({level: u'\r\n\r\n'.join(all_summ)})
+
+        return summary_result
+
+
     def get_summary(self, cosine_dis, ratio, level=1):
         if level == 1:
             distance = self.DISTANCE_THRESHOLD
