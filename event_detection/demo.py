@@ -7,7 +7,7 @@ import config
 def normalize_html_format(short_summary, normalized_content):
     raw_content = normalized_content.strip().split(u'\n')
     new_content = []
-    html_content = u'<h2>Summary:</h2><br>' + short_summary + u'<br><br>'
+    html_content = u'<h2>Summary:</h2><br>' + short_summary + u'<br><br><br>'
     for i, sen in enumerate(raw_content):
         if i == 0:
             # highlight title

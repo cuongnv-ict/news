@@ -239,13 +239,13 @@ class summary:
                 summ = lsh.run_ex(summ)
                 lsh.clear()
 
-                summ.insert(0, u'summary %d:' % (l + 1))
+                summ.insert(0, u'<b>Summary %d:</b>' % (l + 1))
                 summ = u'\r\n'.join(summ).replace(u'_', u' '). \
                     replace(u'\"', u'').replace(u'”', u'').replace(u'“', u'')
 
                 all_summ.append(summ)
 
-            summary_result.update({level: u'\r\n\r\n'.join(all_summ)})
+            summary_result.update({level: u'<br><br>'.join(all_summ)})
 
         return summary_result
 
