@@ -33,7 +33,7 @@ categories = [u'giáo dục', u'thể thao', u'giải trí',
               u'đời sống', u'pháp luật', u'kinh tế',
               u'nhà đất', u'khoa học', u'công nghệ', u'xe cộ']
 
-EVENT_MIN_TRENDING_DOCS = {u'giáo dục' : 10, u'thể thao' : 8, u'giải trí' : 10,
+EVENT_MIN_TRENDING_DOCS = {u'giáo dục' : 10, u'thể thao' : 6, u'giải trí' : 10,
                            u'thế giới' : 15, u'xã hội':15, u'văn hóa' : 8,
                            u'đời sống' : 10, u'pháp luật' : 15, u'kinh tế' : 15,
                            u'nhà đất' : 10, u'khoa học' : 8, u'công nghệ' : 8,
