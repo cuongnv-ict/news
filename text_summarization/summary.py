@@ -22,7 +22,7 @@ class summary:
         self.DISTANCE_THRESHOLD_4 = 0.9
         self.DOCUMENT_TOO_LONG = 50
         self.NUM_SENTENCES_SHORT = 8
-        self.MINIMUM_LENGTH_SENTENCE = 8 # sentences in summary have to length greate than equal MINIMUM_LENGTH_SENTENCE
+        self.MINIMUM_LENGTH_SENTENCE = 2 # sentences in summary have to length greate than equal MINIMUM_LENGTH_SENTENCE
         self.skip_title = utils.load_data_to_list(path.join(root_dir, 'skip_title.txt'))
         self.skip_content = utils.load_data_to_list(path.join(root_dir, 'skip_content.txt'))
 
@@ -34,10 +34,10 @@ class summary:
                 # ratio = 0.525
             elif length > btm.NUM_SEN_LONG_TEXT:
                 # ratio = 0.35
-                ratio = 0.5
+                ratio = 0.75
             else:
                 # ratio = 0.45
-                ratio = 0.6
+                ratio = 0.75
         elif level == u'short':
             if length < btm.NUM_SEN_SHORT_TEXT:
                 ratio = 0.45
