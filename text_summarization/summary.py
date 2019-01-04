@@ -22,7 +22,7 @@ class summary:
         self.DISTANCE_THRESHOLD_4 = 0.9
         self.DOCUMENT_TOO_LONG = 50
         self.NUM_SENTENCES_SHORT = 8
-        self.MINIMUM_LENGTH_SENTENCE = 2 # sentences in summary have to length greate than equal MINIMUM_LENGTH_SENTENCE
+        self.MINIMUM_LENGTH_SENTENCE = 8 # sentences in summary have to length greate than equal MINIMUM_LENGTH_SENTENCE
         self.skip_title = utils.load_data_to_list(path.join(root_dir, 'skip_title.txt'))
         self.skip_content = utils.load_data_to_list(path.join(root_dir, 'skip_content.txt'))
 
@@ -162,6 +162,8 @@ class summary:
             lsh = duplicate_docs()
             summ = lsh.run_ex(summ)
             lsh.clear()
+
+            summ = map(lambda s: s.capitalize(), summ)
 
             summ = u'\r\n'.join(summ).replace(u'_', u' ').\
                 replace(u'\"', u'').replace(u'”', u'').replace(u'“', u'')
