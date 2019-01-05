@@ -22,7 +22,7 @@ class summary:
         self.DISTANCE_THRESHOLD_4 = 0.9
         self.DOCUMENT_TOO_LONG = 50
         self.NUM_SENTENCES_SHORT = 8
-        self.MINIMUM_LENGTH_SENTENCE = 8 # sentences in summary have to length greate than equal MINIMUM_LENGTH_SENTENCE
+        self.MINIMUM_LENGTH_SENTENCE = 6 # sentences in summary have to length greate than equal MINIMUM_LENGTH_SENTENCE
         self.skip_title = utils.load_data_to_list(path.join(root_dir, 'skip_title.txt'))
         self.skip_content = utils.load_data_to_list(path.join(root_dir, 'skip_content.txt'))
 
@@ -147,7 +147,7 @@ class summary:
         for level in [u'short', u'medium', u'long']:
             ratio = self.get_ratio(btm, len(docs), level=level)
 
-            for l in xrange(4):
+            for l in xrange(1, 4):
                 result = self.get_summary(cosine_dis, ratio, level=l+1)
                 if len(result) > 0:
                     break
