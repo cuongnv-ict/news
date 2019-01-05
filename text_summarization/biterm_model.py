@@ -83,9 +83,11 @@ class biterm:
         self.W = len(self.vectorizer.vocabulary_)
         # print ('Vocab length = %d' % (self.W))
         docs = []
-        for sen in clean_sentences:
+        for i in xrange(len(clean_sentences)):
             doc = document()
-            doc.get_doc_info(sen, self.vectorizer.vocabulary_)
+            doc.get_doc_info(raw_sentences[i],
+                             clean_sentences[i],
+                             self.vectorizer.vocabulary_)
             docs.append(doc)
         return docs
 

@@ -17,11 +17,11 @@ class document:
         self.BTM_WINDOW_LENGTH = 2
 
 
-    def get_doc_info(self, doc, vocab):
-        self.content = doc
+    def get_doc_info(self, raw_content, clean_content, vocab):
+        self.content = raw_content
         # new_doc = self.remove_stop_postag(doc)
         # words = new_doc.lower().split(u' ')
-        words = doc.lower().split()
+        words = clean_content.lower().split()
         for w in words:
             try:
                 wid = vocab[w]
