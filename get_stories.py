@@ -52,7 +52,7 @@ class get_stories:
         datetime_obj = date_obj.date()
         now = datetime.now()
         diff = now.date() - datetime_obj
-        if diff.days > 2:
+        if diff.days > 1:
             return True
         return False
 

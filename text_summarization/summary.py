@@ -99,7 +99,16 @@ class summary:
                     u'long': u'\n'.join([new_des, new_body])}
 
 
+    def remove_title_in_body(self, body):
+        if u' == ' in body:
+            body = body.split(u'\n')[1:]
+            clean_body = u'\n'.join(body)
+        else: clean_body = body
+        return clean_body
+
+
     def run(self, title=u'', des=u'', body=u''):
+        body = self.remove_title_in_body(body)
         num_sens = len(tokenize.sent_tokenize(u'\n'.join([des, body])))
         if self.is_skip(title, u'\n'.join([des, body])):
             print(u'Not summary doc: %s' % (title))
