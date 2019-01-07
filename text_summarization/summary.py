@@ -17,9 +17,9 @@ class summary:
     def __init__(self, root_dir='.'):
         self.root_dir = root_dir
         self.DISTANCE_THRESHOLD = 0.35
-        self.DISTANCE_THRESHOLD_2 = 0.5
-        self.DISTANCE_THRESHOLD_3 = 0.75
-        self.DISTANCE_THRESHOLD_4 = 0.9
+        self.DISTANCE_THRESHOLD_2 = 0.4
+        self.DISTANCE_THRESHOLD_3 = 0.5
+        self.DISTANCE_THRESHOLD_4 = 0.75
         self.DOCUMENT_TOO_LONG = 50
         self.NUM_SENTENCES_SHORT = 8
         self.MINIMUM_LENGTH_SENTENCE = 8 # sentences in summary have to length greate than equal MINIMUM_LENGTH_SENTENCE
