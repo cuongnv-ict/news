@@ -2,7 +2,7 @@
 # module get all articles talk about Đông sea event but not in weather forecast category
 import config
 import utils
-from bson.objectid import ObjectId
+import datetime
 
 
 forecast_weather_titles = [u'dự báo thời tiết']
@@ -82,28 +82,6 @@ def get_articles(db, list_titles, list_contents, original_title, contentId2date,
             article = {u'contentId' : int(contentId),
                        u'title' : title,
                        u'date' : contentId2date[contentId],
-                       u'publisher' : contenId2publisher[contentId]}
+                       u'publisher' : contenId2publisher[contentId],
+                       u'updated_at': datetime.datetime.now()}
             collection.insert_one(article)
-
-            now = utils.get_time_at_present()
-            update_collection_time_info(db, config.MONGO_COLLECTION_DONG_SEA)
-
-
-def update_collection_time_info(db, collection_name):
-    try:
-        collection = db.get_collection(config.MONGO_COLLECTION_UPDATE_TIME)
-    except:
-        collection = db.create_collection(config.MONGO_COLLECTION_UPDATE_TIME)
-        utils.create_mongo_index(collection, u'name')
-
-    now = utils.get_time_at_present()
-
-    try:
-        document = collection.find_one({u'name': {u'$eq': collection_name}}, max_time_ms=1000)
-        _id = ObjectId(document[u'_id'])
-        collection.update_one({u'_id': _id},
-                              {u'$set': {u'update_time' : now}})
-    except:
-        collection.insert_one({u'name' : collection_name,
-                               u'create_time' : now,
-                               u'update_time' : now})
