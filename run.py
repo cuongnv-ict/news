@@ -40,13 +40,31 @@ handle.start()
 
 
 
-def build_trending_domain(trending_titles, docs_trending, contentId2publisher):
+def get_long_events(event_name, trending_json):
+    long_event = None
+    for event in trending_json[u'content']:
+        if event[u'event_name'] != event_name:
+            continue
+        long_event = event[u'long_event']
+        break
+    return long_event
+
+
+def build_flow_event(long_event):
+    flow = [u' | '.join([long_event[u'date'], long_event[u'event_name']])]
+    for child in long_event[u'child_events']:
+        flow.append(u' | '.join([child[u'date'], child[u'event_name']]))
+    return u'\n'.join(flow)
+
+
+def build_trending_domain(trending_titles, docs_trending, contentId2publisher, trending_json):
     # build json content
     trending = []
     for k, title in trending_titles.items():
         event = {}
         docs = docs_trending[k]
-        event.update({u'title': title.split(u' == ')[1] + u' - %d docs' % (len(docs))})
+        event_name = title.split(u' == ')[1]
+        event.update({u'title': event_name + u' - %d docs' % (len(docs))})
         sub_title = []
         for name in docs:
             try:
@@ -56,9 +74,21 @@ def build_trending_domain(trending_titles, docs_trending, contentId2publisher):
             except:
                 sub_title.append({u'title': name.split(u' == ')[1],
                                   u'contentId': name.split(u' == ')[0]})
-        event.update({u'subTitles': sub_title})
+        # to do at here
+        long_event = get_long_events(event_name, trending_json)
+        flow_event = build_flow_event(long_event)
+
+        event.update({u'subTitles': sub_title, u'flowOfEvent': flow_event})
         trending.append(event)
     return trending
+
+
+def reformat_trending_json(trending_json):
+    new_trending_json = {}
+    for event in trending_json[u'hot_events']:
+        domain = event[u'domain']
+        new_trending_json.update({domain : event})
+    return new_trending_json
 
 
 app = Flask(__name__, static_url_path='',
@@ -91,18 +121,28 @@ def update():
         trending_titles = joblib.load(m.trending_titles_file)
         docs_trending = joblib.load(m.docs_trending_file)
         contentId2publisher = joblib.load(m.contentId2publisher_file)
+        trending_json = joblib.load(m.trending_json_file)
+        trending_json = reformat_trending_json(trending_json)
         result = []
         for domain in trending_titles.keys():
             json_content = {}
             json_content.update({u'domain' : domain, u'id' : accent2bare(domain.replace(u' ', u'-').lower())})
             trending_domain = build_trending_domain(trending_titles[domain],
                                                     docs_trending[domain],
-                                                    contentId2publisher)
+                                                    contentId2publisher,
+                                                    trending_json[domain])
             json_content.update({u'content' : trending_domain})
             result.append(json_content)
-        #result = json.dumps(result, ensure_ascii=False, encoding='utf-8')
+
+        # import json
+        # from io import open
+        # with open('trending_sample.json', 'w', encoding='utf-8') as fp:
+        #     trending_sample = json.dumps(result, ensure_ascii=False, encoding='utf-8')
+        #     fp.write(unicode(trending_sample))
+
         return jsonify(result)
-    except:
+    except Exception as e:
+        print(e.message)
         return jsonify([])
 
 

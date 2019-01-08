@@ -43,6 +43,7 @@ class master:
         self.trending_result_dir = 'trending_result'
         self.trending_titles_file = os.path.join(self.trending_result_dir, 'trending_titles.pkl')
         self.docs_trending_file = os.path.join(self.trending_result_dir, 'docs_trending.pkl')
+        self.trending_json_file = os.path.join(self.trending_result_dir, 'trending_json.pkl')
         self.duplicate_docs = {}
         self.contentId2title = {}
         self.contentId2category = {}
@@ -109,7 +110,7 @@ class master:
 
                 print('save trending to mongodb...')
                 self.save_trending_to_mongo(db, json_trending)
-                self.save_trending_to_file(trending_titles, docs_trending)
+                self.save_trending_to_file(trending_titles, docs_trending, json_trending)
 
                 print('update hot events which are chosen by editor...')
                 self.update_hot_event_editor(db, json_trending)
@@ -404,11 +405,12 @@ class master:
             except: continue
 
 
-    def save_trending_to_file(self, trending_titles, docs_trending):
+    def save_trending_to_file(self, trending_titles, docs_trending, json_trending):
         utils.mkdir(self.trending_result_dir)
         joblib.dump(trending_titles, self.trending_titles_file, compress=True)
         joblib.dump(docs_trending, self.docs_trending_file, compress=True)
         joblib.dump(self.contentId2publisher, self.contentId2publisher_file, compress=True)
+        joblib.dump(json_trending, self.trending_json_file, compress=True)
 
 
     def get_event_id(self, event_name):
