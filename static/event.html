@@ -56,13 +56,18 @@
 
         $(document).on('click','.nav-link',function(){
             $('.newsContent').empty();
+            $('.long-event-detail').empty();
+        })
+
+        $(document).on('click','#event_title',function(){
+            var long_event_detail = $(this).attr("name");
+        
+             $(".long-event-detail").html('<h3>Dòng sự kiện:</h3>'+long_event_detail.split('\n').join('</br>'));
         })
     </script>
 </head>
 
 <body>
-
-
 
     <div class="container">
 
@@ -83,7 +88,6 @@
                     <hr>
                 </div>
             </div>
-
 
             <div class="row">
                 <ul class="nav nav-tabs" id="myTab" role="tablist">
@@ -132,6 +136,10 @@
             </div>
         </div>
 
+        <dir class="long-event-detail" style="color: red; font-weight: bold;">
+            
+        </dir>
+
         <div class="tab-content" id="myTabContent">
             <div class="tab-pane fade show active" id="the-thao" role="tabpanel" aria-labelledby="the-thao-tab">
                 <div class="row">
@@ -145,11 +153,9 @@
                             </div>
                         </div>
 
-
                     </div>
 
                     <div class="col-6 newsContent">
-
 
                     </div>
                 </div>
@@ -172,7 +178,6 @@
                 </div>
             </div>
 
-
             <div class="tab-pane fade" id="giai-tri" role="tabpanel" aria-labelledby="giai-tri-tab">
                 <div class="row">
                     <div class="col-6" id="eventContainer-giai-tri">
@@ -191,7 +196,6 @@
                 </div>
 
             </div>
-
 
             <div class="tab-pane fade" id="the-gioi" role="tabpanel" aria-labelledby="the-gioi-tab">
                 <div class="row">
@@ -212,9 +216,6 @@
 
             </div>
 
-
-
-
             <div class="tab-pane fade" id="xa-hoi" role="tabpanel" aria-labelledby="xa-hoi-tab">
                 <div class="row">
                     <div class="col-6" id="eventContainer-xa-hoi">
@@ -234,7 +235,6 @@
 
             </div>
 
-
             <div class="tab-pane fade" id="van-hoa" role="tabpanel" aria-labelledby="van-hoa-tab">
                 <div class="row">
                     <div class="col-6" id="eventContainer-van-hoa">
@@ -253,8 +253,6 @@
                 </div>
 
             </div>
-
-
 
             <div class="tab-pane fade" id="doi-song" role="tabpanel" aria-labelledby="doi-song-tab">
                 <div class="row">
@@ -394,7 +392,6 @@
         var TOPIC_IDS = ['the-thao', 'giao-duc', 'giai-tri', 'the-gioi', 'xa-hoi', 'van-hoa',
         'doi-song', 'phap-luat', 'kinh-te', 'nha-dat', 'khoa-hoc', 'cong-nghe', 'xe-co'];
 
-
         String.prototype.format = function () {
             var content = this;
             for (var i = 0; i < arguments.length; i++) {
@@ -482,6 +479,7 @@
         function createCard(jsonCardData, idx,tid) {
 
             //console.log('Create card');
+            var long_event_detail= jsonCardData['flowOfEvent']
             title = jsonCardData['title']
             upperTitle = toUpperTitle(title);
 
@@ -491,7 +489,9 @@
             divTitle = ' <div class="card"> '
                 + '<div class="card-header bg-light" id="heading{0}">'
                 + '<h5 class="mb-0">'
-                + '<button style="white-space:normal" class="btn" data-toggle="collapse" data-target="#collapse{1}"' + 'aria-expanded="true" aria-controls="collapse{2}">'
+                + '<button style="white-space:normal" class="btn" id="event_title" data-toggle="collapse" data-target="#collapse{1}"' + 'aria-expanded="true" aria-controls="collapse{2}"'
+                + ' name="'+long_event_detail
+                +'">'
                 + upperTitle
                 + '</button>'
                 + '</h5>'
@@ -521,12 +521,8 @@
             //console.log(cardDiv);
             return cardDiv;
 
-
-
         }
         //setInterval(update,300000);
-
-
 
     </script>
 </body>
